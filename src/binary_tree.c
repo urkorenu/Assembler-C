@@ -1,5 +1,8 @@
 #include "binary_tree.h"
+#include "bucket.h"
+#include <string.h>
 
+static struct tnode *tree_alloc(void);
 
 static  struct tnode *_find_node(struct tnode *p, char *key) 
 {
@@ -47,9 +50,8 @@ int remove_node(struct binary_tree tree, char *key)
 
 struct tnode *create_tnode(struct tnode *p, char *key, void *data) 
 {
-    p = tree_alloc(key, data);
-    p->node->key = key;
-    p->node->data = data;
+    p = tree_alloc();
+    p->node = create_bucket(p->node, key, data);
     p->left_node = p->right_node = NULL;
     return p;
 }
@@ -61,7 +63,7 @@ void *get_data_by_key(struct binary_tree tree, char *key)
 
 }
 
-struct tnode *tree_alloc(void *key, void *data)
+static struct tnode *tree_alloc(void)
 {
   return (struct tnode *)malloc(sizeof(struct tnode));
 }
@@ -72,9 +74,10 @@ void free_tree(struct tnode *p)
   if (p != NULL) {
     free_tree(p->left_node);
     free_tree(p->right_node);
-    free(p->node->key);
-    free(p->node->data);
+    free_bucket(p->node);
     free(p);
   }
 }
+
+
 

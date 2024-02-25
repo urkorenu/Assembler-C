@@ -1,11 +1,12 @@
 # Flags
 CC = gcc
 CFLAGS = -ansi -pedantic -Wall -std=c99 -g 
-INCLUDES = -I./src
+INCLUDES = -I./$(SRC_DIR)
 HIDE = @
+SRC_DIR = src
 
 #Files and Directories
-SOURCES = $(wildcard ./src/*.c)
+SOURCES = $(wildcard ./$(SRC_DIR)/*.c)
 OBJECTS = $(SOURCES:.c=.o)
 BIN = index
 
@@ -23,7 +24,7 @@ clean: cleanup
 # Build
 # -----
 
-src/%.o: src/%.c
+$(SRC_DIR)/%.o: $(SRC_DIR)/%.c
 	@echo $(BIN): Building $@...
 	@$(HIDE)$(CC) $(CFLAGS) -c $(INCLUDES) $^ -o $@
 

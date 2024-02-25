@@ -1,7 +1,7 @@
 #ifndef _BINARY_TREE_H
 #define _BINARY_TREE_H
 
-#include "../includes.h"
+#include "includes.h"
 #include "bucket.h"
 
 /* 
@@ -46,8 +46,6 @@ extern struct tnode *create_tnode(struct tnode *p, char *key, void *data);
 /* 
  * Memory allocation -
  */
-
-extern struct tnode *tree_alloc(void *key, void *data);
 
 extern void free_tree(struct tnode *p);
 
