@@ -5,7 +5,6 @@ static struct bucket *bucket_alloc(void);
 struct bucket *create_bucket(struct bucket *p, char *key, void *data)
 {
     p = bucket_alloc();
-    reset_bucket(p);
     p->key = mystrdup(key);
     p->data = data;
     return p;

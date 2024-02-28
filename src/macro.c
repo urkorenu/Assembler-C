@@ -1,22 +1,23 @@
 #include "macro.h"
-
-static struct macro *macro_alloc(void)
-{
+static struct macro *macro_alloc(void) {
     return (struct macro *)malloc(sizeof(struct macro));
 }
 
-struct macro *create_macro(struct macro *p, int start, int end, char *file)
-{
-    p = macro_alloc();
-    set_start(p, start);
-    set_end(p, end);
-    set_file(p, file);
-    return p;
-} 
+struct macro *create_macro(struct macro **p, int start, int end) {
+    *p = macro_alloc(); 
+    printf("macro allocated\n");
+    if (*p != NULL) { 
+        set_start(*p, start);
+        printf("int set\n");
+        set_end(*p, end);
+        printf("end set\n");
+    }
+    return *p;
+}
+
 
 void free_macro(struct macro *p)
 {
-    free(p->file);
     free(p);
 }
 
@@ -35,10 +36,6 @@ void set_end(struct macro *macro, int end)
     macro->end = end;
 }
 
-void set_file(struct macro *macro, char *file)
-{
-    memcpy(macro->file,file, sizeof(file) +1);
-}
 
 int get_start(struct macro *macro)
 { 
@@ -48,9 +45,4 @@ int get_start(struct macro *macro)
 int get_end(struct macro *macro)
 {
     return macro->end;
-}
-
-char *get_file(struct macro *macro)
-{
-    return macro->file;
 }
