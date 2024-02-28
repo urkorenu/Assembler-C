@@ -16,4 +16,6 @@ extern void free_bucket(struct bucket *p);
 
 extern void reset_bucket(struct bucket *p);
 
+extern char *mystrdup(char *s);
+
 #endif /* _BUCKET_H */

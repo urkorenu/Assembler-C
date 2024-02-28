@@ -6,7 +6,7 @@ struct bucket *create_bucket(struct bucket *p, char *key, void *data)
 {
     p = bucket_alloc();
     reset_bucket(p);
-    memcpy(p->key, key, sizeof(key)+1);
+    p->key = mystrdup(key);
     p->data = data;
     return p;
 }
@@ -28,4 +28,13 @@ void reset_bucket(struct bucket *p)
     memset(p, 0, sizeof(struct bucket));
 }
 
+char *mystrdup(char *s)
+{
+    char *p;
 
+    p = (char *)malloc(strlen(s) + 1);
+    if (p != NULL)
+        strcpy(p,s);
+
+    return p;
+}

@@ -8,7 +8,7 @@ SRC_DIR = src
 #Files and Directories
 SOURCES = $(wildcard ./$(SRC_DIR)/*.c)
 OBJECTS = $(SOURCES:.c=.o)
-BIN = index
+BIN = assembler
 
 # -----
 # Rules
