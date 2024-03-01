@@ -8,21 +8,38 @@ static  struct tnode *_find_node(struct tnode *p, char *key)
 {
     int cmp;
 
-    
     if (p == NULL || p->node == NULL) {
-        return p;}
+        return NULL;}
     if ((cmp = strcmp(p->node->key, key)) == 0){
         return p;}
     if (cmp > 0)
         return _find_node(p->right_node , key);
     else 
         return _find_node(p->left_node , key);
-
 }
 
 struct tnode *find_node(struct binary_tree *tree, char *key)
 {
     return _find_node(tree->root, key);
+}
+
+struct tnode *find_previous_node(struct tnode *p, char *key)
+{
+    int cmp;
+
+    if (p->left_node == NULL || p->right_node == NULL)
+        return NULL;
+    cmp = strcmp(p->right_node->node->key, key);
+    if (cmp > 0){
+        if ((cmp = strcmp(p->right_node->node->key, key)) == 0)
+            return p;
+        return find_previous_node(p->right_node , key);}
+    else {
+        if ((cmp = strcmp(p->left_node->node->key, key)) == 0)
+            return p;
+
+        return find_previous_node(p->left_node , key);}
+
 }
 
 int insert_node(struct binary_tree *tree, char *key, void *data)
@@ -58,15 +75,6 @@ struct tnode *create_tnode(struct tnode *p, char *key, void *data)
     return p;
 }
 
-int remove_node(struct binary_tree *tree, char *key) 
-{
-    struct tnode *p = find_node(tree, key);
-    if (!(p->node->key)) {
-        return 0; }
-    p = NULL; 
-    return 1; 
-}
-
 
 void *get_data_by_key(struct binary_tree *tree, char *key) {
     struct tnode *p = find_node(tree, key);
@@ -94,6 +102,4 @@ void free_tree(struct tnode *p)
     free(p);
   }
 }
-
-
 

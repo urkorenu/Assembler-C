@@ -16,6 +16,8 @@ int main(void)
     printf("%s\n", tree.root->node->key);
     data = get_data_by_key(&tree, key);
     printf("%d\n" ,data->start);
+    free_tree(tree.root);
+    free(key);
 
     return 0;
 }
