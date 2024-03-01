@@ -5,12 +5,9 @@ static struct macro *macro_alloc(void) {
 
 struct macro *create_macro(struct macro **p, int start, int end) {
     *p = macro_alloc(); 
-    printf("macro allocated\n");
     if (*p != NULL) { 
         set_start(*p, start);
-        printf("int set\n");
         set_end(*p, end);
-        printf("end set\n");
     }
     return *p;
 }

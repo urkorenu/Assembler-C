@@ -9,11 +9,9 @@ static  struct tnode *_find_node(struct tnode *p, char *key)
     int cmp;
 
     
-    if (p == NULL) {
-        printf("Null node\n");
+    if (p == NULL || p->node == NULL) {
         return p;}
     if ((cmp = strcmp(p->node->key, key)) == 0){
-        printf("Equal node\n");
         return p;}
     if (cmp > 0)
         return _find_node(p->right_node , key);
@@ -27,13 +25,30 @@ struct tnode *find_node(struct binary_tree *tree, char *key)
     return _find_node(tree->root, key);
 }
 
-int insert_node(struct binary_tree *tree, char *key, void **data)
+int insert_node(struct binary_tree *tree, char *key, void *data)
 {
-    struct tnode *node = find_node(tree, key);
-    struct macro *macro = (struct macro *)*data;
-    node = create_tnode(node, key, data);
+    if (tree->root != NULL) {
+        tree->root = add_node(tree->root, key, data);
+    }
+    else 
+        tree->root = add_node(NULL , key, data);
     return 1;
 }
+
+struct tnode *add_node(struct tnode *p, char *key, void *data) {
+    int cond;
+
+    if (p == NULL) {
+        p = create_tnode(p, key, data); }
+    else if ((cond = strcmp(key, p->node->key)) == 0) {
+        p = create_tnode(p, key, data); }
+    else if (cond < 0)
+        p->left_node = add_node(p->left_node, key, data);
+    else
+        p->right_node = add_node(p->right_node, key, data);
+    return p;
+}
+
 
 struct tnode *create_tnode(struct tnode *p, char *key, void *data) 
 {
@@ -47,7 +62,6 @@ int remove_node(struct binary_tree *tree, char *key)
 {
     struct tnode *p = find_node(tree, key);
     if (!(p->node->key)) {
-        printf("No matching node");
         return 0; }
     p = NULL; 
     return 1; 
@@ -57,10 +71,8 @@ int remove_node(struct binary_tree *tree, char *key)
 void *get_data_by_key(struct binary_tree *tree, char *key) {
     struct tnode *p = find_node(tree, key);
     if (p != NULL && p->node != NULL && p->node->data != NULL) {
-        printf("returned pointer\n");
         return p->node->data;
     } else {
-        printf("returned null\n");
         return NULL;
     }
 }
