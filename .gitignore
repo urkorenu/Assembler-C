@@ -1,0 +1,8 @@
+/**/*.cache/*
+/**/*.cache/
+/**/*.cache
+/**/*.o
+/**/*.vscode
+/**/*.idx
+/**/*.json
+/**/*.dSYM
