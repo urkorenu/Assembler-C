@@ -8,6 +8,6 @@ extern char *get_line(char *line, FILE *file);
 
 extern char *get_word(char *line ,char *delimiters);
 
-extern char *modify_path(char *path);
+extern char *modify_path(const char *path);
 
 #endif /*_IO_H*/

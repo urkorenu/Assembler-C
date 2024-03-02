@@ -13,20 +13,27 @@ char *get_word(char *line ,char *delimiters)
     return strtok(line, delimiters);
 }
 
-char *modify_path(char *path)
-{
-    char *new_path = NULL;
+char *modify_path(const char *path) {
+
+    char *new_path = malloc(strlen(path) + 20); 
+    if (new_path == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        return NULL;
+    }
+
     char footer[] = "_processed";
+    const char *last_four = &path[strlen(path)-4]; 
+
     int i;
-    char *last_four = &path[strlen(path)-4];
-    
-    for (i=0; path[i] != '.'; i++)
+    for (i = 0; path[i] != '.' && path[i] != '\0'; i++) {
         new_path[i] = path[i];
+    }
 
-    strncat(new_path, footer, strlen(footer));
-    strncat(new_path, last_four, 4);
+    strcat(new_path, footer);
+    strcat(new_path, last_four);
+
     return new_path;
-
 }
+
 
 
