@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
     file_path = argv[file_count++];
     file = fopen(file_path, "r");
     new_path = modify_path(file_path);
-    new_file = fopen(file_path, "w");
+    new_file = fopen(new_path, "w");
     if (file == NULL) {
       fprintf(stderr, "Error opening file %s: ", file_path);
       perror("");  
@@ -25,6 +25,7 @@ int main(int argc, char *argv[]) {
 
     parse_pre_proccesor(file, &tree, new_file);
     fclose(file);
+    fclose(new_file);
     free_tree(tree.root);
   }
 
