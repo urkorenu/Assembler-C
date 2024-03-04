@@ -2,7 +2,7 @@
 #include "includes.h"
 #include "io.h"
 #include "macro.h"
-#include <string.h>
+#include <stdio.h>
 
 /* void parser(FILE *file, void *host, int mode) 
 {
@@ -24,6 +24,9 @@ void parse_pre_proccesor(FILE *file, void *host, FILE *new_file)
    char *word = NULL;
    int reading_macro = 0;
    int start_idx;
+   struct macro *temp = NULL;
+   int num_lines = 0;
+   fpos_t temp_pos;
 
 
    while (get_line(line, file) != NULL) {
@@ -32,25 +35,38 @@ void parse_pre_proccesor(FILE *file, void *host, FILE *new_file)
                if (strcmp(word, "mcr") == 0) {
                    reading_macro = 1;
                    key = get_word(line, idx_ptr);
-                   start_idx = line_count++;
+                   start_idx = ++line_count;
+                   fgetpos(file, &temp_pos);
                    break;
                 }
                else {
-                   fprintf(new_file, "%s", line);
-                   ++line_count;
-                   break;
+                   temp = get_data_by_key(host, word);
+                   if (temp ) {
+                       fgetpos(file, &temp_pos);
+                       insert_macro(temp, file, new_file);
+                       fsetpos(file, &temp_pos);
+                       ++line_count;
+                       break;
+                    }
+                   else {
+                        fprintf(new_file, "%s", line);
+                        ++line_count;
+                        break;
+                   }
                }
            }
            
            else {
                if (strcmp(word, "endmcr") == 0) {
                    struct macro *macro = NULL;
-                   macro = create_macro(&macro ,start_idx, (++line_count));
+                   macro = create_macro(&macro , temp_pos , line_count - start_idx);
                    insert_node(host, key, macro);
                    reading_macro = 0;
                    break;
                }
-               else { break;}
+               else {
+                   line_count++;
+                   break;}
            }
        }
        word = NULL;
