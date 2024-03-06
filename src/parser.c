@@ -97,7 +97,7 @@ struct bucket *parse_first_moshe(FILE *file, void *host, FILE *new_file)
 {
    int line_count = 1;
    int dc = 100;
-   int ic = 0;
+   int ic = 100;
    char line[MAXWORD];
    char *key = NULL;
    int idx = 0;
@@ -106,7 +106,6 @@ struct bucket *parse_first_moshe(FILE *file, void *host, FILE *new_file)
    char *symbol = NULL;
    int reading_symbol = 0;
    int start_idx;
-   struct macro *temp = NULL;
    fpos_t temp_pos;
    struct bucket *error = NULL;
    char error_data[MAXWORD];
@@ -126,6 +125,7 @@ struct bucket *parse_first_moshe(FILE *file, void *host, FILE *new_file)
                        create_bucket(symbol_data, word, MDEFINE);
                         /* maybe need conversion to int or else */
                         insert_node(host, key, symbol_data);
+                        ++ic;
                    }
                    else {
                        strcpy(error_data, "invalid syntax");
@@ -167,13 +167,14 @@ struct bucket *parse_first_moshe(FILE *file, void *host, FILE *new_file)
                 key = get_word(line, idx_ptr);
                 create_bucket(symbol_data, NULL, EXTERNAL);
                 insert_node(host, key, symbol_data);
+                ic++;
             }
         }
        else {
             if (reading_symbol){
                if (!get_data_by_key(host, symbol)){
                     create_bucket(symbol_data, CODE, to_void_ptr(dc));
-                    dc++;
+                    ic++;
                     /* maybe need conversion to int or else */
                     insert_node(host, symbol, symbol_data);
                }
@@ -182,7 +183,8 @@ struct bucket *parse_first_moshe(FILE *file, void *host, FILE *new_file)
                    create_bucket(error, key, error_data);
                 }
             }
-            else if (get_instruction(inst, word)){
+            if (get_instruction(inst, word)){
+                ic = ic + inst->args;
             }
             /* process commands */
 

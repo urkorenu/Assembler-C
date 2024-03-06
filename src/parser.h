@@ -10,6 +10,7 @@
 
 #define to_void_ptr(val) ((void *) (&(val)))
 
+extern struct bucket *parse_first_moshe(FILE *file, void *host, FILE *new_file);
 
 extern void parse_pre_processor(FILE *file, void *host, FILE *new_file);
 

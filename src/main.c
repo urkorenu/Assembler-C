@@ -24,6 +24,7 @@ int main(int argc, char *argv[]) {
     }
 
     parse_pre_processor(file, &tree, new_file);
+    parse_first_moshe(new_file, &tree, new_file);
     fclose(file);
     fclose(new_file);
     free_tree(tree.root);
