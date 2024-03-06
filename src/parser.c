@@ -1,10 +1,9 @@
 #include "binary_tree.h"
 #include "bucket.h"
 #include "includes.h"
+#include "instruction.h"
 #include "io.h"
 #include "macro.h"
-#include <linux/limits.h>
-#include <string.h>
 #include "parser.h"
 
 static int is_data_store_instruction(char *word)
@@ -112,10 +111,8 @@ struct bucket *parse_first_moshe(FILE *file, void *host, FILE *new_file)
    struct bucket *error = NULL;
    char error_data[MAXWORD];
    struct bucket *symbol_data = NULL;
-   
-
-    
-   reset_counters(void *ic, void *dc);
+   struct instruction *inst = NULL;
+   init_instruction(inst);
 
    while (get_line(line, file) != NULL) {
        word = get_word(line, idx_ptr);
@@ -185,6 +182,8 @@ struct bucket *parse_first_moshe(FILE *file, void *host, FILE *new_file)
                    create_bucket(error, key, error_data);
                 }
             }
+            else if (get_instruction(inst, word)){
+            }
             /* process commands */
 
        }
@@ -198,4 +197,5 @@ struct bucket *parse_first_moshe(FILE *file, void *host, FILE *new_file)
    return error;
 
 }
+
 
