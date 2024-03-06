@@ -1,20 +1,40 @@
 #include "binary_tree.h"
+#include "bucket.h"
 #include "includes.h"
 #include "io.h"
 #include "macro.h"
-#include <stdio.h>
+#include <linux/limits.h>
+#include <string.h>
+#include "parser.h"
 
-/* void parser(FILE *file, void *host, int mode) 
+static int is_data_store_instruction(char *word)
 {
-    switch (mode) {
-        case 1:
-            parse_pre_proccesor(file, host);
-        case 2:
-            parse_x(file, host);
-    }
-} */
+    if (strcmp(word, ".data") == 0)
+        return 1;
+    else if (strcmp(word, ".string") == 0)
+        return 1;
+    return 0;
+}
 
-void parse_pre_proccesor(FILE *file, void *host, FILE *new_file)
+static int is_symbol(char *word)
+{
+    int length = strlen(word);
+    if (word[length-1] == ':')
+        return 1;
+    return 0;
+}
+
+static int is_e_instruction(char *word)
+{
+    if (strcmp(word, ".extern") == 0)
+        return 1;
+    else if (strcmp(word, ".entry") == 0)
+        return 1;
+    return 0;
+}
+
+
+void parse_pre_processor(FILE *file, void *host, FILE *new_file)
 {
    int line_count = 1;
    char line[MAXWORD];
@@ -25,7 +45,6 @@ void parse_pre_proccesor(FILE *file, void *host, FILE *new_file)
    int reading_macro = 0;
    int start_idx;
    struct macro *temp = NULL;
-   int num_lines = 0;
    fpos_t temp_pos;
 
 
@@ -75,5 +94,108 @@ void parse_pre_proccesor(FILE *file, void *host, FILE *new_file)
    }
 }
 
+struct bucket *parse_first_moshe(FILE *file, void *host, FILE *new_file)
+{
+   int line_count = 1;
+   int dc = 100;
+   int ic = 0;
+   char line[MAXWORD];
+   char *key = NULL;
+   int idx = 0;
+   int *idx_ptr = &idx;
+   char *word = NULL;
+   char *symbol = NULL;
+   int reading_symbol = 0;
+   int start_idx;
+   struct macro *temp = NULL;
+   fpos_t temp_pos;
+   struct bucket *error = NULL;
+   char error_data[MAXWORD];
+   struct bucket *symbol_data = NULL;
+   
 
+    
+   reset_counters(void *ic, void *dc);
+
+   while (get_line(line, file) != NULL) {
+       word = get_word(line, idx_ptr);
+
+       if (strcmp(word, ".define") == 0){
+           key = get_word(line, idx_ptr);
+           if (!get_data_by_key(host, key)){
+                   word = get_word(line, idx_ptr);
+                   if (strcmp(word, "=") == 0){
+                        word = get_word(line, idx_ptr);
+                       create_bucket(symbol_data, word, MDEFINE);
+                        /* maybe need conversion to int or else */
+                        insert_node(host, key, symbol_data);
+                   }
+                   else {
+                       strcpy(error_data, "invalid syntax");
+                       /* maybe i dont need to create bucket for every error
+                        * or should i create tree of error ?! */
+                        create_bucket(error, key, error_data);
+                   }
+
+
+           }
+           else {
+                strcpy(error_data, "define key is already initialized");
+               create_bucket(error, key, error_data);
+           }
+       }           
+       else if (is_symbol(word)){
+               strcpy(symbol, word);
+               word = get_word(line, idx_ptr);
+               reading_symbol = 1;
+       }
+
+       if (is_data_store_instruction(word)){
+           if (reading_symbol){
+               if (!get_data_by_key(host, symbol)){
+                   create_bucket(symbol_data, DATA, to_void_ptr(dc));
+                   dc++;
+                    /* maybe need conversion to int or else */
+                    insert_node(host, symbol, symbol_data);
+                    /* process functions */
+                }
+               else {
+                    strcpy(error_data, "symbol is already initialized");
+                   create_bucket(error, key, error_data);
+                }
+           }
+       }
+       if (is_e_instruction(word)) {
+            if (strcmp(word, ".extern") == 0) {
+                key = get_word(line, idx_ptr);
+                create_bucket(symbol_data, NULL, EXTERNAL);
+                insert_node(host, key, symbol_data);
+            }
+        }
+       else {
+            if (reading_symbol){
+               if (!get_data_by_key(host, symbol)){
+                    create_bucket(symbol_data, CODE, to_void_ptr(dc));
+                    dc++;
+                    /* maybe need conversion to int or else */
+                    insert_node(host, symbol, symbol_data);
+               }
+               else {
+                    strcpy(error_data, "symbol is already initialized");
+                   create_bucket(error, key, error_data);
+                }
+            }
+            /* process commands */
+
+       }
+       word = NULL;
+       symbol = NULL;
+       idx = 0;
+       memset(line, 0, MAXWORD);
+       reading_symbol = 0;
+       
+   }
+   return error;
+
+}
 

@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
       continue;
     }
 
-    parse_pre_proccesor(file, &tree, new_file);
+    parse_pre_processor(file, &tree, new_file);
     fclose(file);
     fclose(new_file);
     free_tree(tree.root);
