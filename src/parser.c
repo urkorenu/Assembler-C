@@ -95,7 +95,6 @@ void parse_pre_processor(FILE *file, void *host, FILE *new_file)
 
 struct bucket *parse_first_phase(FILE *file, void *host, FILE *new_file)
 {
-   int line_count = 1;
    int dc = 100;
    int ic = 100;
    char line[MAXWORD];
@@ -105,8 +104,6 @@ struct bucket *parse_first_phase(FILE *file, void *host, FILE *new_file)
    char *word = NULL;
    char *symbol = NULL;
    int reading_symbol = 0;
-   int start_idx;
-   fpos_t temp_pos;
    struct bucket *error = NULL;
    char error_data[MAXWORD];
    struct bucket *symbol_data = NULL;
