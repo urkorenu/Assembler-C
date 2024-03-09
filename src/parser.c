@@ -93,7 +93,7 @@ void parse_pre_processor(FILE *file, void *host, FILE *new_file)
    }
 }
 
-struct bucket *parse_first_moshe(FILE *file, void *host, FILE *new_file)
+struct bucket *parse_first_phase(FILE *file, void *host, FILE *new_file)
 {
    int line_count = 1;
    int dc = 100;

@@ -61,5 +61,7 @@ int get_instruction(struct instruction *p, char *word)
         p->code = 15;
         p->args = 0;
     }
-    return 1;
+    if (p->code || p->args)
+        return 1;
+    return 0;
 }
