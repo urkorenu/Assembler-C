@@ -1,8 +1,3 @@
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdarg.h>
 #include "Errors.h"
 /*All kinds of possible errors in the code
  We will change as needed*/

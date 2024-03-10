@@ -93,7 +93,7 @@ void parse_pre_processor(FILE *file, void *host, FILE *new_file)
    }
 }
 
-struct bucket *parse_first_phase(FILE *file, void *host, FILE *new_file)
+struct bucket *parse_first_phase(struct assembler_data *assembler, FILE *source_file)
 {
    int dc = 100;
    int ic = 100;
@@ -110,18 +110,18 @@ struct bucket *parse_first_phase(FILE *file, void *host, FILE *new_file)
    struct instruction *inst = NULL;
    init_instruction(inst);
 
-   while (get_line(line, file) != NULL) {
+   while (get_line(line, source_file) != NULL) {
        word = get_word(line, idx_ptr);
 
        if (strcmp(word, ".define") == 0){
            key = get_word(line, idx_ptr);
-           if (!get_data_by_key(host, key)){
+           if (!get_data_by_key(assembler->symbol_table, key)){
                    word = get_word(line, idx_ptr);
                    if (strcmp(word, "=") == 0){
                         word = get_word(line, idx_ptr);
                        create_bucket(symbol_data, word, MDEFINE);
                         /* maybe need conversion to int or else */
-                        insert_node(host, key, symbol_data);
+                        insert_node(assembler->symbol_table, key, symbol_data);
                         ++ic;
                    }
                    else {
@@ -146,11 +146,11 @@ struct bucket *parse_first_phase(FILE *file, void *host, FILE *new_file)
 
        if (is_data_store_instruction(word)){
            if (reading_symbol){
-               if (!get_data_by_key(host, symbol)){
+               if (!get_data_by_key(assembler->symbol_table, symbol)){
                    create_bucket(symbol_data, DATA, to_void_ptr(dc));
                    dc++;
                     /* maybe need conversion to int or else */
-                    insert_node(host, symbol, symbol_data);
+                    insert_node(assembler->symbol_table, symbol, symbol_data);
                     /* process functions */
                 }
                else {
@@ -163,17 +163,17 @@ struct bucket *parse_first_phase(FILE *file, void *host, FILE *new_file)
             if (strcmp(word, ".extern") == 0) {
                 key = get_word(line, idx_ptr);
                 create_bucket(symbol_data, NULL, EXTERNAL);
-                insert_node(host, key, symbol_data);
+                insert_node(assembler->symbol_table, key, symbol_data);
                 ic++;
             }
         }
        else {
             if (reading_symbol){
-               if (!get_data_by_key(host, symbol)){
+               if (!get_data_by_key(assembler->symbol_table, symbol)){
                     create_bucket(symbol_data, CODE, to_void_ptr(dc));
                     ic++;
                     /* maybe need conversion to int or else */
-                    insert_node(host, symbol, symbol_data);
+                    insert_node(assembler->symbol_table, symbol, symbol_data);
                }
                else {
                     strcpy(error_data, "symbol is already initialized");

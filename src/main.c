@@ -1,15 +1,23 @@
 #include "binary_tree.h"
-#include "parser.h"
 #include "files.h"
+#include "linked_list.h"
+#include "parser.h"
 
 int main(int argc, char *argv[]) {
+  struct assembler_data assembler;
+  struct linked_list errors, object_list;
+  struct binary_tree symbol_table, macro_tree;
+  struct files as_files;
+  assembler.errors = &errors;
+  assembler.object_list = &object_list;
+  assembler.symbol_table = &symbol_table;
+  assembler.macro_tree = &macro_tree;
+  assembler.as_files = &as_files;
   char *path;
   FILE *file;
   FILE *new_file;
   int file_count = 1;
-  struct binary_tree tree;
-  tree.root = NULL;
-  struct files as_files;
+  macro_tree.root = NULL;
 
   while (file_count < argc) {
     path = argv[file_count++];
@@ -18,15 +26,15 @@ int main(int argc, char *argv[]) {
     new_file = fopen(as_files.processed_path, "w");
     if (file == NULL) {
       fprintf(stderr, "Error opening file %s: ", as_files.assembly_path);
-      perror("");  
+      perror("");
       continue;
     }
 
-    parse_pre_processor(file, &tree, new_file);
-    parse_first_phase(new_file, &tree, new_file);
+    parse_pre_processor(file, assembler.macro_tree, new_file);
+    parse_first_phase(&assembler, new_file);
     fclose(file);
     fclose(new_file);
-    free_tree(tree.root);
+    free_tree(macro_tree.root);
   }
 
   return 0;
