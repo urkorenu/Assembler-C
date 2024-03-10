@@ -1,3 +1,6 @@
+#ifndef ERROR_H
+#define ERROR_H
+
 #include "includes.h"
 /* Represents an error with an associated error ID and error message */
 typedef struct Error {
@@ -66,3 +69,5 @@ typedef enum ERROR_CODES {
 
 //this func print internal errors. 
 void print_in_error(int error_code);
+
+#endif /* ERROR_H */
