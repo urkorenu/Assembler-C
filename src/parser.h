@@ -12,6 +12,8 @@
 #define DATA "data"
 #define EXTERNAL "external"
 
+#define COMMA ','
+#define HASH '#'
 struct assembler_data {
     struct linked_list *errors;
     struct linked_list *object_list;
