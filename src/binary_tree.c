@@ -2,72 +2,80 @@
 #include "bucket.h"
 #include <string.h>
 
-static struct tnode *tree_alloc(void);
+static struct tnode*
+tree_alloc(void);
 
-static  struct tnode *_find_node(struct tnode *p, char *key) 
+static struct tnode*
+_find_node(struct tnode* p, char* key)
 {
     int cmp;
 
     if (p == NULL || p->node == NULL) {
-        return NULL;}
-    if ((cmp = strcmp(p->node->key, key)) == 0){
-        return p;}
+        return NULL;
+    }
+    if ((cmp = strcmp(p->node->key, key)) == 0) {
+        return p;
+    }
     if (cmp > 0)
-        return _find_node(p->right_node , key);
-    else 
-        return _find_node(p->left_node , key);
+        return _find_node(p->right_node, key);
+    else
+        return _find_node(p->left_node, key);
 }
 
-struct tnode *find_node(struct binary_tree *tree, char *key)
+struct tnode*
+find_node(struct binary_tree* tree, char* key)
 {
     return _find_node(tree->root, key);
 }
 
-struct tnode *find_previous_node(struct tnode *p, char *key)
+struct tnode*
+find_previous_node(struct tnode* p, char* key)
 {
     int cmp;
 
     if (p->left_node == NULL || p->right_node == NULL)
         return NULL;
     cmp = strcmp(p->right_node->node->key, key);
-    if (cmp > 0){
+    if (cmp > 0) {
         if ((cmp = strcmp(p->right_node->node->key, key)) == 0)
             return p;
-        return find_previous_node(p->right_node , key);}
-    else {
+        return find_previous_node(p->right_node, key);
+    } else {
         if ((cmp = strcmp(p->left_node->node->key, key)) == 0)
             return p;
 
-        return find_previous_node(p->left_node , key);}
-
+        return find_previous_node(p->left_node, key);
+    }
 }
 
-int insert_node(struct binary_tree *tree, char *key, void *data)
+int
+insert_node(struct binary_tree* tree, char* key, void* data)
 {
     if (tree->root != NULL) {
         tree->root = add_node(tree->root, key, data);
-    }
-    else 
-        tree->root = add_node(NULL , key, data);
+    } else
+        tree->root = add_node(NULL, key, data);
     return 1;
 }
 
-struct tnode *add_node(struct tnode *p, char *key, void *data) {
+struct tnode*
+add_node(struct tnode* p, char* key, void* data)
+{
     int cond;
 
     if (p == NULL) {
-        p = create_tnode(p, key, data); }
-    else if ((cond = strcmp(key, p->node->key)) == 0) {
-        p = create_tnode(p, key, data); }
-    else if (cond < 0)
+        p = create_tnode(p, key, data);
+    } else if ((cond = strcmp(key, p->node->key)) == 0) {
+        p = create_tnode(p, key, data);
+    } else if (cond < 0)
         p->left_node = add_node(p->left_node, key, data);
     else
         p->right_node = add_node(p->right_node, key, data);
     return p;
 }
 
-
-struct tnode *create_tnode(struct tnode *p, char *key, void *data) 
+struct tnode*
+create_tnode(struct tnode* p, char* key, void* data)
 {
     p = tree_alloc();
     p->node = create_bucket(p->node, key, data);
@@ -75,9 +83,10 @@ struct tnode *create_tnode(struct tnode *p, char *key, void *data)
     return p;
 }
 
-
-void *get_data_by_key(struct binary_tree *tree, char *key) {
-    struct tnode *p = find_node(tree, key);
+void*
+get_data_by_key(struct binary_tree* tree, char* key)
+{
+    struct tnode* p = find_node(tree, key);
     if (p != NULL && p->node != NULL && p->node->data != NULL) {
         return p->node->data;
     } else {
@@ -85,21 +94,19 @@ void *get_data_by_key(struct binary_tree *tree, char *key) {
     }
 }
 
-
-
-static struct tnode *tree_alloc(void)
+static struct tnode*
+tree_alloc(void)
 {
-  return (struct tnode *)malloc(sizeof(struct tnode));
+    return (struct tnode*)malloc(sizeof(struct tnode));
 }
 
-
-void free_tree(struct tnode *p)
+void
+free_tree(struct tnode* p)
 {
-  if (p != NULL) {
-    free_tree(p->left_node);
-    free_tree(p->right_node);
-    free_bucket(p->node);
-    free(p);
-  }
+    if (p != NULL) {
+        free_tree(p->left_node);
+        free_tree(p->right_node);
+        free_bucket(p->node);
+        free(p);
+    }
 }
-

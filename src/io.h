@@ -4,10 +4,10 @@
 
 #define MAXWORD 100
 
+extern char*
+get_line(char* line, FILE* file);
 
-extern char *get_line(char *line, FILE *file);
-
-extern char *get_word(char *line, int *idx);
-
+extern char*
+get_word(char* line, int* idx);
 
 #endif /*_IO_H*/

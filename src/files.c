@@ -1,8 +1,10 @@
 #include "files.h"
 
-char *modify_path(const char *path, const char *format) {
+char*
+modify_path(const char* path, const char* format)
+{
 
-    char *new_path = malloc(strlen(path) + 1); 
+    char* new_path = malloc(strlen(path) + 1);
     if (new_path == NULL) {
         fprintf(stderr, "Memory allocation failed\n");
         return NULL;
@@ -14,8 +16,8 @@ char *modify_path(const char *path, const char *format) {
     return new_path;
 }
 
-
-void set_file_pack(struct files *files, const char *path)
+void
+set_file_pack(struct files* files, const char* path)
 {
     files->assembly_path = modify_path(path, ASSEMBLY);
     files->processed_path = modify_path(path, PROCESSED);
@@ -24,4 +26,3 @@ void set_file_pack(struct files *files, const char *path)
     files->entries_path = modify_path(path, ENTRY);
     return;
 }
-

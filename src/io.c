@@ -3,20 +3,22 @@
 #include <stdio.h>
 #include <string.h>
 
-char *get_line(char *line, FILE *file) 
+char*
+get_line(char* line, FILE* file)
 {
     return fgets(line, MAXWORD, file);
 }
 
-char *get_word(char *line, int *idx)
+char*
+get_word(char* line, int* idx)
 {
     if (line == NULL || idx == NULL) {
         return NULL;
     }
 
-    char *p = malloc(sizeof(char) * 100);
+    char* p = malloc(sizeof(char) * 100);
     if (p == NULL) {
-        return NULL; 
+        return NULL;
     }
 
     int i = 0;
@@ -28,12 +30,7 @@ char *get_word(char *line, int *idx)
         p[i++] = line[(*idx)++];
     }
 
-    p[i] = '\0'; 
+    p[i] = '\0';
 
     return p;
 }
-
-
-
-
-

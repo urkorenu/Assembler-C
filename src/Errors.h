@@ -4,8 +4,8 @@
 #include "includes.h"
 /* Represents an error with an associated error ID and error message */
 typedef struct Error {
-    int error_id;     /* Unique identifier for the error */
-    char *error_msg;  /* Error message associated with the error */
+    int error_id;    /* Unique identifier for the error */
+    char* error_msg; /* Error message associated with the error */
 } Error;
 
 /* Represents error codes for various types of errors */
@@ -29,7 +29,7 @@ typedef enum ERROR_CODES {
     ERROR_CODE_15,
     ERROR_CODE_16,
     ERROR_CODE_17,
-    //if you think about more or less errors you can add or delete. 
+    // if you think about more or less errors you can add or delete.
 
     /* The following errors are related to reading command assembly lines */
     ERROR_CODE_30 = 30,
@@ -52,9 +52,9 @@ typedef enum ERROR_CODES {
     ERROR_CODE_47,
     ERROR_CODE_48,
     ERROR_CODE_49,
-    
 
-    /* The following errors are related to reading instruction .data or .string lines related errors */
+    /* The following errors are related to reading instruction .data or .string
+       lines related errors */
     ERROR_CODE_50 = 50,
     ERROR_CODE_51,
     ERROR_CODE_52,
@@ -67,7 +67,8 @@ typedef enum ERROR_CODES {
     ERROR_CODE_59
 } ERROR_CODES;
 
-//this func print internal errors. 
-void print_in_error(int error_code);
+// this func print internal errors.
+void
+print_in_error(int error_code);
 
 #endif /* ERROR_H */
