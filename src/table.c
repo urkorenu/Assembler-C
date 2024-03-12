@@ -34,3 +34,11 @@ insert_label_table(label_address **label_table, int lines, char *label, int coun
     /* Return 1 to indicate successful insertion */
     return 1;
 }
+void change_label_table_data_count(label_address *label_table, int table_lines, int IC) {
+    int i;
+    for (i = 0; i < table_lines; i++) {
+        /*Increase by 1 the address of the data line counter*/
+        if ((label_table + i)->is_symbol) {
+            (label_table + i)->address += IC + 1;
+        }
+    }
