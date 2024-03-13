@@ -14,6 +14,9 @@
 #define COMMA ','
 #define HASH '#'
 
+#define SOURCE_OPERAND 4
+#define DESTINATION_OPERAND 2
+
 struct assembler_data {
     struct linked_list* errors;
     struct linked_list* object_list;

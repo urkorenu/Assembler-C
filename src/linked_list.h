@@ -12,7 +12,7 @@ struct linked_list {
 extern struct linked_list*
 create_new_ll_node(void* data);
 
-extern void
+extern struct linked_list*
 insert_ll_node(struct linked_list* head, void* data);
 
 extern struct linked_list*

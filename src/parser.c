@@ -4,9 +4,11 @@
 #include "includes.h"
 #include "instruction.h"
 #include "io.h"
+#include "linked_list.h"
 #include "macro.h"
-#include <cstdlib>
-#include <stdlib.h>
+#include <ctype.h>
+#include <stdint.h>
+
 static int
 is_data_store_instruction(char* word)
 {
@@ -127,6 +129,17 @@ add_bits(int source, int data, int location)
     return source & temp;
 }
 
+static int
+is_register(char* word)
+{
+    int len = strlen(word);
+    if (len == 2 && word[0] == 'r' && isdigit(word[len - 1])){
+        int temp = word[len-1] - '0';
+        if (0 <= temp && temp <= 7)
+            return 1;}
+    return 0;
+}
+
 int
 line_to_bin_1st(struct assembler_data* assembler,
                 char* line,
@@ -137,17 +150,22 @@ line_to_bin_1st(struct assembler_data* assembler,
     int found_comma = 0;
     int idx = 0;
     int* idx_ptr = &idx;
-    /* flag */
     int _contain_more_codes = 0;
     /* addressing flags */
-    int address = 0;
-    /* init of bin code */
+    int source_address = 0;
+    int dest_address = 0;
     char* word = NULL;
     int n_operators = 0;
-    sturct bucket* temp_data;
+    struct bucket* temp_data;
+    int found_reg = 0;
+    struct linked_list *source_code = insert_ll_node(assembler->object_list, &code);
+    int shift_bits = 0;
     /*
      * address -> A/R/E ->*/
-    if ((word = get_word(line, idx_ptr))) {
+    while ((word = get_word(line, idx_ptr))) {
+        if (n_operators)
+            shift_bits = DESTINATION_OPERAND;
+        shift_bits = SOURCE_OPERAND;
         if (is_symbol(word))
             word = get_word(line, idx_ptr);
         word = get_word(line, idx_ptr);
@@ -155,7 +173,7 @@ line_to_bin_1st(struct assembler_data* assembler,
             if (inst->args-- >= 1) {
                 n_operators++;
                 if (is_ended_with_x(word, COMMA)) {
-                    if (inst->args-- >= 1) {
+                    if (inst->args >= 1) {
                         found_comma = 1;
                         remove_last_char(word);
                     } else
@@ -163,9 +181,20 @@ line_to_bin_1st(struct assembler_data* assembler,
                     /* raise error illegal comma */
                 } else {
                     if (is_register(word)) {
-                        int temp = strlen(word);
-                        temp = word[temp - 1] - '0';
-                        code = add_bits(code, 3, n_operators * 2);
+                        int reg_code = strlen(word);
+                        reg_code = (word[reg_code - 1] - '0') << 5;
+                        code = add_bits(code, 3, shift_bits);
+                        if (found_reg){
+                            struct linked_list *temp_node;
+                            reg_code = reg_code >> 3;
+                            temp_node = get_last_node(assembler->object_list);
+                            code =add_bits((int)temp_node->data, reg_code, shift_bits);
+                            temp_node->data = to_void_ptr(code);
+                            break;
+                        }
+                        source_code->data = (to_void_ptr(code));
+                        insert_ll_node(assembler->object_list, to_void_ptr(reg_code));
+                        found_reg++;
                         /* new code is temp
                          * if dest operand << 2
                          * if source operand << 5
@@ -182,7 +211,7 @@ line_to_bin_1st(struct assembler_data* assembler,
                                  * address = 0; */
                             } else
                                 ;
-                            /* raise error : data has not been defined */
+                            /* put ? in code */
                         }
                         if (!temp)
                             if ((temp = atoi(word)))
