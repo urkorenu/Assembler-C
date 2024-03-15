@@ -1,16 +1,19 @@
 #ifndef INSTRUCTION_H
 #define INSTRUCTION_H
 
-struct instruction {
-
+struct line_data {
+    char* symbol;
     int code;
+    char* source;
+    char* destination;
     int args;
+    int is_valid;
 };
 
-extern struct instruction*
-init_instruction(struct instruction* p);
+extern struct line_data*
+init_instruction(struct line_data* p);
 
 extern int
-get_instruction(struct instruction* p, char* word);
+get_instruction(struct line_data* p, char* word);
 
 #endif /* INSTRUCTION_H */

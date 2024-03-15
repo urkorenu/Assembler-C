@@ -1,15 +1,15 @@
 #include "instruction.h"
 #include "includes.h"
 
-struct instruction*
-init_instruction(struct instruction* p)
+struct line_data*
+init_instruction(struct line_data* p)
 {
-    p = (struct instruction*)malloc(sizeof(struct instruction));
+    p = (struct line_data*)malloc(sizeof(struct line_data));
     return p;
 }
 
 int
-get_instruction(struct instruction* p, char* word)
+get_instruction(struct line_data* p, char* word)
 {
     if (p == NULL || !word)
         return 0;
@@ -67,3 +67,5 @@ get_instruction(struct instruction* p, char* word)
         return 1;
     return 0;
 }
+
+

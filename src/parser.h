@@ -17,6 +17,13 @@
 #define SOURCE_OPERAND 4
 #define DESTINATION_OPERAND 2
 
+#define SOURCE_REGISTER 5
+#define DESTINATION_REGISTER 2
+
+#define DIRECT_ADDRESS 1
+#define INDEX_ADDRESS 2
+#define REGISTER_ADDRESS 3
+
 struct assembler_data {
     struct linked_list* errors;
     struct linked_list* object_list;
@@ -26,6 +33,7 @@ struct assembler_data {
     int ic;
     int dc;
 };
+
 
 #define to_void_ptr(val) ((void*)(&(val)))
 

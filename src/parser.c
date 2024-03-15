@@ -6,8 +6,6 @@
 #include "io.h"
 #include "linked_list.h"
 #include "macro.h"
-#include <ctype.h>
-#include <stdint.h>
 
 static int
 is_data_store_instruction(char* word)
@@ -122,109 +120,199 @@ remove_last_char(char* word)
     return;
 }
 
+static void
+remove_first_char(char* word)
+{
+    word++;
+    return;
+}
+
 int
 add_bits(int source, int data, int location)
 {
     int temp = data << location;
-    return source & temp;
+    return source | temp;
 }
 
 static int
 is_register(char* word)
 {
     int len = strlen(word);
-    if (len == 2 && word[0] == 'r' && isdigit(word[len - 1])){
-        int temp = word[len-1] - '0';
+    if (len == 2 && word[0] == 'r' && isdigit(word[len - 1])) {
+        int temp = word[len - 1] - '0';
         if (0 <= temp && temp <= 7)
-            return 1;}
+            return 1;
+    }
     return 0;
+}
+
+static int
+get_index(char* word, char* index)
+{
+    int i;
+    int j = 0;
+    int len = strlen(word);
+    int inside_square_brackets = 0;
+    for (i = 0; i <= len; i++) {
+        if (word[i] == '[')
+            inside_square_brackets = 1;
+        else if (inside_square_brackets) {
+            if (word[i] == ']')
+                return 1;
+            index[j++] = word[i];
+            word[i] = '0';
+        }
+    }
+    return 0;
+}
+int
+parse_line(struct assembler_data* assembler, char* line, struct line_data* inst)
+{
+    char* word = NULL;
+    int idx = 0;
+    int* idx_ptr = &idx;
+    int found_comma;
+    while ((word = get_word(line, idx_ptr))) {
+        if (is_symbol(word)) {
+            inst->symbol = word;
+            word = get_word(line, idx_ptr);
+        }
+        if (get_instruction(inst, word)) {
+            if (inst->args == 2) {
+                word = get_word(line, idx_ptr);
+                if (is_ended_with_x(word, COMMA)) {
+                    found_comma = 1;
+                    remove_last_char(word);
+                    strcpy(inst->source, word);
+                    /* inst->source = word; */
+                } else {
+                    strcpy(inst->source, word);
+                }
+                if (!found_comma) {
+                    word = get_word(line, idx_ptr);
+                    if (is_starting_with_x(word, COMMA)) {
+                        remove_first_char(word);
+                        if (word[0] != '0')
+                            idx -= (strlen(word)) - 1;
+                    } else {
+                        inst->is_valid = 0;
+                        return 0;
+                        /* error : missing comma */
+                    }
+                }
+            }
+            if (inst->args >= 1) {
+                word = get_word(line, idx_ptr);
+                if (is_ended_with_x(word, COMMA)) {
+                    inst->is_valid = 0;
+                    return 0;
+                    /* error - too many commas */
+                }
+                strcpy(inst->destination, word);
+            }
+            if ((word = get_word(line, idx_ptr))) {
+                inst->is_valid = 0;
+                return 0;
+                /* error  - too much text */
+            }
+
+        } else {
+            inst->is_valid = 0;
+            /* error : not a valid command */
+        }
+    }
+    return 1;
 }
 
 int
 line_to_bin_1st(struct assembler_data* assembler,
                 char* line,
-                struct instruction* inst)
+                struct line_data* inst)
 {
-    int code = 0b00000000;
-    code = inst->code << 6;
-    int found_comma = 0;
-    int idx = 0;
-    int* idx_ptr = &idx;
-    int _contain_more_codes = 0;
-    /* addressing flags */
-    int source_address = 0;
-    int dest_address = 0;
-    char* word = NULL;
-    int n_operators = 0;
+    int code = inst->code << 6;
     struct bucket* temp_data;
     int found_reg = 0;
-    struct linked_list *source_code = insert_ll_node(assembler->object_list, &code);
-    int shift_bits = 0;
-    /*
-     * address -> A/R/E ->*/
-    while ((word = get_word(line, idx_ptr))) {
-        if (n_operators)
-            shift_bits = DESTINATION_OPERAND;
-        shift_bits = SOURCE_OPERAND;
-        if (is_symbol(word))
-            word = get_word(line, idx_ptr);
-        word = get_word(line, idx_ptr);
-        if ((word = get_word(line, idx_ptr)))
-            if (inst->args-- >= 1) {
-                n_operators++;
-                if (is_ended_with_x(word, COMMA)) {
-                    if (inst->args >= 1) {
-                        found_comma = 1;
-                        remove_last_char(word);
+    struct linked_list* source_code =
+      insert_ll_node(assembler->object_list, &code);
+    char* index = NULL;
+    if (inst->source) {
+        if (is_register(inst->source)) {
+            int reg_code = strlen(inst->source);
+            reg_code = (inst->source[reg_code - 1] - '0') << SOURCE_REGISTER;
+            code = add_bits(code, REGISTER_ADDRESS, SOURCE_OPERAND);
+            source_code->data = (to_void_ptr(code));
+            insert_ll_node(assembler->object_list, to_void_ptr(reg_code));
+            found_reg++;
+        }
+        if (is_starting_with_x(inst->source, HASH)) {
+            inst->source++;
+            int temp = 0;
+
+            if ((temp = atoi(inst->source))) {
+                temp = temp << 2;
+                insert_ll_node(assembler->object_list,
+                               to_void_ptr(inst->source));
+            } else {
+
+                if ((temp_data = get_data_by_key(assembler->symbol_table,
+                                                 inst->source))) {
+                    if (strcmp(temp_data->data, MDEFINE) == 0) {
+                        if ((temp = atoi(temp_data->key))) {
+                            temp = temp << 2;
+                            insert_ll_node(assembler->object_list,
+                                           to_void_ptr(temp));
+                        } else
+                            ;
+                        /* error : value error */
                     } else
                         ;
-                    /* raise error illegal comma */
-                } else {
-                    if (is_register(word)) {
-                        int reg_code = strlen(word);
-                        reg_code = (word[reg_code - 1] - '0') << 5;
-                        code = add_bits(code, 3, shift_bits);
-                        if (found_reg){
-                            struct linked_list *temp_node;
-                            reg_code = reg_code >> 3;
-                            temp_node = get_last_node(assembler->object_list);
-                            code =add_bits((int)temp_node->data, reg_code, shift_bits);
-                            temp_node->data = to_void_ptr(code);
-                            break;
-                        }
-                        source_code->data = (to_void_ptr(code));
-                        insert_ll_node(assembler->object_list, to_void_ptr(reg_code));
-                        found_reg++;
-                        /* new code is temp
-                         * if dest operand << 2
-                         * if source operand << 5
-                         * */
-                    }
-                    if (is_starting_with_x(word, HASH)) {
-                        word++;
-                        int temp = 0;
-                        if ((temp_data = get_data_by_key(
-                               assembler->symbol_table, word))) {
-                            if (temp_data->data == MDEFINE) {
-                                temp = atoi(temp_data->key);
-                                /* code is unchanged, new code is temp << 2
-                                 * address = 0; */
-                            } else
-                                ;
-                            /* put ? in code */
-                        }
-                        if (!temp)
-                            if ((temp = atoi(word)))
-                                ;
-                            /* code is unchanged, new code is temp << 2
-                             * address = 0; */
-                            else
-                                ;
-                        /* raise value error */
-                    }
-                }
+                    /* error : not a defined symbol */
+                } else
+                    ;
+                /* error : Unknown data */
             }
+        }
+        if (get_index(inst->source, index)) {
+            code = add_bits(code, INDEX_ADDRESS, SOURCE_OPERAND);
+            source_code->data = (to_void_ptr(code));
+            insert_ll_node(assembler->object_list, NULL);
+            int temp = 0;
+            if ((temp = atoi(index))) {
+                temp = temp << 2;
+                insert_ll_node(assembler->object_list, to_void_ptr(temp));
+            } else {
+                if ((temp_data =
+                       get_data_by_key(assembler->symbol_table, index))) {
+                    if (strcmp(temp_data->data, MDEFINE) == 0) {
+                        if ((temp = atoi(temp_data->key))) {
+                            temp = temp << 2;
+
+                            insert_ll_node(assembler->object_list,
+                                           to_void_ptr(temp));
+                        } else
+                            ;
+                        /* error - value error */
+                    } else
+                        ;
+                    /* error - index is not defined */
+                } else
+                    ;
+                /* error - Unknown index*/
+            }
+            /* if (found_reg) {
+                struct linked_list* temp_node;
+                reg_code = reg_code >> 3;
+                temp_node = get_last_node(assembler->object_list);
+                code = add_bits((int)temp_node->data, reg_code, shift_bits);
+                temp_node->data = to_void_ptr(code);
+                return NULL; */
+        } else {
+            code = add_bits(code, DIRECT_ADDRESS, SOURCE_OPERAND);
+            source_code->data = (to_void_ptr(code));
+            insert_ll_node(assembler->object_list, NULL);
+        }
     }
+
     return 0;
 }
 
@@ -243,9 +331,8 @@ parse_first_phase(struct assembler_data* assembler, FILE* source_file)
     struct bucket* error = NULL;
     char error_data[MAXWORD];
     struct bucket* symbol_data = NULL;
-    struct instruction* inst = NULL;
+    struct line_data* inst = NULL;
     init_instruction(inst);
-    FILE* obj_file = fopen(assembler->as_files->object_path, "w");
 
     while (get_line(line, source_file) != NULL) {
         word = get_word(line, idx_ptr);
@@ -262,8 +349,8 @@ parse_first_phase(struct assembler_data* assembler, FILE* source_file)
                     ++ic;
                 } else {
                     strcpy(error_data, "invalid syntax");
-                    /* maybe i dont need to create bucket for every error
-                     * or should i create tree of error ?! */
+                    /* maybe i dont need to create bucket for every
+                     * error or should i create tree of error ?! */
                     create_bucket(error, key, error_data);
                 }
 
