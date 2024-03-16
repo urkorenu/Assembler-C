@@ -31,7 +31,7 @@ Error errors[] = {
     { -1, "" },
     { -1, "" },
     { -1, "" },
-    { -1, "" },
+    { ERROR_CODE28, "define key is already initialized" },
     { ERROR_CODE29, "Missing command" },
     { ERROR_CODE_30, "Line is too long" },
     { ERROR_CODE_31, "Illegal opcode" },
