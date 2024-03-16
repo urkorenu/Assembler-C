@@ -1,8 +1,9 @@
 #ifndef ENCODE_H
 #define ENCODE_H
 
-#include "instruction.h"
 #include "parser.h"
+#include "instruction.h"
+#include "linked_list.h"
 
 extern void
 encode_register(struct assembler_data* assembler,

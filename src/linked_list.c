@@ -18,7 +18,7 @@ struct linked_list*
 insert_ll_node(struct linked_list* head, void* data)
 {
     if (!head || !data)
-        return;
+        return NULL;
     if (head->data == NULL) {
         head = create_new_ll_node(data);
         return head;

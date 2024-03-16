@@ -1,5 +1,4 @@
 #include "encode.h"
-#include "parser.h"
 
 void
 encode_register(struct assembler_data* assembler,
@@ -17,13 +16,13 @@ encode_register(struct assembler_data* assembler,
     }
 
     int reg_code = strlen(inst->source);
-    reg_code = (inst->source[reg_code - 1] - '0') << SOURCE_REGISTER;
+    reg_code = (inst->source[reg_code - 1] - '0') << bit_location;
 
     if (found_register) {
         struct linked_list* temp_node;
         reg_code = reg_code >> REGISTER_ADDRESS;
         temp_node = get_last_node(assembler->object_list);
-        code = add_bits((int)temp_node->data, reg_code, operand_location);
+        code = add_bits(get_lnode_data(temp_node, int), reg_code, operand_location);
         temp_node->data = to_void_ptr(code);
         return;
     }
@@ -78,7 +77,7 @@ encode_index(struct assembler_data* assembler,
     if (source) {
         operand_location = SOURCE_OPERAND;
     }
-    code = add_bits(code, INDEX_ADDRESS, operand_location);
+    code = add_bits(0, INDEX_ADDRESS, operand_location);
     source_code->data = (to_void_ptr(code));
     insert_ll_node(assembler->object_list, NULL);
     int temp = 0;
