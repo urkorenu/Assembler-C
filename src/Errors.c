@@ -32,7 +32,7 @@ Error errors[] = {
     { -1, "" },
     { -1, "" },
     { -1, "" },
-    { -1, "" },
+    { ERROR_CODE29, "Missing command" },
     { ERROR_CODE_30, "Line is too long" },
     { ERROR_CODE_31, "Illegal opcode" },
     { ERROR_CODE_32, "Line contains extra text" },
