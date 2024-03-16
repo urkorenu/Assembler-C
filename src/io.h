@@ -3,6 +3,7 @@
 #include "includes.h"
 
 #define MAXWORD 100
+#define MAX_LEN 81
 
 extern char*
 get_line(char* line, FILE* file);
