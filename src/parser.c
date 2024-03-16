@@ -1,6 +1,7 @@
 #include "parser.h"
 #include "binary_tree.h"
 #include "bucket.h"
+#include "encode.h"
 #include "includes.h"
 #include "instruction.h"
 #include "io.h"
@@ -230,86 +231,23 @@ line_to_bin_1st(struct assembler_data* assembler,
                 struct line_data* inst)
 {
     int code = inst->code << 6;
-    struct bucket* temp_data;
     int found_reg = 0;
+    char* index = NULL;
     struct linked_list* source_code =
       insert_ll_node(assembler->object_list, &code);
-    char* index = NULL;
     if (inst->source) {
         if (is_register(inst->source)) {
-            int reg_code = strlen(inst->source);
-            reg_code = (inst->source[reg_code - 1] - '0') << SOURCE_REGISTER;
-            code = add_bits(code, REGISTER_ADDRESS, SOURCE_OPERAND);
-            source_code->data = (to_void_ptr(code));
-            insert_ll_node(assembler->object_list, to_void_ptr(reg_code));
-            found_reg++;
+            encode_register(assembler, inst, found_reg, source_code, 1);
+            found_reg = 1;
         }
         if (is_starting_with_x(inst->source, HASH)) {
-            inst->source++;
-            int temp = 0;
-
-            if ((temp = atoi(inst->source))) {
-                temp = temp << 2;
-                insert_ll_node(assembler->object_list,
-                               to_void_ptr(inst->source));
-            } else {
-
-                if ((temp_data = get_data_by_key(assembler->symbol_table,
-                                                 inst->source))) {
-                    if (strcmp(temp_data->data, MDEFINE) == 0) {
-                        if ((temp = atoi(temp_data->key))) {
-                            temp = temp << 2;
-                            insert_ll_node(assembler->object_list,
-                                           to_void_ptr(temp));
-                        } else
-                            ;
-                        /* error : value error */
-                    } else
-                        ;
-                    /* error : not a defined symbol */
-                } else
-                    ;
-                /* error : Unknown data */
-            }
+            encode_direct(assembler, inst, source_code, 1);
         }
         if (get_index(inst->source, index)) {
-            code = add_bits(code, INDEX_ADDRESS, SOURCE_OPERAND);
-            source_code->data = (to_void_ptr(code));
-            insert_ll_node(assembler->object_list, NULL);
-            int temp = 0;
-            if ((temp = atoi(index))) {
-                temp = temp << 2;
-                insert_ll_node(assembler->object_list, to_void_ptr(temp));
-            } else {
-                if ((temp_data =
-                       get_data_by_key(assembler->symbol_table, index))) {
-                    if (strcmp(temp_data->data, MDEFINE) == 0) {
-                        if ((temp = atoi(temp_data->key))) {
-                            temp = temp << 2;
-
-                            insert_ll_node(assembler->object_list,
-                                           to_void_ptr(temp));
-                        } else
-                            ;
-                        /* error - value error */
-                    } else
-                        ;
-                    /* error - index is not defined */
-                } else
-                    ;
-                /* error - Unknown index*/
-            }
-            /* if (found_reg) {
-                struct linked_list* temp_node;
-                reg_code = reg_code >> 3;
-                temp_node = get_last_node(assembler->object_list);
-                code = add_bits((int)temp_node->data, reg_code, shift_bits);
-                temp_node->data = to_void_ptr(code);
-                return NULL; */
+            encode_index(assembler, inst, source_code, 1, index);
         } else {
-            code = add_bits(code, DIRECT_ADDRESS, SOURCE_OPERAND);
-            source_code->data = (to_void_ptr(code));
-            insert_ll_node(assembler->object_list, NULL);
+
+            encode_null(assembler, inst, source_code, 1);
         }
     }
 

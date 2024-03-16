@@ -36,6 +36,8 @@ struct assembler_data {
 
 
 #define to_void_ptr(val) ((void*)(&(val)))
+extern int
+add_bits(int source, int data, int location);
 
 extern struct bucket*
 parse_first_phase(struct assembler_data* host, FILE* source_file);
