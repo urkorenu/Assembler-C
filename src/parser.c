@@ -199,6 +199,7 @@ parse_line(struct assembler_data* assembler, char* line, struct line_data* inst)
                         inst->is_valid = 0;
                         return 0;
                         /* error : missing comma */
+                        print_in_error(ERROR_CODE_29);
                     }
                 }
             }
@@ -208,6 +209,7 @@ parse_line(struct assembler_data* assembler, char* line, struct line_data* inst)
                     inst->is_valid = 0;
                     return 0;
                     /* error - too many commas */
+                    print_in_error(ERROR_CODE_39);
                 }
                 strcpy(inst->destination, word);
             }
@@ -215,11 +217,13 @@ parse_line(struct assembler_data* assembler, char* line, struct line_data* inst)
                 inst->is_valid = 0;
                 return 0;
                 /* error  - too much text */
+                print_in_error(ERROR_CODE_32);
             }
 
         } else {
             inst->is_valid = 0;
             /* error : not a valid command */
+            print_in_error(ERROR_CODE_38);
         }
     }
     return 1;
@@ -293,8 +297,7 @@ parse_first_phase(struct assembler_data* assembler, FILE* source_file, struct fi
                 }
 
             } else {
-                strcpy(error_data, "define key is already initialized");
-                create_bucket(error, key, error_data);
+               print_in_error(ERROR_CODE_28);
             }
         } else if (is_symbol(word)) {
             strcpy(symbol, word);
