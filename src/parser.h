@@ -40,7 +40,7 @@ extern int
 add_bits(int source, int data, int location);
 
 extern struct bucket*
-parse_first_phase(struct assembler_data* host, FILE* source_file);
+parse_first_phase(struct assembler_data* host, FILE* source_file, struct files *as_files);
 
 extern void
 parse_pre_processor(FILE* file, void* host, FILE* new_file);

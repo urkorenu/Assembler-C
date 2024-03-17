@@ -24,4 +24,7 @@ get_last_node(struct linked_list* p);
 extern struct linked_list*
 llalloc(void);
 
+extern void 
+print_linked_list(struct linked_list *p, FILE *file);
+
 #endif /* !LINKED_LIST_H */

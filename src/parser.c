@@ -255,7 +255,7 @@ line_to_bin_1st(struct assembler_data* assembler,
 }
 
 struct bucket*
-parse_first_phase(struct assembler_data* assembler, FILE* source_file)
+parse_first_phase(struct assembler_data* assembler, FILE* source_file, struct files *as_files)
 {
     int dc = 100;
     int ic = 100;
@@ -336,7 +336,8 @@ parse_first_phase(struct assembler_data* assembler, FILE* source_file)
                 }
             }
             if (get_instruction(inst, word)) {
-                ic += inst->args;
+                parse_line(assembler, line, inst);
+                line_to_bin_1st(assembler, line, inst);
             }
             /* process commands */
         }
@@ -346,5 +347,7 @@ parse_first_phase(struct assembler_data* assembler, FILE* source_file)
         memset(line, 0, MAXWORD);
         reading_symbol = 0;
     }
+    FILE *ob_file = fopen(as_files->object_path, "w");
+    print_linked_list(assembler->object_list, ob_file);
     return error;
 }

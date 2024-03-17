@@ -17,26 +17,27 @@ main(int argc, char* argv[])
 	    .as_files = &as_files,
 	};
     char* path;
-    FILE* file;
-    FILE* new_file;
+    FILE* original_file;
+    FILE* processed_file, ob_file;
     int file_count = 1;
     macro_tree.root = NULL;
 
     while (file_count < argc) {
         path = argv[file_count++];
         set_file_pack(&as_files, path);
-        file = fopen(as_files.assembly_path, "r");
-        new_file = fopen(as_files.processed_path, "w");
-        if (file == NULL) {
+        original_file = fopen(as_files.assembly_path, "r");
+        processed_file= fopen(as_files.processed_path, "w");
+        if (original_file == NULL) {
             fprintf(stderr, "Error opening file %s: ", as_files.assembly_path);
             perror("");
             continue;
         }
-
-        parse_pre_processor(file, assembler.macro_tree, new_file);
-        parse_first_phase(&assembler, new_file);
-        fclose(file);
-        fclose(new_file);
+        parse_pre_processor(original_file, assembler.macro_tree, processed_file);
+        fclose(processed_file);
+        processed_file = fopen(as_files.processed_path, "r");
+        parse_first_phase(&assembler, processed_file, &as_files);
+        fclose(original_file);
+        fclose(processed_file);
         free_tree(macro_tree.root);
     }
 
