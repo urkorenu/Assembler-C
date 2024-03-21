@@ -175,6 +175,7 @@ parse_line(struct assembler_data* assembler, char* line, struct line_data* inst)
     int found_comma;
     while ((word = get_word(line, idx_ptr))) {
         if (is_symbol(word)) {
+            inst->symbol = (char*)malloc(strlen(word) + 1);
             inst->symbol = word;
             word = get_word(line, idx_ptr);
         }
@@ -275,7 +276,8 @@ parse_first_phase(struct assembler_data* assembler, FILE* source_file, struct fi
     struct bucket* symbol_data = NULL;
     struct line_data* inst = NULL;
     init_instruction(inst);
-
+ struct line_data* inst = (struct line_data*)malloc(sizeof(struct line_data));
+    struct bucket* symbol_data = NULL;
     while (get_line(line, source_file) != NULL) {
         word = get_word(line, idx_ptr);
 
