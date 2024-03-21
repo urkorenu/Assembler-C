@@ -248,6 +248,12 @@ line_to_bin_1st(struct assembler_data* assembler,
         if (is_starting_with_x(inst->source, HASH)) {
             encode_direct(assembler, inst, source_code, 1);
         }
+                index = (char*)malloc(MAX_INDEX_LENGTH * sizeof(char));
+        if (index == NULL) {
+            // Handle allocation failure
+            printf("Memory allocation failed for index\n");
+            return NULL; // or handle the error in a suitable manner
+        }
         if (get_index(inst->source, index)) {
             encode_index(assembler, inst, source_code, 1, index);
         } else {
