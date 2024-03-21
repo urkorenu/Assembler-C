@@ -261,7 +261,8 @@ line_to_bin_1st(struct assembler_data* assembler,
             encode_null(assembler, inst, source_code, 1);
         }
     }
-
+    // Free the memory allocated for index when no longer needed
+    free(index);
     return 0;
 }
 
