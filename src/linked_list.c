@@ -45,11 +45,10 @@ llalloc(void)
 void 
 print_linked_list(struct linked_list *p, FILE *file)
 {
-    struct linked_list *node = p;
 
-    while (node != NULL){
-        fprintf(file, "%d\n", get_lnode_data(node, int));
-        node = node->next;
+    while (p!= NULL){
+        fprintf(file, "%d\n", get_lnode_data(p, int));
+        p = p->next;
     }
 }
 

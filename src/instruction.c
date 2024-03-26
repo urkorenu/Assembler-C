@@ -11,9 +11,8 @@ init_instruction(struct line_data* p)
 int
 get_instruction(struct line_data* p, char* word)
 {
-    if (p == NULL || !word)
+    if (!word)
         return 0;
-
     if (strcmp(word, "mov") == 0) {
         p->code = 0;
         p->args = 2;
@@ -63,9 +62,7 @@ get_instruction(struct line_data* p, char* word)
         p->code = 15;
         p->args = 0;
     }
-    if (p->code || p->args)
+    if (p->code > 0 || p->args > 0)
         return 1;
     return 0;
 }
-
-

@@ -285,7 +285,7 @@ parse_first_phase(struct assembler_data* assembler,
     char error_data[MAXWORD];
     struct bucket* symbol_data = NULL;
     struct line_data* inst = NULL;
-    init_instruction(inst);
+    inst = init_instruction(inst);
     while (get_line(line, source_file) != NULL) {
         word = get_word(line, idx_ptr);
 
@@ -295,7 +295,7 @@ parse_first_phase(struct assembler_data* assembler,
                 word = get_word(line, idx_ptr);
                 if (strcmp(word, "=") == 0) {
                     word = get_word(line, idx_ptr);
-                    create_bucket(&symbol_data, word, to_void_ptr(MDEFINE));
+                    symbol_data = create_bucket(&symbol_data, word, MDEFINE);
                     /* maybe need conversion to int or else */
                     insert_node(assembler->symbol_table, key, &symbol_data);
                     ++ic;
