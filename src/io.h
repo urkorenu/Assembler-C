@@ -4,6 +4,7 @@
 
 #define MAXWORD 100
 #define MAX_LEN 81
+#define MAX_INDEX_LENGTH 4
 
 extern char*
 get_line(char* line, FILE* file);

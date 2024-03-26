@@ -29,9 +29,12 @@ typedef enum ERROR_CODES {
     ERROR_CODE_15,
     ERROR_CODE_16,
     ERROR_CODE_17,
+
     // if you think about more or less errors you can add or delete.
 
-    /* The following errors are related to reading command assembly lines */
+    /* The following errors are related to reading command assembly lines */    
+    ERROR_CODE_28,
+    ERROR_CODE_29,
     ERROR_CODE_30 = 30,
     ERROR_CODE_31,
     ERROR_CODE_32,

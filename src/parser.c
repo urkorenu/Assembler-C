@@ -1,4 +1,5 @@
 #include "parser.h"
+#include "Errors.h"
 #include "binary_tree.h"
 #include "bucket.h"
 #include "encode.h"
@@ -238,6 +239,7 @@ line_to_bin_1st(struct assembler_data* assembler,
     int code = inst->code << 6;
     int found_reg = 0;
     char* index = NULL;
+    index = (char*)malloc(MAX_INDEX_LENGTH * sizeof(char));
     struct linked_list* source_code =
       insert_ll_node(assembler->object_list, &code);
     if (inst->source) {
@@ -248,7 +250,6 @@ line_to_bin_1st(struct assembler_data* assembler,
         if (is_starting_with_x(inst->source, HASH)) {
             encode_direct(assembler, inst, source_code, 1);
         }
-                index = (char*)malloc(MAX_INDEX_LENGTH * sizeof(char));
         if (index == NULL) {
             // Handle allocation failure
             printf("Memory allocation failed for index\n");
@@ -267,7 +268,9 @@ line_to_bin_1st(struct assembler_data* assembler,
 }
 
 struct bucket*
-parse_first_phase(struct assembler_data* assembler, FILE* source_file, struct files *as_files)
+parse_first_phase(struct assembler_data* assembler,
+                  FILE* source_file,
+                  struct files* as_files)
 {
     int dc = 100;
     int ic = 100;
@@ -283,8 +286,6 @@ parse_first_phase(struct assembler_data* assembler, FILE* source_file, struct fi
     struct bucket* symbol_data = NULL;
     struct line_data* inst = NULL;
     init_instruction(inst);
- struct line_data* inst = (struct line_data*)malloc(sizeof(struct line_data));
-    struct bucket* symbol_data = NULL;
     while (get_line(line, source_file) != NULL) {
         word = get_word(line, idx_ptr);
 
@@ -296,7 +297,7 @@ parse_first_phase(struct assembler_data* assembler, FILE* source_file, struct fi
                     word = get_word(line, idx_ptr);
                     create_bucket(symbol_data, word, MDEFINE);
                     /* maybe need conversion to int or else */
-                    insert_node(assembler->symbol_table, key, symbol_data);
+                    insert_node(assembler->symbol_table, key, &symbol_data);
                     ++ic;
                 } else {
                     strcpy(error_data, "invalid syntax");
@@ -306,7 +307,7 @@ parse_first_phase(struct assembler_data* assembler, FILE* source_file, struct fi
                 }
 
             } else {
-               print_in_error(ERROR_CODE_28);
+                print_in_error(ERROR_CODE_28);
             }
         } else if (is_symbol(word)) {
             strcpy(symbol, word);
@@ -359,7 +360,7 @@ parse_first_phase(struct assembler_data* assembler, FILE* source_file, struct fi
         memset(line, 0, MAXWORD);
         reading_symbol = 0;
     }
-    FILE *ob_file = fopen(as_files->object_path, "w");
+    FILE* ob_file = fopen(as_files->object_path, "w");
     print_linked_list(assembler->object_list, ob_file);
     return error;
 }
