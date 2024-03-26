@@ -310,7 +310,9 @@ parse_first_phase(struct assembler_data* assembler,
                 print_in_error(ERROR_CODE_28);
             }
         } else if (is_symbol(word)) {
-            strcpy(symbol, word);
+            int i = 0;
+            int* temp_ptr = &i;
+            symbol = get_word(word, temp_ptr);
             word = get_word(line, idx_ptr);
             reading_symbol = 1;
         }
