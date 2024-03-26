@@ -295,7 +295,7 @@ parse_first_phase(struct assembler_data* assembler,
                 word = get_word(line, idx_ptr);
                 if (strcmp(word, "=") == 0) {
                     word = get_word(line, idx_ptr);
-                    create_bucket(symbol_data, word, MDEFINE);
+                    create_bucket(&symbol_data, word, to_void_ptr(MDEFINE));
                     /* maybe need conversion to int or else */
                     insert_node(assembler->symbol_table, key, &symbol_data);
                     ++ic;
@@ -303,7 +303,7 @@ parse_first_phase(struct assembler_data* assembler,
                     strcpy(error_data, "invalid syntax");
                     /* maybe i dont need to create bucket for every
                      * error or should i create tree of error ?! */
-                    create_bucket(error, key, error_data);
+                    create_bucket(&error, key, error_data);
                 }
 
             } else {
@@ -318,34 +318,34 @@ parse_first_phase(struct assembler_data* assembler,
         if (is_data_store_instruction(word)) {
             if (reading_symbol) {
                 if (!get_data_by_key(assembler->symbol_table, symbol)) {
-                    create_bucket(symbol_data, DATA, to_void_ptr(dc));
+                    create_bucket(&symbol_data, DATA, to_void_ptr(dc));
                     dc++;
                     /* maybe need conversion to int or else */
                     insert_node(assembler->symbol_table, symbol, symbol_data);
                     /* process functions */
                 } else {
                     strcpy(error_data, "symbol is already initialized");
-                    create_bucket(error, key, error_data);
+                    create_bucket(&error, key, error_data);
                 }
             }
         }
         if (is_e_instruction(word)) {
             if (strcmp(word, ".extern") == 0) {
                 key = get_word(line, idx_ptr);
-                create_bucket(symbol_data, NULL, EXTERNAL);
+                create_bucket(&symbol_data, NULL, EXTERNAL);
                 insert_node(assembler->symbol_table, key, symbol_data);
                 ic++;
             }
         } else {
             if (reading_symbol) {
                 if (!get_data_by_key(assembler->symbol_table, symbol)) {
-                    create_bucket(symbol_data, CODE, to_void_ptr(dc));
+                    create_bucket(&symbol_data, CODE, to_void_ptr(dc));
                     ic++;
                     /* maybe need conversion to int or else */
                     insert_node(assembler->symbol_table, symbol, symbol_data);
                 } else {
                     strcpy(error_data, "symbol is already initialized");
-                    create_bucket(error, key, error_data);
+                    create_bucket(&error, key, error_data);
                 }
             }
             if (get_instruction(inst, word)) {

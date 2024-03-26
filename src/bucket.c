@@ -1,15 +1,27 @@
 #include "bucket.h"
 
+static void
+set_key(struct bucket* p, char* key)
+{
+    p->key = mystrdup(key);
+}
+
+static void
+set_data(struct bucket* p, void* data)
+{
+    p->data = data;
+}
+
 static struct bucket*
 bucket_alloc(void);
 
 struct bucket*
-create_bucket(struct bucket* p, char* key, void* data)
+create_bucket(struct bucket** p, char* key, void* data)
 {
-    p = bucket_alloc();
-    p->key = mystrdup(key);
-    p->data = data;
-    return p;
+    *p = bucket_alloc();
+    set_key(*p, key);
+    set_data(*p, data);
+    return *p;
 }
 
 static struct bucket*

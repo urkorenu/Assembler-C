@@ -78,7 +78,7 @@ struct tnode*
 create_tnode(struct tnode* p, char* key, void* data)
 {
     p = tree_alloc();
-    p->node = create_bucket(p->node, key, data);
+    p->node = create_bucket(&p->node, key, data);
     p->left_node = p->right_node = NULL;
     return p;
 }
