@@ -186,10 +186,10 @@ parse_line(struct assembler_data* assembler, char* line, struct line_data* inst)
                 if (is_ended_with_x(word, COMMA)) {
                     found_comma = 1;
                     remove_last_char(word);
-                    strcpy(inst->source, word);
+                    inst-> source = mystrdup(word);
                     /* inst->source = word; */
                 } else {
-                    strcpy(inst->source, word);
+                    inst-> source = mystrdup(word);
                 }
                 if (!found_comma) {
                     word = get_word(line, idx_ptr);
@@ -213,7 +213,7 @@ parse_line(struct assembler_data* assembler, char* line, struct line_data* inst)
                     /* error - too many commas */
                     print_in_error(ERROR_CODE_39);
                 }
-                strcpy(inst->destination, word);
+                inst->destination = mystrdup(word);
             }
             if ((word = get_word(line, idx_ptr))) {
                 inst->is_valid = 0;
@@ -251,9 +251,8 @@ line_to_bin_1st(struct assembler_data* assembler,
             encode_direct(assembler, inst, source_code, 1);
         }
         if (index == NULL) {
-            // Handle allocation failure
             printf("Memory allocation failed for index\n");
-            return NULL; // or handle the error in a suitable manner
+            return -1; 
         }
         if (get_index(inst->source, index)) {
             encode_index(assembler, inst, source_code, 1, index);
@@ -262,7 +261,6 @@ line_to_bin_1st(struct assembler_data* assembler,
             encode_null(assembler, inst, source_code, 1);
         }
     }
-    // Free the memory allocated for index when no longer needed
     free(index);
     return 0;
 }

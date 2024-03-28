@@ -18,7 +18,7 @@ main(int argc, char* argv[])
 	};
     char* path;
     FILE* original_file;
-    FILE* processed_file, ob_file;
+    FILE* processed_file;
     int file_count = 1;
     macro_tree.root = NULL;
 

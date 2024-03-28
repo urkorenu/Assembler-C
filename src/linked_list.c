@@ -17,7 +17,7 @@ create_new_ll_node(void* data)
 struct linked_list*
 insert_ll_node(struct linked_list* head, void* data)
 {
-    if (!head || !data)
+    if (!data)
         return NULL;
     if (head->data == NULL) {
         head = create_new_ll_node(data);
@@ -42,13 +42,15 @@ llalloc(void)
     return (struct linked_list*)malloc(sizeof(struct linked_list));
 }
 
-void 
-print_linked_list(struct linked_list *p, FILE *file)
-{
-
-    while (p!= NULL){
-        fprintf(file, "%d\n", get_lnode_data(p, int));
-        p = p->next;
+void print_linked_list(struct linked_list *p, FILE *file) {
+    if (file == NULL) {
+        printf("Error: Invalid file pointer.\n");
+        return;
     }
+
+    if (!p || !p->data) 
+        return;
+    fprintf(file, "%d\n", get_lnode_data(p, int));
+    print_linked_list(p->next, file);
 }
 

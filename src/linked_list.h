@@ -10,7 +10,7 @@ struct linked_list {
 };
 
 #define get_lnode_data(lnode, dtype)\
-    ((dtype *)(lnode->data))[0]
+    ((dtype *)((lnode)->data))[0]
 
 extern struct linked_list*
 create_new_ll_node(void* data);
