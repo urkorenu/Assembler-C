@@ -1,5 +1,12 @@
 #include "linked_list.h"
 
+#define WORDSIZE 14
+#define BITSIZE(x) (sizeof(x) * 8)
+#define BITMASK(N) (1 << (N))
+#define GET_BIT(X, N) (\
+    ((X) & BITMASK(N)) >> (N)\
+)
+
 static void
 _print_linked_list(const struct linked_list* p, FILE* file, const char* sep);
 
@@ -46,8 +53,6 @@ insert_ll_node(struct linked_list* head, int data)
 struct linked_list*
 get_last_node(struct linked_list* p)
 {
-    /* if (p->next == NULL) */
-    /*     return p; */
     if (p->state == DATA_UNSET || p->next == NULL)
         return p;
     return get_last_node(p->next);
@@ -75,14 +80,8 @@ llfree(struct linked_list* p) {
 static void
 int_to_binary(int n, FILE* file)
 {
-    int i, a[15] = { 0 };
-    for (i = 0; n > 0; i++) {
-        a[i] = n % 2;
-        n = n / 2;
-    }
-    for (i = i - 1; i >= 0; i--) {
-        fprintf(file, "%d", a[i]);
-    }
+    for (int i = WORDSIZE - 1; i >= 0; i--)
+        fprintf(file, "%0d", GET_BIT(n, i));
 }
 
 void
