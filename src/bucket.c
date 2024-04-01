@@ -22,7 +22,7 @@ create_bucket(char* key, void* data)
     p = bucket_alloc();
     set_key(p, key);
     set_data(p, data);
-    printf("%s", (char *)data);
+    printf("%s\n", (char *)data);
     return p;
 }
 
@@ -35,6 +35,8 @@ bucket_alloc(void)
 void
 free_bucket(struct bucket* p)
 {
+    if (p == NULL)
+        return;
     free(p->key);
     free(p->data);
     free(p);

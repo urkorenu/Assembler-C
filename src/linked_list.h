@@ -3,8 +3,14 @@
 
 #include "includes.h"
 
+enum node_state {
+    DATA_UNSET,
+    DATA_SET,
+};
+
 struct linked_list {
     int data;
+    enum node_state state;
     struct linked_list* next;
     struct linked_list* pre;
 };
@@ -28,6 +34,12 @@ extern struct linked_list*
 llalloc(void);
 
 extern void 
-print_linked_list(struct linked_list *p, FILE *file);
+print_linked_list(const struct linked_list *p, FILE *file);
+
+extern void
+ll_fprintf(const struct linked_list *p, FILE *file, const char *sep);
+
+extern void
+llfree(struct linked_list* p);
 
 #endif /* !LINKED_LIST_H */
