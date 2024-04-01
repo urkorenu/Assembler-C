@@ -19,7 +19,32 @@ do
         if [[ "${arg}" =~ "m" ]]; then
             make
         fi
-        if [[ "${arg}" =~ "t" ]]; then
+        if [[ "${arg}" =~ "tr" ]]; then
+            make tests
+            tests=$(find . -name "*test")
+            mkdir -p ./test_logs
+            for test in ${tests}; do
+                if [[ ! -x ${test} ]]; then
+                    continue
+                fi
+                log_file="./test_logs/${test}.log"
+                echo "Running test: ${test}..." > ${log_file}
+                echo "" >> ${log_file}
+                eval "./${test} &>> ${log_file}"
+                echo "" >> ${log_file}
+                echo "" >> ${log_file}
+                if [[ $? -eq 0 ]]; then
+                    echo '------------' >> ${log_file}
+                    echo 'Test passed!' >> ${log_file}
+                    echo '------------' >> ${log_file}
+                else
+                    echo '------------' >> ${log_file}
+                    echo 'Test failed!' >> ${log_file}
+                    echo '------------' >> ${log_file}
+                fi
+            done
+            exit
+        elif [[ "${arg}" =~ "t" ]]; then
             make tests
         fi
     else 
