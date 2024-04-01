@@ -7,6 +7,7 @@ if [ $# -lt 1 ]; then
     echo "  -c      will run \"make clean && make\" before running the assembler program"
     echo "  -m      will run \"make\" before running the assembler program"
     echo "  -t      will run \"make tests\" before running the assembler program"
+    echo "  -tr     will build and run all available tests, results are saved under test_results/<test_name>.log"
     exit 1
 fi
 
