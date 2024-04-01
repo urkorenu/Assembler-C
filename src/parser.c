@@ -186,10 +186,10 @@ parse_line(struct assembler_data* assembler, char* line, struct line_data* inst)
                 if (is_ended_with_x(word, COMMA)) {
                     found_comma = 1;
                     remove_last_char(word);
-                    inst-> source = mystrdup(word);
+                    inst->source = mystrdup(word);
                     /* inst->source = word; */
                 } else {
-                    inst-> source = mystrdup(word);
+                    inst->source = mystrdup(word);
                 }
                 if (!found_comma) {
                     word = get_word(line, idx_ptr);
@@ -241,7 +241,7 @@ line_to_bin_1st(struct assembler_data* assembler,
     char* index = NULL;
     index = (char*)malloc(MAX_INDEX_LENGTH * sizeof(char));
     struct linked_list* source_code =
-      insert_ll_node(assembler->object_list, &code);
+      insert_ll_node(assembler->object_list, code);
     if (inst->source) {
         if (is_register(inst->source)) {
             encode_register(assembler, inst, found_reg, source_code, 1);
@@ -252,7 +252,7 @@ line_to_bin_1st(struct assembler_data* assembler,
         }
         if (index == NULL) {
             printf("Memory allocation failed for index\n");
-            return -1; 
+            return -1;
         }
         if (get_index(inst->source, index)) {
             encode_index(assembler, inst, source_code, 1, index);
@@ -281,7 +281,6 @@ parse_first_phase(struct assembler_data* assembler,
     int reading_symbol = 0;
     struct bucket* error = NULL;
     char error_data[MAXWORD];
-    struct bucket* symbol_data = NULL;
     struct line_data* inst = NULL;
     inst = init_instruction(inst);
     while (get_line(line, source_file) != NULL) {
@@ -293,15 +292,16 @@ parse_first_phase(struct assembler_data* assembler,
                 word = get_word(line, idx_ptr);
                 if (strcmp(word, "=") == 0) {
                     word = get_word(line, idx_ptr);
-                    symbol_data = create_bucket(&symbol_data, word, MDEFINE);
                     /* maybe need conversion to int or else */
-                    insert_node(assembler->symbol_table, key, &symbol_data);
+                    insert_node(assembler->symbol_table,
+                                key,
+                                create_bucket(word, to_void_ptr(MDEFINE)));
                     ++ic;
                 } else {
                     strcpy(error_data, "invalid syntax");
                     /* maybe i dont need to create bucket for every
                      * error or should i create tree of error ?! */
-                    create_bucket(&error, key, error_data);
+                    error = create_bucket(key, error_data);
                 }
 
             } else {
@@ -318,34 +318,36 @@ parse_first_phase(struct assembler_data* assembler,
         if (is_data_store_instruction(word)) {
             if (reading_symbol) {
                 if (!get_data_by_key(assembler->symbol_table, symbol)) {
-                    create_bucket(&symbol_data, DATA, to_void_ptr(dc));
                     dc++;
                     /* maybe need conversion to int or else */
-                    insert_node(assembler->symbol_table, symbol, symbol_data);
+                    insert_node(assembler->symbol_table,
+                                symbol,
+                                create_bucket(DATA, to_void_ptr(dc)));
                     /* process functions */
                 } else {
                     strcpy(error_data, "symbol is already initialized");
-                    create_bucket(&error, key, error_data);
+                    error = create_bucket(key, error_data);
                 }
             }
         }
         if (is_e_instruction(word)) {
             if (strcmp(word, ".extern") == 0) {
                 key = get_word(line, idx_ptr);
-                create_bucket(&symbol_data, NULL, EXTERNAL);
-                insert_node(assembler->symbol_table, key, symbol_data);
+                insert_node(
+                  assembler->symbol_table, key, create_bucket(NULL, EXTERNAL));
                 ic++;
             }
         } else {
             if (reading_symbol) {
                 if (!get_data_by_key(assembler->symbol_table, symbol)) {
-                    create_bucket(&symbol_data, CODE, to_void_ptr(dc));
                     ic++;
                     /* maybe need conversion to int or else */
-                    insert_node(assembler->symbol_table, symbol, symbol_data);
+                    insert_node(assembler->symbol_table,
+                                symbol,
+                                create_bucket(CODE, to_void_ptr(dc)));
                 } else {
                     strcpy(error_data, "symbol is already initialized");
-                    create_bucket(&error, key, error_data);
+                    error = create_bucket(key, error_data);
                 }
             }
             if (get_instruction(inst, word)) {

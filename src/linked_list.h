@@ -4,19 +4,22 @@
 #include "includes.h"
 
 struct linked_list {
-    void* data;
+    int data;
     struct linked_list* next;
     struct linked_list* pre;
 };
 
 #define get_lnode_data(lnode, dtype)\
-    ((dtype *)((lnode)->data))[0]
+    ((dtype)((lnode)->data))
 
 extern struct linked_list*
-create_new_ll_node(void* data);
+create_new_ll_node(int data);
+
+extern void
+set_data(struct linked_list* p, int data);
 
 extern struct linked_list*
-insert_ll_node(struct linked_list* head, void* data);
+insert_ll_node(struct linked_list* head, int data);
 
 extern struct linked_list*
 get_last_node(struct linked_list* p);

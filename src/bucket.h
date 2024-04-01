@@ -11,7 +11,7 @@ struct bucket {
 typedef void (*free_fn)(void* data);
 
 extern struct bucket*
-create_bucket(struct bucket** p, char* key, void* data);
+create_bucket(char* key, void* data);
 
 extern void
 free_bucket(struct bucket* p);

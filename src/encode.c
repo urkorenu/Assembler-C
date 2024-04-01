@@ -1,4 +1,5 @@
 #include "encode.h"
+#include "linked_list.h"
 
 void
 encode_register(struct assembler_data* assembler,
@@ -9,7 +10,7 @@ encode_register(struct assembler_data* assembler,
 {
     int bit_location = DESTINATION_REGISTER;
     int operand_location = DESTINATION_OPERAND;
-    int code;
+    int code = 0;
     if (source) {
         bit_location = SOURCE_REGISTER;
         operand_location = SOURCE_OPERAND;
@@ -23,12 +24,12 @@ encode_register(struct assembler_data* assembler,
         reg_code = reg_code >> REGISTER_ADDRESS;
         temp_node = get_last_node(assembler->object_list);
         code = add_bits(get_lnode_data(temp_node, int), reg_code, operand_location);
-        temp_node->data = to_void_ptr(code);
+        temp_node->data = code;
         return;
     }
     code = add_bits(0, REGISTER_ADDRESS, operand_location);
-    source_code->data = (to_void_ptr(code));
-    insert_ll_node(assembler->object_list, to_void_ptr(reg_code));
+    set_data(source_code, code);
+    insert_ll_node(assembler->object_list, reg_code);
 }
 
 void
@@ -43,7 +44,7 @@ encode_direct(struct assembler_data* assembler,
 
     if ((temp = atoi(inst->source))) {
         temp = temp << 2;
-        insert_ll_node(assembler->object_list, to_void_ptr(inst->source));
+        insert_ll_node(assembler->object_list, temp);
     } else {
 
         if ((temp_data =
@@ -51,7 +52,7 @@ encode_direct(struct assembler_data* assembler,
             if (strcmp(temp_data->data, MDEFINE) == 0) {
                 if ((temp = atoi(temp_data->key))) {
                     temp = temp << 2;
-                    insert_ll_node(assembler->object_list, to_void_ptr(temp));
+                    insert_ll_node(assembler->object_list, temp);
                 } else
                     ;
                 /* error : value error */
@@ -78,19 +79,19 @@ encode_index(struct assembler_data* assembler,
         operand_location = SOURCE_OPERAND;
     }
     code = add_bits(0, INDEX_ADDRESS, operand_location);
-    source_code->data = (to_void_ptr(code));
-    insert_ll_node(assembler->object_list, NULL);
+    source_code->data = code;
+    insert_ll_node(assembler->object_list, 0);
     int temp = 0;
     if ((temp = atoi(index))) {
         temp = temp << 2;
-        insert_ll_node(assembler->object_list, to_void_ptr(temp));
+        insert_ll_node(assembler->object_list, temp);
     } else {
         if ((temp_data = get_data_by_key(assembler->symbol_table, index))) {
             if (strcmp(temp_data->data, MDEFINE) == 0) {
                 if ((temp = atoi(temp_data->key))) {
                     temp = temp << 2;
 
-                    insert_ll_node(assembler->object_list, to_void_ptr(temp));
+                    insert_ll_node(assembler->object_list, temp);
                 } else
                     ;
                 /* error - value error */
@@ -114,6 +115,6 @@ encode_null(struct assembler_data* assembler,
         operand_location = SOURCE_OPERAND;
     }
     code = add_bits(code, DIRECT_ADDRESS, operand_location);
-    source_code->data = (to_void_ptr(code));
-    insert_ll_node(assembler->object_list, NULL);
+    source_code->data = code;
+    insert_ll_node(assembler->object_list, 0);
 }
