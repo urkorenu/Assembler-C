@@ -29,6 +29,7 @@ typedef enum ERROR_CODES {
     ERROR_CODE_15,
     ERROR_CODE_16,
     ERROR_CODE_17,
+    ERROR_CODE_18,
 
     // if you think about more or less errors you can add or delete.
 

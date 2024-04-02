@@ -63,52 +63,6 @@ assembler_reset(struct assembler_data* asm)
     memset(asm, 0, sizeof(struct assembler_data));
 }
 
-static int
-is_data_store_instruction(char* word)
-{
-    if (strcmp(word, ".data") == 0)
-        return 1;
-    else if (strcmp(word, ".string") == 0)
-        return 1;
-    return 0;
-}
-
-static int
-is_symbol(char* word)
-{
-    int length = strlen(word);
-    if (word[length - 1] == ':')
-        return 1;
-    return 0;
-}
-
-static int
-is_ended_with_x(char* word, char x)
-{
-    int length = strlen(word);
-    if (word[length - 1] == x)
-        return 1;
-    return 0;
-}
-
-static int
-is_starting_with_x(char* word, char x)
-{
-    if (word[0] == x)
-        return 1;
-    return 0;
-}
-
-static int
-is_e_instruction(char* word)
-{
-    if (strcmp(word, ".extern") == 0)
-        return 1;
-    else if (strcmp(word, ".entry") == 0)
-        return 1;
-    return 0;
-}
-
 void
 parse_pre_processor(FILE* file, void* host, FILE* new_file)
 {
@@ -168,38 +122,11 @@ parse_pre_processor(FILE* file, void* host, FILE* new_file)
     }
 }
 
-void
-remove_last_char(char* word)
-{
-    int size = strlen(word);
-    word[size - 1] = '\0';
-    return;
-}
-
-static void
-remove_first_char(char* word)
-{
-    word++;
-    return;
-}
-
 int
 add_bits(int source, int data, int location)
 {
     int temp = data << location;
     return source | temp;
-}
-
-static int
-is_register(char* word)
-{
-    int len = strlen(word);
-    if (len == 2 && word[0] == 'r' && isdigit(word[len - 1])) {
-        int temp = word[len - 1] - '0';
-        if (0 <= temp && temp <= 7)
-            return 1;
-    }
-    return 0;
 }
 
 static char*
@@ -309,8 +236,7 @@ line_to_bin_1st(struct assembler_data* assembler,
             found_reg = 1;
         } else if (is_starting_with_x(inst->source, HASH)) {
             encode_direct(assembler, inst, source_code, 1);
-        }
-        else if ((index = get_index(inst->source))) {
+        } else if ((index = get_index(inst->source))) {
             encode_index(assembler, inst, source_code, 1, index);
         } else {
             encode_null(assembler, inst, source_code, 1);
@@ -322,8 +248,7 @@ line_to_bin_1st(struct assembler_data* assembler,
             found_reg = 1;
         } else if (is_starting_with_x(inst->destination, HASH)) {
             encode_direct(assembler, inst, source_code, 0);
-        }
-        else if ((index = get_index(inst->destination))) {
+        } else if ((index = get_index(inst->destination))) {
             encode_index(assembler, inst, source_code, 0, index);
         } else {
 
@@ -335,7 +260,7 @@ line_to_bin_1st(struct assembler_data* assembler,
     return 0;
 }
 
-struct bucket*
+int
 parse_first_phase(struct assembler_data* assembler,
                   FILE* source_file,
                   struct files* as_files)
@@ -349,8 +274,6 @@ parse_first_phase(struct assembler_data* assembler,
     char* word = NULL;
     char* symbol = NULL;
     int reading_symbol = 0;
-    struct bucket* error = NULL;
-    char error_data[MAXWORD];
     struct line_data* inst = NULL;
     while (get_line(line, source_file) != NULL) {
         inst = init_instruction(inst);
@@ -368,10 +291,7 @@ parse_first_phase(struct assembler_data* assembler,
                                 create_bucket(word, to_void_ptr(MDEFINE)));
                     ++ic;
                 } else {
-                    strcpy(error_data, "invalid syntax");
-                    /* maybe i dont need to create bucket for every
-                     * error or should i create tree of error ?! */
-                    error = create_bucket(key, error_data);
+                    /* error - invalid syntax")*/;
                 }
 
             } else {
@@ -389,14 +309,20 @@ parse_first_phase(struct assembler_data* assembler,
             if (reading_symbol) {
                 if (!get_data_by_key(assembler->symbol_table, symbol)) {
                     dc++;
-                    /* maybe need conversion to int or else */
                     insert_node(assembler->symbol_table,
                                 symbol,
                                 create_bucket(DATA, to_void_ptr(dc)));
-                    /* process functions */
+                    word = get_word(line, idx_ptr);
+                    if (!word)
+                        word = get_word(line, idx_ptr);
+                    if (is_starting_with_x(word, '\"') &&
+                        is_ended_with_x(word, '\"')) {
+                        encode_string(assembler, line);
+                    } else {
+                        encode_data(assembler, line);
+                    }
                 } else {
-                    strcpy(error_data, "symbol is already initialized");
-                    error = create_bucket(key, error_data);
+                    /* error - "symbol is already initialized")*/;
                 }
             }
         }
@@ -415,9 +341,8 @@ parse_first_phase(struct assembler_data* assembler,
                     insert_node(assembler->symbol_table,
                                 symbol,
                                 create_bucket(CODE, to_void_ptr(dc)));
-                } else {
-                    strcpy(error_data, "symbol is already initialized");
-                    error = create_bucket(key, error_data);
+                } else {;
+                    /* error - symbol already initialized */
                 }
             }
             if (get_instruction(inst, word)) {
@@ -431,9 +356,9 @@ parse_first_phase(struct assembler_data* assembler,
         idx = 0;
         memset(line, 0, MAXWORD);
         reading_symbol = 0;
-        inst = NULL; 
+        inst = NULL;
     }
     FILE* ob_file = fopen(as_files->object_path, "w");
     print_linked_list(assembler->object_list, ob_file);
-    return error;
+    return 1;
 }

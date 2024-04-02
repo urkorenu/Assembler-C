@@ -1,4 +1,5 @@
 #include "encode.h"
+#include "io.h"
 #include "linked_list.h"
 #include "parser.h"
 
@@ -10,6 +11,73 @@ get_register_code(char* reg)
     int code = 0;
     assert(sscanf(reg, register_code_fmt, &code) == 1);
     return code;
+}
+
+/* remove first char -> get char -> encode -> get char ..... */
+void
+encode_string(struct assembler_data* assembler, char* line)
+{
+    char* word = NULL;
+    int i = 0;
+    int idx = 0;
+    int* idx_ptr = &idx;
+    word = get_word(line, idx_ptr);
+    word = get_word(line, idx_ptr);
+    word = get_word(line, idx_ptr);
+    for (i = 1; word[i] != '\"' && word[i] != '\0'; i++) {
+        insert_ll_node(assembler->object_list, (int)word[i]);
+    }
+    /* It should  be 0 */
+    insert_ll_node(assembler->object_list, 0);
+}
+
+/* get word -> check if valid -> encode -> check for comma -> repeat*/
+
+void
+encode_data(struct assembler_data* assembler, char* line)
+{
+
+    char* word = NULL;
+    int found_comma;
+    int temp = 0;
+    int idx = 0;
+    struct bucket* temp_data;
+    int* idx_ptr = &idx;
+    word = get_word(line, idx_ptr);
+    word = get_word(line, idx_ptr);
+
+    while ((word = get_word(line, idx_ptr))) {
+        if (is_ended_with_x(word, COMMA)) {
+            found_comma = 1;
+            remove_last_char(word);
+        }
+        if ((temp = atoi(word))) {
+            insert_ll_node(assembler->object_list, temp);
+        } else {
+            if ((temp_data = get_data_by_key(assembler->symbol_table, word))) {
+                if (strcmp(temp_data->data, MDEFINE) == 0) {
+                    if ((temp = atoi(temp_data->key))) {
+                        insert_ll_node(assembler->object_list, temp);
+                    } else
+                        ;
+                    /* error - value error */
+                } else
+                    ;
+                /* error - index is not defined */
+            } else
+                return;
+            /* error - Unknown index*/
+        } /* inst->source = word; */
+
+        if (!found_comma) {
+            word = get_word(line, idx_ptr);
+            if (is_starting_with_x(word, COMMA)) {
+                remove_first_char(word);
+                if (word[0] != '0')
+                    idx -= (strlen(word)) - 1;
+            }
+        }
+    }
 }
 
 void
@@ -35,8 +103,9 @@ encode_register(struct assembler_data* assembler,
     if (found_register) {
         struct linked_list* temp_node;
         temp_node = get_last_node(assembler->object_list);
-        code |=
-          add_bits(get_lnode_data(temp_node, int), get_register_code(register_str), bit_location);
+        code |= add_bits(get_lnode_data(temp_node, int),
+                         get_register_code(register_str),
+                         bit_location);
         set_data(temp_node, code);
     }
     code |= add_bits(source_code->data, REGISTER_ADDRESS, operand_location);
@@ -59,7 +128,7 @@ encode_direct(struct assembler_data* assembler,
         val_str = inst->source;
     }
 
-    if ((temp = atoi(val_str +1))) {
+    if ((temp = atoi(val_str + 1))) {
         temp = temp << 2;
         insert_ll_node(assembler->object_list, temp);
     } else {
@@ -97,6 +166,7 @@ encode_index(struct assembler_data* assembler,
     }
     code = add_bits(source_code->data, INDEX_ADDRESS, operand_location);
     source_code->data = code;
+    /* It should change later at 2nd phase */
     insert_ll_node(assembler->object_list, 0);
     int temp = 0;
     if ((temp = atoi(index))) {

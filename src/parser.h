@@ -53,7 +53,7 @@ assembler_reset(struct assembler_data *asm);
 extern int
 add_bits(int source, int data, int location);
 
-extern struct bucket*
+extern int
 parse_first_phase(struct assembler_data* host, FILE* source_file, struct files *as_files);
 
 extern void

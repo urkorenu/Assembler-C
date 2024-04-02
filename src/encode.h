@@ -1,12 +1,18 @@
 #ifndef ENCODE_H
 #define ENCODE_H
 
-#include "parser.h"
 #include "instruction.h"
 #include "linked_list.h"
+#include "parser.h"
 
 extern int
-get_register_code(char *reg);
+get_register_code(char* reg);
+
+extern void
+encode_string(struct assembler_data* assembler, char* line);
+
+extern void
+encode_data(struct assembler_data* assembler, char* line);
 
 extern void
 encode_register(struct assembler_data* assembler,

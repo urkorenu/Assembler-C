@@ -21,8 +21,7 @@ Error errors[] = {
     { ERROR_CODE_15, "Macros expansion in an .as file failed" },
     { ERROR_CODE_16, "Macro call before declaration" },
     { ERROR_CODE_17, "Illegal name for a macro" },
-    { ERROR_CODE_18, "The symbol is not found in the table
-    " },
+    { ERROR_CODE_18, "The symbol is not found in the table"},
     { ERROR_CODE_28, "define key is already initialized" },
     { ERROR_CODE_29, "Missing command" },
     { ERROR_CODE_30, "Line is too long" },

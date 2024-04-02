@@ -67,7 +67,7 @@ add_node(struct tnode* p, char* key, void* data)
         p = create_tnode(p, key, data);
     } else if ((cond = strcmp(key, p->node->key)) == 0) {
         p = create_tnode(p, key, data);
-    } else if (cond < 0)
+    } else if (cond > 0)
         p->left_node = add_node(p->left_node, key, data);
     else
         p->right_node = add_node(p->right_node, key, data);
