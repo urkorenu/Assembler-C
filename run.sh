@@ -3,14 +3,11 @@
 assembler_executable=assembler
 
 # Utility Variables
-now=$(date +%H_%M)
+now=$(date +%H)
 today=$(date +%Y-%m-%d)
 
 # Path Variables
-build_dir="./build"
-source_dir="./src"
-example_dir="./examples"
-logging_directory="./logs/${today}/${now}"
+logging_directory=$(printf "./logs/%.s/%.s" ${today} ${now})
 
 
 # =============================================================================
@@ -60,9 +57,9 @@ function build_tests {
 function run_tests {
     init_logging_prerequisites
 
-    tests=(./*test)
-    for test in ${tests[@]}; do
-        test_log="${logging_directory}/$(basename test).log"
+    tests=$(find . -type f -executable -name "*test" -print)
+    for test in ${tests}; do
+        test_log=$(printf "./%.s/%.s.log" ${logging_directory} $(basename ${test}))
         log_pre_run_info ${test} ${test_log}
         run_test ${test} ${test_log}
         log_post_run_info ${test} ${test_log}
@@ -73,28 +70,24 @@ function init_logging_prerequisites {
     eval "mkdir -p ${logging_directory}"
 }
 
-function get_test_list {
-    return ./*test
-}
-
 function log_pre_run_info {
-    echo -e "Running test: ${1}...\n\n" &> ${2}
+    echo -e "Running test: ${test}...\n\n" > ${test_log}
 }
 
 function run_test {
-    eval "${1} &>> ${2}"
+    eval "${test}" >> ${test_log}
 }
 
 function log_post_run_info {
     sep=$(printf '=%.0s' {1..79})
 
-    echo -e "\n\n${sep}" &>> ${2}
+    echo -e "\n\n${sep}" >> ${test_log}
     if ${1}; then
-        echo -e "Test ${1} passed!" &>> ${2}
+        echo -e "Test ${test} passed!" >> ${test_log}
     else
-        echo -e "Test failed!" &>> ${2}
+        echo -e "Test ${test} failed!" >> ${test_log}
     fi
-    echo -e "${sep}\n\n" &>> ${2}
+    echo -e "\n\n${sep}" >> ${test_log}
 
 }
 

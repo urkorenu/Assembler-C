@@ -44,7 +44,7 @@ _print_int_checker(const char* name, int_checker_t checker)
         fprintf(stdout, "\n------------------MISSMATCH------------------\n");
     fprintf(stdout, "checker:   %s\n", name);
 
-    fprintf(stdout, "input:  {");
+    fprintf(stdout, "inputs:    {");
     if (checker.input != NULL && checker.input_size) {
         size_t i;
         fprintf(stdout, "%d", checker.input[0]);
@@ -52,7 +52,7 @@ _print_int_checker(const char* name, int_checker_t checker)
             fprintf(stdout, ", %d", checker.input[i]);
     }
     else {
-        fprintf(stdout, "input:  (NULL / UNKNOWN)\n");
+        fprintf(stdout, "(NULL / UNKNOWN)");
     }
     fprintf(stdout, "}\n");
 

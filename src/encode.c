@@ -108,7 +108,7 @@ encode_register(struct assembler_data* assembler,
                          bit_location);
         set_data(temp_node, code);
     }
-    code |= add_bits(source_code->data, REGISTER_ADDRESS, operand_location);
+    code = add_bits(source_code->data, REGISTER_ADDRESS, operand_location);
     set_data(source_code, code);
     if (!found_register)
         insert_ll_node(assembler->object_list, reg_code);
