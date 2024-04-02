@@ -22,7 +22,6 @@ create_bucket(char* key, void* data)
     p = bucket_alloc();
     set_key(p, key);
     set_data(p, data);
-    printf("%s\n", (char *)data);
     return p;
 }
 
