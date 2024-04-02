@@ -78,7 +78,7 @@ struct tnode*
 create_tnode(struct tnode* p, char* key, void* data)
 {
     p = tree_alloc();
-    p->node = create_bucket(&p->node, key, data);
+    p->node = create_bucket(key, data);
     p->left_node = p->right_node = NULL;
     return p;
 }
@@ -98,6 +98,32 @@ static struct tnode*
 tree_alloc(void)
 {
     return (struct tnode*)malloc(sizeof(struct tnode));
+}
+
+struct binary_tree*
+btree_alloc(void)
+{
+    struct binary_tree *btree = NULL;
+
+    btree = malloc(sizeof(struct binary_tree));
+    btree->root = NULL;
+    return btree;
+}
+
+struct binary_tree*
+create_new_btree(void)
+{
+    return btree_alloc();
+}
+
+void
+btree_free(struct binary_tree* btree)
+{
+    if (btree == NULL)
+        return;
+    free_tree(btree->root);
+    free(btree);
+    btree = NULL;
 }
 
 void

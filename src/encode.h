@@ -5,6 +5,9 @@
 #include "instruction.h"
 #include "linked_list.h"
 
+extern int
+get_register_code(char *reg);
+
 extern void
 encode_register(struct assembler_data* assembler,
                 struct line_data* inst,

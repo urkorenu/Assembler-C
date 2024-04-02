@@ -52,6 +52,15 @@ create_tnode(struct tnode* p, char* key, void* data);
  * Memory allocation -
  */
 
+extern struct binary_tree*
+btree_alloc(void);
+
+extern struct binary_tree*
+create_new_btree(void);
+
+extern void
+btree_free(struct binary_tree* btree);
+
 extern void
 free_tree(struct tnode* p);
 

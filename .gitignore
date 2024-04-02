@@ -7,4 +7,6 @@
 /**/*.json
 /**/*.dSYM
 /**/*.DS_Store
+**/logs/
+**/*.log
 assembler

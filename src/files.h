@@ -17,6 +17,16 @@ struct files {
     char* externals_path;
 };
 
+extern const char FILES_ALLOC_ERR[];
+
+extern const struct files DEFAULT_FILES_VAL;
+
+extern struct files*
+files_alloc(void);
+
+extern void
+files_free(struct files* f);
+
 extern char*
 modify_path(const char* path, const char* format);
 

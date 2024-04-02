@@ -1,4 +1,5 @@
 #include "binary_tree.h"
+#include "bucket.h"
 #include "files.h"
 #include "linked_list.h"
 #include "parser.h"
@@ -16,6 +17,7 @@ main(int argc, char* argv[])
 	    .macro_tree = &macro_tree,
 	    .as_files = &as_files,
 	};
+    struct bucket *error = NULL;
     char* path;
     FILE* original_file;
     FILE* processed_file;
@@ -35,10 +37,11 @@ main(int argc, char* argv[])
         parse_pre_processor(original_file, assembler.macro_tree, processed_file);
         fclose(processed_file);
         processed_file = fopen(as_files.processed_path, "r");
-        parse_first_phase(&assembler, processed_file, &as_files);
+        error = parse_first_phase(&assembler, processed_file, &as_files);
         fclose(original_file);
         fclose(processed_file);
         free_tree(macro_tree.root);
+        free_bucket(error);
     }
 
     return 0;

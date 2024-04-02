@@ -16,12 +16,13 @@ static struct bucket*
 bucket_alloc(void);
 
 struct bucket*
-create_bucket(struct bucket** p, char* key, void* data)
+create_bucket(char* key, void* data)
 {
-    *p = bucket_alloc();
-    set_key(*p, key);
-    set_data(*p, data);
-    return *p;
+    struct bucket* p;
+    p = bucket_alloc();
+    set_key(p, key);
+    set_data(p, data);
+    return p;
 }
 
 static struct bucket*
@@ -33,6 +34,8 @@ bucket_alloc(void)
 void
 free_bucket(struct bucket* p)
 {
+    if (p == NULL)
+        return;
     free(p->key);
     free(p->data);
     free(p);

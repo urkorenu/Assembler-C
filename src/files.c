@@ -1,5 +1,36 @@
 #include "files.h"
 
+const char FILES_ALLOC_ERR[] = {
+    "Failed to allocate memory for struct files - Buy more ram lol!\n"
+};
+
+const struct files DEFAULT_FILES_VAL = {
+    .assembly_path=ASSEMBLY,
+    .processed_path=PROCESSED,
+    .object_path=OBJECT,
+    .externals_path=EXTERN,
+    .entries_path=ENTRY,
+};
+
+
+extern struct files*
+files_alloc(void)
+{
+    struct files* f = malloc(sizeof(struct files));
+    if (f != NULL)
+        f[0] = (DEFAULT_FILES_VAL);
+    else
+        fprintf(stderr, FILES_ALLOC_ERR);
+    return f;
+}
+
+extern void
+files_free(struct files* f)
+{
+    free(f);
+}
+
+
 char*
 modify_path(const char* path, const char* format)
 {

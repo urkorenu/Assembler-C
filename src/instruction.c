@@ -5,6 +5,8 @@ struct line_data*
 init_instruction(struct line_data* p)
 {
     p = (struct line_data*)malloc(sizeof(struct line_data));
+    p->args = 0;
+    p->code = 0;
     return p;
 }
 
