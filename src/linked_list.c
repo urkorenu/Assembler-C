@@ -3,9 +3,7 @@
 #define WORDSIZE 14
 #define BITSIZE(x) (sizeof(x) * 8)
 #define BITMASK(N) (1 << (N))
-#define GET_BIT(X, N) (\
-    ((X) & BITMASK(N)) >> (N)\
-)
+#define GET_BIT(X, N) (((X) & BITMASK(N)) >> (N))
 
 static void
 _print_linked_list(const struct linked_list* p, FILE* file, const char* sep);
@@ -65,7 +63,8 @@ llalloc(void)
 }
 
 void
-llfree(struct linked_list* p) {
+llfree(struct linked_list* p)
+{
     if (p == NULL) {
         return;
     }
@@ -80,6 +79,10 @@ llfree(struct linked_list* p) {
 static void
 int_to_binary(int n, FILE* file)
 {
+    if (n == 0) {
+        fprintf(file, "?");
+        return;
+    }
     for (int i = WORDSIZE - 1; i >= 0; i--)
         fprintf(file, "%0d", GET_BIT(n, i));
 }
@@ -91,13 +94,12 @@ print_linked_list(const struct linked_list* p, FILE* file)
 }
 
 void
-ll_fprintf(const struct linked_list *p, FILE *file, const char *sep)
+ll_fprintf(const struct linked_list* p, FILE* file, const char* sep)
 {
     if (file == NULL) {
         fprintf(stderr, "Error: Invalid file pointer.\n");
-    }
-    else if (p != NULL) {
-        _print_linked_list(p, file, ((sep == NULL) ? "\n": sep));
+    } else if (p != NULL) {
+        _print_linked_list(p, file, ((sep == NULL) ? "\n" : sep));
     }
 }
 

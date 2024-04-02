@@ -5,7 +5,7 @@
 #define register_code_fmt "r%1d"
 
 int
-get_register_code(char *reg)
+get_register_code(char* reg)
 {
     int code = 0;
     assert(sscanf(reg, register_code_fmt, &code) == 1);
@@ -22,25 +22,27 @@ encode_register(struct assembler_data* assembler,
     int reg_code = 0;
     int bit_location = DESTINATION_REGISTER;
     int operand_location = DESTINATION_OPERAND;
+    char* register_str = inst->destination;
     int code = 0;
     if (source) {
         bit_location = SOURCE_REGISTER;
         operand_location = SOURCE_OPERAND;
+        register_str = inst->source;
     }
 
-    reg_code = get_register_code(inst->source) << bit_location;
+    reg_code = get_register_code(register_str) << bit_location;
 
     if (found_register) {
         struct linked_list* temp_node;
-        reg_code = reg_code >> REGISTER_ADDRESS;
         temp_node = get_last_node(assembler->object_list);
-        code |= add_bits(get_lnode_data(temp_node, int), reg_code, operand_location);
-        temp_node->data = code;
-        return;
+        code |=
+          add_bits(get_lnode_data(temp_node, int), get_register_code(register_str), bit_location);
+        set_data(temp_node, code);
     }
     code |= add_bits(source_code->data, REGISTER_ADDRESS, operand_location);
     set_data(source_code, code);
-    insert_ll_node(assembler->object_list, reg_code);
+    if (!found_register)
+        insert_ll_node(assembler->object_list, reg_code);
 }
 
 void
@@ -49,11 +51,15 @@ encode_direct(struct assembler_data* assembler,
               struct linked_list* source_code,
               int source)
 {
-    inst->source++;
     int temp = 0;
     struct bucket* temp_data;
+    char* val_str = inst->destination;
 
-    if ((temp = atoi(inst->source))) {
+    if (source) {
+        val_str = inst->source;
+    }
+
+    if ((temp = atoi(val_str +1))) {
         temp = temp << 2;
         insert_ll_node(assembler->object_list, temp);
     } else {
@@ -89,7 +95,7 @@ encode_index(struct assembler_data* assembler,
     if (source) {
         operand_location = SOURCE_OPERAND;
     }
-    code = add_bits(0, INDEX_ADDRESS, operand_location);
+    code = add_bits(source_code->data, INDEX_ADDRESS, operand_location);
     source_code->data = code;
     insert_ll_node(assembler->object_list, 0);
     int temp = 0;
@@ -125,7 +131,7 @@ encode_null(struct assembler_data* assembler,
     if (source) {
         operand_location = SOURCE_OPERAND;
     }
-    code = add_bits(code, DIRECT_ADDRESS, operand_location);
+    code = add_bits(source_code->data, DIRECT_ADDRESS, operand_location);
     source_code->data = code;
     insert_ll_node(assembler->object_list, 0);
 }

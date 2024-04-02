@@ -16,7 +16,7 @@ get_word(char* line, int* idx)
         return NULL;
     }
 
-    char* p = malloc(sizeof(char) * 100);
+    char* p = malloc(sizeof(char) * MAX_LEN);
     if (p == NULL) {
         return NULL;
     }

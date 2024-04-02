@@ -9,6 +9,7 @@
 #include "io.h"
 #include "linked_list.h"
 #include "macro.h"
+#include <strings.h>
 
 const char ASEMBLER_MEM_ERR[] = {
     "FATAL ERROR: Failed to allocate memory for struct assembler_data\n"
@@ -17,10 +18,8 @@ const char ASEMBLER_MEM_ERR[] = {
 struct assembler_data*
 assembler_alloc(void)
 {
-    struct assembler_data* asm = malloc(
-        sizeof(struct assembler_data)
-    );
-    
+    struct assembler_data* asm = malloc(sizeof(struct assembler_data));
+
     if (asm == NULL) {
         fprintf(stderr, ASEMBLER_MEM_ERR);
         return NULL;
@@ -29,8 +28,8 @@ assembler_alloc(void)
     return asm;
 }
 
-void 
-assembler_free(struct assembler_data *asm)
+void
+assembler_free(struct assembler_data* asm)
 {
     if (asm == NULL)
         return;
@@ -45,7 +44,7 @@ assembler_init(void)
 {
     struct assembler_data asm = {
         .errors = create_new_ll_node(0),
-        .object_list = create_new_ll_node(0),        
+        .object_list = create_new_ll_node(0),
         .symbol_table = create_new_btree(),
         .macro_tree = create_new_btree(),
         .as_files = files_alloc(),
@@ -53,8 +52,8 @@ assembler_init(void)
     return asm;
 }
 
-void 
-assembler_reset(struct assembler_data *asm)
+void
+assembler_reset(struct assembler_data* asm)
 {
     llfree(asm->errors);
     llfree(asm->object_list);
@@ -203,9 +202,13 @@ is_register(char* word)
     return 0;
 }
 
-static int
-get_index(char* word, char* index)
+static char*
+get_index(char* word)
 {
+    char* p = malloc(sizeof(char) * MAX_LEN);
+    if (p == NULL) {
+        return NULL;
+    }
     int i;
     int j = 0;
     int len = strlen(word);
@@ -214,13 +217,17 @@ get_index(char* word, char* index)
         if (word[i] == '[')
             inside_square_brackets = 1;
         else if (inside_square_brackets) {
-            if (word[i] == ']')
-                return 1;
-            index[j++] = word[i];
+            if (word[i] == ']') {
+                if (j) {
+                    p[j] = '\0';
+                    return p;
+                }
+            }
+            p[j++] = word[i];
             word[i] = '0';
         }
     }
-    return 0;
+    return NULL;
 }
 int
 parse_line(struct assembler_data* assembler, char* line, struct line_data* inst)
@@ -294,11 +301,6 @@ line_to_bin_1st(struct assembler_data* assembler,
     int opcode = inst->code << 6;
     int found_reg = 0;
     char* index = NULL;
-    index = (char*)malloc(MAX_INDEX_LENGTH * sizeof(char));
-    if (index == NULL) {
-        printf("Memory allocation failed for index\n");
-        return -1;
-    }
     struct linked_list* source_code =
       insert_ll_node(assembler->object_list, opcode);
     if (inst->source) {
@@ -308,26 +310,27 @@ line_to_bin_1st(struct assembler_data* assembler,
         } else if (is_starting_with_x(inst->source, HASH)) {
             encode_direct(assembler, inst, source_code, 1);
         }
-        if (get_index(inst->source, index)) {
+        else if ((index = get_index(inst->source))) {
             encode_index(assembler, inst, source_code, 1, index);
         } else {
             encode_null(assembler, inst, source_code, 1);
         }
-        if (inst->destination) {
-            if (is_register(inst->destination)) {
-                encode_register(assembler, inst, found_reg, source_code, 0);
-                found_reg = 1;
-            } else if (is_starting_with_x(inst->destination, HASH)) {
-                encode_direct(assembler, inst, source_code, 1);
-            }
-            if (get_index(inst->source, index)) {
-                encode_index(assembler, inst, source_code, 0, index);
-            } else {
+    }
+    if (inst->destination) {
+        if (is_register(inst->destination)) {
+            encode_register(assembler, inst, found_reg, source_code, 0);
+            found_reg = 1;
+        } else if (is_starting_with_x(inst->destination, HASH)) {
+            encode_direct(assembler, inst, source_code, 0);
+        }
+        else if ((index = get_index(inst->destination))) {
+            encode_index(assembler, inst, source_code, 0, index);
+        } else {
 
-                encode_null(assembler, inst, source_code, 0);
-            }
+            encode_null(assembler, inst, source_code, 0);
         }
     }
+
     free(index);
     return 0;
 }
@@ -349,8 +352,8 @@ parse_first_phase(struct assembler_data* assembler,
     struct bucket* error = NULL;
     char error_data[MAXWORD];
     struct line_data* inst = NULL;
-    inst = init_instruction(inst);
     while (get_line(line, source_file) != NULL) {
+        inst = init_instruction(inst);
         word = get_word(line, idx_ptr);
 
         if (strcmp(word, ".define") == 0) {
@@ -428,6 +431,7 @@ parse_first_phase(struct assembler_data* assembler,
         idx = 0;
         memset(line, 0, MAXWORD);
         reading_symbol = 0;
+        inst = NULL; 
     }
     FILE* ob_file = fopen(as_files->object_path, "w");
     print_linked_list(assembler->object_list, ob_file);
