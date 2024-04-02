@@ -34,8 +34,22 @@ struct assembler_data {
     int dc;
 };
 
+extern const char ASSEMBLER_MEM_ERR[];
 
 #define to_void_ptr(val) ((void*)(&(val)))
+
+extern struct assembler_data*
+assembler_alloc(void);
+
+extern void
+assembler_free(struct assembler_data *asm);
+
+extern struct assembler_data
+assembler_init(void);
+
+void 
+assembler_reset(struct assembler_data *asm);
+
 extern int
 add_bits(int source, int data, int location);
 

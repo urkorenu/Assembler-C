@@ -3,11 +3,66 @@
 #include "binary_tree.h"
 #include "bucket.h"
 #include "encode.h"
+#include "files.h"
 #include "includes.h"
 #include "instruction.h"
 #include "io.h"
 #include "linked_list.h"
 #include "macro.h"
+
+const char ASEMBLER_MEM_ERR[] = {
+    "FATAL ERROR: Failed to allocate memory for struct assembler_data\n"
+};
+
+struct assembler_data*
+assembler_alloc(void)
+{
+    struct assembler_data* asm = malloc(
+        sizeof(struct assembler_data)
+    );
+    
+    if (asm == NULL) {
+        fprintf(stderr, ASEMBLER_MEM_ERR);
+        return NULL;
+    }
+    asm[0] = assembler_init();
+    return asm;
+}
+
+void 
+assembler_free(struct assembler_data *asm)
+{
+    if (asm == NULL)
+        return;
+
+    assembler_reset(asm);
+    free(asm);
+    asm = NULL;
+}
+
+struct assembler_data
+assembler_init(void)
+{
+    struct assembler_data asm = {
+        .errors = create_new_ll_node(0),
+        .object_list = create_new_ll_node(0),        
+        .symbol_table = create_new_btree(),
+        .macro_tree = create_new_btree(),
+        .as_files = files_alloc(),
+    };
+    return asm;
+}
+
+void 
+assembler_reset(struct assembler_data *asm)
+{
+    llfree(asm->errors);
+    llfree(asm->object_list);
+    btree_free(asm->symbol_table);
+    btree_free(asm->macro_tree);
+    files_free(asm->as_files);
+    memset(asm, 0, sizeof(struct assembler_data));
+}
 
 static int
 is_data_store_instruction(char* word)
@@ -236,29 +291,41 @@ line_to_bin_1st(struct assembler_data* assembler,
                 char* line,
                 struct line_data* inst)
 {
-    int code = inst->code << 6;
+    int opcode = inst->code << 6;
     int found_reg = 0;
     char* index = NULL;
     index = (char*)malloc(MAX_INDEX_LENGTH * sizeof(char));
+    if (index == NULL) {
+        printf("Memory allocation failed for index\n");
+        return -1;
+    }
     struct linked_list* source_code =
-      insert_ll_node(assembler->object_list, code);
+      insert_ll_node(assembler->object_list, opcode);
     if (inst->source) {
         if (is_register(inst->source)) {
             encode_register(assembler, inst, found_reg, source_code, 1);
             found_reg = 1;
-        }
-        if (is_starting_with_x(inst->source, HASH)) {
+        } else if (is_starting_with_x(inst->source, HASH)) {
             encode_direct(assembler, inst, source_code, 1);
-        }
-        if (index == NULL) {
-            printf("Memory allocation failed for index\n");
-            return -1;
         }
         if (get_index(inst->source, index)) {
             encode_index(assembler, inst, source_code, 1, index);
         } else {
-
             encode_null(assembler, inst, source_code, 1);
+        }
+        if (inst->destination) {
+            if (is_register(inst->destination)) {
+                encode_register(assembler, inst, found_reg, source_code, 0);
+                found_reg = 1;
+            } else if (is_starting_with_x(inst->destination, HASH)) {
+                encode_direct(assembler, inst, source_code, 1);
+            }
+            if (get_index(inst->source, index)) {
+                encode_index(assembler, inst, source_code, 0, index);
+            } else {
+
+                encode_null(assembler, inst, source_code, 0);
+            }
         }
     }
     free(index);

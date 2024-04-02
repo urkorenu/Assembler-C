@@ -47,7 +47,7 @@ insert_ll_node(struct linked_list* head, int data)
         last_node = last_node->next = create_new_ll_node(data);
 
     set_data(last_node, data);
-    return head;
+    return last_node;
 }
 
 struct linked_list*

@@ -100,6 +100,32 @@ tree_alloc(void)
     return (struct tnode*)malloc(sizeof(struct tnode));
 }
 
+struct binary_tree*
+btree_alloc(void)
+{
+    struct binary_tree *btree = NULL;
+
+    btree = malloc(sizeof(struct binary_tree));
+    btree->root = NULL;
+    return btree;
+}
+
+struct binary_tree*
+create_new_btree(void)
+{
+    return btree_alloc();
+}
+
+void
+btree_free(struct binary_tree* btree)
+{
+    if (btree == NULL)
+        return;
+    free_tree(btree->root);
+    free(btree);
+    btree = NULL;
+}
+
 void
 free_tree(struct tnode* p)
 {
