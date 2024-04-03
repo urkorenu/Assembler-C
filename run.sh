@@ -178,4 +178,4 @@ function main {
 }
 
 log=$(printf "%s/run.log" "${logging_directory}")
-main "${@}"
+main "${@}" | tee --output-error=warn -p "${log}"

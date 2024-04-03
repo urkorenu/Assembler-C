@@ -2,6 +2,7 @@
 /* Includes */
 /* -------- */
 
+#include "operand.h"
 #include <stdio.h>
 #define TEST_IMPLEMENTATION
 
@@ -84,7 +85,7 @@ void test_get_register_code(void)
 
 void test_encode_register(reg_test_t test_kind)
 {
-    const int src_shift = 4; 
+    const int src_shift = 5; 
     const int dst_shift = 2;
 
     int rcode;
@@ -101,7 +102,6 @@ void test_encode_register(reg_test_t test_kind)
     struct linked_list *both_code;
 
     asm = assembler_init();
-    set_data(asm.object_list, 0);
     src_checker = default_checker;
     dst_checker = default_checker;
     both_checker = default_checker;
@@ -118,14 +118,10 @@ void test_encode_register(reg_test_t test_kind)
         dst_code = insert_ll_node(asm.object_list, 0);
         both_code = insert_ll_node(asm.object_list, 0);
 
-        pprint_list(src_code);
-        pprint_list(dst_code);
-        pprint_list(both_code);
-
-        encode_register(&asm, &data, 0, src_code, 1);
-        encode_register(&asm, &data, 0, dst_code, 0);
-        encode_register(&asm, &data, 0, both_code, 1);
-        encode_register(&asm, &data, 1, both_code, 0);
+        encode_register(&asm, &data, 0, src_code, SOURCE);
+        encode_register(&asm, &data, 0, dst_code, DESTINATION);
+        encode_register(&asm, &data, 0, both_code, SOURCE);
+        encode_register(&asm, &data, 1, both_code, DESTINATION);
 
         src_checker.input = &src_rcode;
         dst_checker.input = &dst_rcode;
@@ -146,6 +142,7 @@ void test_encode_register(reg_test_t test_kind)
         pprint_list(src_code);
         pprint_list(dst_code);
         pprint_list(both_code);
+        pprint_list(asm.object_list);
 
         int_checker_check(src_checker);
         int_checker_check(dst_checker);

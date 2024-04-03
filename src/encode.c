@@ -1,17 +1,10 @@
 #include "encode.h"
 #include "io.h"
 #include "linked_list.h"
+#include "operand.h"
 #include "parser.h"
+#include "register.h"
 
-#define register_code_fmt "r%1d"
-
-int
-get_register_code(char* reg)
-{
-    int code = 0;
-    assert(sscanf(reg, register_code_fmt, &code) == 1);
-    return code;
-}
 
 /* remove first char -> get char -> encode -> get char ..... */
 void
@@ -82,36 +75,21 @@ encode_data(struct assembler_data* assembler, char* line)
 
 void
 encode_register(struct assembler_data* assembler,
-                struct line_data* inst,
+                struct line_data* input,
                 int found_register,
-                struct linked_list* source_code,
-                int source)
+                struct linked_list* output,
+                operand_t operand)
 {
-    int reg_code = 0;
-    int bit_location = DESTINATION_REGISTER;
-    int operand_location = DESTINATION_OPERAND;
-    char* register_str = inst->destination;
-    int code = 0;
-    if (source) {
-        bit_location = SOURCE_REGISTER;
-        operand_location = SOURCE_OPERAND;
-        register_str = inst->source;
-    }
+    char* str = (operand != SOURCE ? input->destination: input->source);
+    register_t register_ = register_init(get_register_code(str), operand);
+    bytecode_t operand_code = (register_.code << register_.operand);
+    bytecode_t register_code = (register_.code << register_.offset);
+    bytecode_t encode = (output->data | register_code);
 
-    reg_code = get_register_code(register_str) << bit_location;
+    set_data(output, encode);
 
-    if (found_register) {
-        struct linked_list* temp_node;
-        temp_node = get_last_node(assembler->object_list);
-        code |= add_bits(get_lnode_data(temp_node, int),
-                         get_register_code(register_str),
-                         bit_location);
-        set_data(temp_node, code);
-    }
-    code = add_bits(source_code->data, REGISTER_ADDRESS, operand_location);
-    set_data(source_code, code);
-    if (!found_register)
-        insert_ll_node(assembler->object_list, reg_code);
+    if (found_register)
+        insert_ll_node(output, operand_code);
 }
 
 void
