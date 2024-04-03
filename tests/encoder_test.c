@@ -101,6 +101,7 @@ void test_encode_register(reg_test_t test_kind)
     struct linked_list *both_code;
 
     asm = assembler_init();
+    set_data(asm.object_list, 0);
     src_checker = default_checker;
     dst_checker = default_checker;
     both_checker = default_checker;
@@ -126,12 +127,8 @@ void test_encode_register(reg_test_t test_kind)
         encode_register(&asm, &data, 0, both_code, 1);
         encode_register(&asm, &data, 1, both_code, 0);
 
-        pprint_list(src_code);
-        pprint_list(dst_code);
-        pprint_list(both_code);
-
-        src_checker.input = &both_rcodes[0];
-        dst_checker.input = &both_rcodes[1];
+        src_checker.input = &src_rcode;
+        dst_checker.input = &dst_rcode;
         both_checker.input = both_rcodes;
 
         src_checker.input_size = 1;
@@ -145,6 +142,10 @@ void test_encode_register(reg_test_t test_kind)
         src_checker.actual = src_code->data;
         dst_checker.actual = dst_code->data;
         both_checker.actual = both_code->data;
+
+        pprint_list(src_code);
+        pprint_list(dst_code);
+        pprint_list(both_code);
 
         int_checker_check(src_checker);
         int_checker_check(dst_checker);
