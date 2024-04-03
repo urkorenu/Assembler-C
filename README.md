@@ -156,9 +156,6 @@ ___
 
 ### ✔️ Prerequisites
 
-**Please switch to the `linux` branch to run the project. Use the following instructions:**
-
-
 Before you begin, ensure that you have the following prerequisites installed:
 > - `ℹ️ GCC compiler`
 > - `ℹ️ Ubuntu system (but others will also work)`
