@@ -87,6 +87,26 @@ int_to_binary(int n, FILE* file)
         fprintf(file, "%0d", GET_BIT(n, i));
 }
 
+static void
+encrypt_binary(int n, FILE *file)
+{
+    int bit_sum, first_bit;
+    for (int i = WORDSIZE - 1; i >= 0; i-=2)
+    {
+        first_bit = GET_BIT(n, i) * 2;
+        bit_sum = first_bit + GET_BIT(n, i-1);
+        if (!bit_sum)
+            fprintf(file, "%c", '*');
+        else if (bit_sum == 1)
+            fprintf(file, "%c", '#');
+        else if (bit_sum == 2)
+            fprintf(file, "%c", '%');
+        else 
+            fprintf(file, "%c", '!');
+
+    }
+}
+
 void
 print_linked_list(const struct linked_list* p, FILE* file)
 {
@@ -107,7 +127,8 @@ static void
 _print_linked_list(const struct linked_list* p, FILE* file, const char* sep)
 {
     if (p->state == DATA_SET) {
-        int_to_binary(get_lnode_data(p, int), file);
+        encrypt_binary(get_lnode_data(p, int), file);
+        /*int_to_binary(get_lnode_data(p, int), file);*/
     }
     if (p->next != NULL) {
         fprintf(file, "%s", sep);
