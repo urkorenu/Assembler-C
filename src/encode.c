@@ -26,9 +26,11 @@ encode_string(struct assembler_data* assembler, char* line)
     word = get_word(line, idx_ptr);
     for (i = 1; word[i] != '\"' && word[i] != '\0'; i++) {
         insert_ll_node(assembler->object_list, (int)word[i]);
+        assembler->ic++;
     }
     /* It should  be 0 */
     insert_ll_node(assembler->object_list, 0);
+    assembler->ic++;
 }
 
 /* get word -> check if valid -> encode -> check for comma -> repeat*/
@@ -53,11 +55,13 @@ encode_data(struct assembler_data* assembler, char* line)
         }
         if ((temp = atoi(word))) {
             insert_ll_node(assembler->object_list, temp);
+            assembler->ic++;
         } else {
             if ((temp_data = get_data_by_key(assembler->symbol_table, word))) {
                 if (strcmp(temp_data->data, MDEFINE) == 0) {
                     if ((temp = atoi(temp_data->key))) {
                         insert_ll_node(assembler->object_list, temp);
+                        assembler->ic++;
                     } else
                         ;
                     /* error - value error */
@@ -110,8 +114,10 @@ encode_register(struct assembler_data* assembler,
     }
     code |= add_bits(source_code->data, REGISTER_ADDRESS, operand_location);
     set_data(source_code, code);
-    if (!found_register)
+    if (!found_register){
         insert_ll_node(assembler->object_list, reg_code);
+        assembler->ic++;
+    }
 }
 
 void
@@ -131,14 +137,16 @@ encode_direct(struct assembler_data* assembler,
     if ((temp = atoi(val_str + 1))) {
         temp = temp << 2;
         insert_ll_node(assembler->object_list, temp);
+        assembler->ic++;
     } else {
 
         if ((temp_data =
-               get_data_by_key(assembler->symbol_table, inst->source))) {
+               get_data_by_key(assembler->symbol_table, val_str +1))) {
             if (strcmp(temp_data->data, MDEFINE) == 0) {
                 if ((temp = atoi(temp_data->key))) {
                     temp = temp << 2;
                     insert_ll_node(assembler->object_list, temp);
+                    assembler->ic++;
                 } else
                     ;
                 /* error : value error */
@@ -168,10 +176,12 @@ encode_index(struct assembler_data* assembler,
     source_code->data = code;
     /* It should change later at 2nd phase */
     insert_ll_node(assembler->object_list, 0);
+    assembler->ic++;
     int temp = 0;
     if ((temp = atoi(index))) {
         temp = temp << 2;
         insert_ll_node(assembler->object_list, temp);
+        assembler->ic++;
     } else {
         if ((temp_data = get_data_by_key(assembler->symbol_table, index))) {
             if (strcmp(temp_data->data, MDEFINE) == 0) {
@@ -179,6 +189,7 @@ encode_index(struct assembler_data* assembler,
                     temp = temp << 2;
 
                     insert_ll_node(assembler->object_list, temp);
+                    assembler->ic++;
                 } else
                     ;
                 /* error - value error */
@@ -204,4 +215,5 @@ encode_null(struct assembler_data* assembler,
     code = add_bits(source_code->data, DIRECT_ADDRESS, operand_location);
     source_code->data = code;
     insert_ll_node(assembler->object_list, 0);
+    assembler->ic++;
 }

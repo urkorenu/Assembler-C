@@ -127,8 +127,8 @@ static void
 _print_linked_list(const struct linked_list* p, FILE* file, const char* sep)
 {
     if (p->state == DATA_SET) {
-        encrypt_binary(get_lnode_data(p, int), file);
-        /*int_to_binary(get_lnode_data(p, int), file);*/
+        /*encrypt_binary(get_lnode_data(p, int), file);*/
+        int_to_binary(get_lnode_data(p, int), file);
     }
     if (p->next != NULL) {
         fprintf(file, "%s", sep);

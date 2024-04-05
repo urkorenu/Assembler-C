@@ -230,6 +230,7 @@ line_to_bin_1st(struct assembler_data* assembler,
     char* index = NULL;
     struct linked_list* source_code =
       insert_ll_node(assembler->object_list, opcode);
+    assembler->ic++;
     if (inst->source) {
         if (is_register(inst->source)) {
             encode_register(assembler, inst, found_reg, source_code, 1);
@@ -265,8 +266,6 @@ parse_first_phase(struct assembler_data* assembler,
                   FILE* source_file,
                   struct files* as_files)
 {
-    int dc = 100;
-    int ic = 100;
     char line[MAXWORD];
     char* key = NULL;
     int idx = 0;
@@ -274,6 +273,7 @@ parse_first_phase(struct assembler_data* assembler,
     char* word = NULL;
     char* symbol = NULL;
     int reading_symbol = 0;
+    assembler->ic = 100;
     struct line_data* inst = NULL;
     while (get_line(line, source_file) != NULL) {
         inst = init_instruction(inst);
@@ -289,7 +289,6 @@ parse_first_phase(struct assembler_data* assembler,
                     insert_node(assembler->symbol_table,
                                 key,
                                 create_bucket(word, to_void_ptr(MDEFINE)));
-                    ++ic;
                 } else {
                     /* error - invalid syntax")*/;
                 }
@@ -308,10 +307,9 @@ parse_first_phase(struct assembler_data* assembler,
         if (is_data_store_instruction(word)) {
             if (reading_symbol) {
                 if (!get_data_by_key(assembler->symbol_table, symbol)) {
-                    dc++;
                     insert_node(assembler->symbol_table,
                                 symbol,
-                                create_bucket(DATA, to_void_ptr(dc)));
+                                create_bucket(DATA, (void *)assembler->ic));
                     word = get_word(line, idx_ptr);
                     if (!word)
                         word = get_word(line, idx_ptr);
@@ -331,16 +329,14 @@ parse_first_phase(struct assembler_data* assembler,
                 key = get_word(line, idx_ptr);
                 insert_node(
                   assembler->symbol_table, key, create_bucket(NULL, EXTERNAL));
-                ic++;
             }
         } else {
             if (reading_symbol) {
                 if (!get_data_by_key(assembler->symbol_table, symbol)) {
-                    ic++;
                     /* maybe need conversion to int or else */
                     insert_node(assembler->symbol_table,
                                 symbol,
-                                create_bucket(CODE, to_void_ptr(dc)));
+                                create_bucket(CODE, (void *)assembler->ic));
                 } else {;
                     /* error - symbol already initialized */
                 }
@@ -360,5 +356,6 @@ parse_first_phase(struct assembler_data* assembler,
     }
     FILE* ob_file = fopen(as_files->object_path, "w");
     print_linked_list(assembler->object_list, ob_file);
+    treeprint(assembler->symbol_table->root);
     return 1;
 }

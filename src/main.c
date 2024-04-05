@@ -16,6 +16,7 @@ main(int argc, char* argv[])
         .symbol_table = &symbol_table,
         .macro_tree = &macro_tree,
         .as_files = &as_files,
+        .ic = 100,
     };
     char* path;
     FILE* original_file;

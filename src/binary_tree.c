@@ -103,7 +103,7 @@ tree_alloc(void)
 struct binary_tree*
 btree_alloc(void)
 {
-    struct binary_tree *btree = NULL;
+    struct binary_tree* btree = NULL;
 
     btree = malloc(sizeof(struct binary_tree));
     btree->root = NULL;
@@ -134,5 +134,19 @@ free_tree(struct tnode* p)
         free_tree(p->right_node);
         free_bucket(p->node);
         free(p);
+    }
+}
+
+void
+treeprint(struct tnode* p)
+{
+
+    if (p != NULL) {
+        treeprint(p->left_node);
+        printf("key : %s, ", p->node->key);
+        struct bucket* temp_buck = p->node->data;
+        printf("ic : %d", (int)temp_buck->data);
+        printf("\n");
+        treeprint(p->right_node);
     }
 }
