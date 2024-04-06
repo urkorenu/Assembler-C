@@ -5,6 +5,15 @@
 
 #define register_code_fmt "r%1d"
 
+int countBits(int n) {
+    int count = 0;
+    while (n != 0) {
+        count++;
+        n >>= 1;
+    }
+    return count;
+}
+
 int
 get_register_code(char* reg)
 {
@@ -178,14 +187,15 @@ encode_index(struct assembler_data* assembler,
     insert_ll_node(assembler->object_list, 0);
     assembler->ic++;
     int temp = 0;
-    if ((temp = atoi(index))) {
+    if ((temp = atoi(index)) && (temp >= 0)) {
+        printf("%d\n", countBits(temp)); 
         temp = temp << 2;
         insert_ll_node(assembler->object_list, temp);
         assembler->ic++;
     } else {
         if ((temp_data = get_data_by_key(assembler->symbol_table, index))) {
             if (strcmp(temp_data->data, MDEFINE) == 0) {
-                if ((temp = atoi(temp_data->key))) {
+                if ((temp = atoi(temp_data->key)) && temp >= 0) {
                     temp = temp << 2;
 
                     insert_ll_node(assembler->object_list, temp);
@@ -217,3 +227,4 @@ encode_null(struct assembler_data* assembler,
     insert_ll_node(assembler->object_list, 0);
     assembler->ic++;
 }
+

@@ -4,6 +4,7 @@
 #include "instruction.h"
 #include "linked_list.h"
 #include "parser.h"
+#include "includes.h"
 
 extern int
 get_register_code(char* reg);
