@@ -1,6 +1,7 @@
 #include "instruction.h"
 #include "includes.h"
 
+/* Initialize an instruction structure */
 struct line_data*
 init_instruction(struct line_data* p)
 {
@@ -10,8 +11,9 @@ init_instruction(struct line_data* p)
     return p;
 }
 
+/* Get the instruction code and number of arguments from a word */
 int
-get_instruction(struct line_data* p, char* word)
+get_instruction(struct line_data* p, const char* word)
 {
     if (!word)
         return 0;

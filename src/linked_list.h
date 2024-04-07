@@ -3,6 +3,11 @@
 
 #include "includes.h"
 
+#define WORDSIZE 14
+#define BITSIZE(x) (sizeof(x) * 8)
+#define BITMASK(N) (1 << (N))
+#define GET_BIT(X, N) (((X) & BITMASK(N)) >> (N))
+
 enum node_state {
     DATA_UNSET,
     DATA_SET,

@@ -11,15 +11,12 @@ struct bucket {
 typedef void (*free_fn)(void* data);
 
 extern struct bucket*
-create_bucket(char* key, void* data);
+create_bucket(const char* key, void* data);
 
 extern void
 free_bucket(struct bucket* p);
 
 extern void
 reset_bucket(struct bucket* p);
-
-extern char*
-mystrdup(char* s);
 
 #endif /* _BUCKET_H */

@@ -14,6 +14,6 @@ extern struct line_data*
 init_instruction(struct line_data* p);
 
 extern int
-get_instruction(struct line_data* p, char* word);
+get_instruction(struct line_data* p, const char* word);
 
 #endif /* INSTRUCTION_H */

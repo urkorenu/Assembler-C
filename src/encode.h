@@ -7,13 +7,16 @@
 #include "includes.h"
 
 extern int
-get_register_code(char* reg);
+add_bits(int source, int data, int location);
+
+extern int
+get_register_code(const char* reg);
 
 extern void
-encode_string(struct assembler_data* assembler, char* line);
+encode_string(struct assembler_data* assembler, const char* line);
 
 extern void
-encode_data(struct assembler_data* assembler, char* line);
+encode_data(struct assembler_data* assembler, const char* line);
 
 extern void
 encode_register(struct assembler_data* assembler,

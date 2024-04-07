@@ -9,7 +9,6 @@
 #include "io.h"
 #include "linked_list.h"
 #include "macro.h"
-#include <strings.h>
 
 const char ASEMBLER_MEM_ERR[] = {
     "FATAL ERROR: Failed to allocate memory for struct assembler_data\n"
@@ -63,6 +62,16 @@ assembler_reset(struct assembler_data* asm)
     memset(asm, 0, sizeof(struct assembler_data));
 }
 
+/**
+ * @brief Parses the file and operate the pre-processor into a file.
+ *
+ * This function reads pre-processor directives from the given file and performs
+ * appropriate actions based on the directives encountered.
+ *
+ * @param file      Pointer to the input file.
+ * @param host      Pointer to the host data structure.
+ * @param new_file  Pointer to the output file.
+ */
 void
 parse_pre_processor(FILE* file, void* host, FILE* new_file)
 {
@@ -120,13 +129,6 @@ parse_pre_processor(FILE* file, void* host, FILE* new_file)
         idx = 0;
         memset(line, 0, MAXWORD);
     }
-}
-
-int
-add_bits(int source, int data, int location)
-{
-    int temp = data << location;
-    return source | temp;
 }
 
 static char*

@@ -12,8 +12,8 @@
 
 struct tnode {
     struct bucket* node;
-    struct tnode* left_node;
-    struct tnode* right_node;
+    struct tnode* left;
+    struct tnode* right;
 };
 
 struct binary_tree {
@@ -27,26 +27,26 @@ struct binary_tree {
  * */
 
 extern struct tnode*
-find_previous_node(struct tnode* p, char* key);
-
-extern struct tnode*
-find_node(struct binary_tree* tree, char* key);
+find_previous_node(struct tnode* root, const char* key);
 
 extern void*
-get_data_by_key(struct binary_tree* tree, char* key);
+get_data_by_key(struct binary_tree* tree, const char* key);
+
+extern void
+treeprint(struct tnode* p);
 
 /*
  * Set -
  * */
 
 extern int
-insert_node(struct binary_tree* tree, char* key, void* data);
+insert_node(struct binary_tree* tree, const char* key, void* data);
 
 extern struct tnode*
-add_node(struct tnode* p, char* key, void* data);
+add_node(struct tnode* p, const char* key, void* data);
 
 extern struct tnode*
-create_tnode(struct tnode* p, char* key, void* data);
+create_tnode(char* key, void* data);
 
 /*
  * Memory allocation -
@@ -64,7 +64,6 @@ btree_free(struct binary_tree* btree);
 extern void
 free_tree(struct tnode* p);
 
-extern void
-treeprint(struct tnode* p);
+
 
 #endif /* _BINARY_TREE_H */

@@ -13,7 +13,6 @@ extern char*
 get_word(char* line, int* idx);
 
 
-
 extern void
 remove_last_char(char* word);
 
@@ -23,25 +22,28 @@ remove_first_char(char* word);
 
 
 extern int
-is_data_store_instruction(char* word);
+is_data_store_instruction(const char* word);
 
 
 extern int
-is_symbol(char* word);
+is_symbol(const char* word);
 
 
 extern int
-is_ended_with_x(char* word, char x);
+is_ended_with_x(const char* word, const char x);
 
 
 extern int
-is_starting_with_x(char* word, char x);
+is_starting_with_x(const char* word, const char x);
 
 
 extern int
-is_e_instruction(char* word);
+is_e_instruction(const char* word);
 
 extern int
-is_register(char* word); 
+is_register(const char* word);
+
+extern char*
+mystrdup(char* s);
 
 #endif /*_IO_H*/

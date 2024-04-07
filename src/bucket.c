@@ -1,36 +1,40 @@
 #include "bucket.h"
 
+/*/////////////*/
+/* Set methods */
+/*/////////////*/
+
+/* Set the key for a bucket.*/
 static void
-set_key(struct bucket* p, char* key)
+set_key(struct bucket* p, const char* key)
 {
     p->key = mystrdup(key);
 }
 
+/* Set the data for a bucket.*/
 static void
 set_data(struct bucket* p, void* data)
 {
     p->data = data;
 }
 
-static struct bucket*
-bucket_alloc(void);
+/*//////////////////*/
+/* Memory functions */
+/*//////////////////*/
 
-struct bucket*
-create_bucket(char* key, void* data)
-{
-    struct bucket* p;
-    p = bucket_alloc();
-    set_key(p, key);
-    set_data(p, data);
-    return p;
-}
-
+/* Allocate memory for a bucket. */
 static struct bucket*
 bucket_alloc(void)
 {
-    return (struct bucket*)malloc(sizeof(struct bucket));
+    struct bucket *p = (struct bucket *)malloc(sizeof(struct bucket));
+    if (p == NULL) {
+        fprintf(stderr, "Memory allocation failed for bucket\n");
+        exit(EXIT_FAILURE);
+    }
+    return p;
 }
 
+/* Free the memory of a bucker*/
 void
 free_bucket(struct bucket* p)
 {
@@ -41,20 +45,19 @@ free_bucket(struct bucket* p)
     free(p);
 }
 
+/* Reset a bucket by zeroing out its memory. */
 void
 reset_bucket(struct bucket* p)
 {
     memset(p, 0, sizeof(struct bucket));
 }
 
-char*
-mystrdup(char* s)
+/* Reset a bucket by zeroing out its memory. */
+struct bucket*
+create_bucket(const char* key, void* data)
 {
-    char* p;
-
-    p = (char*)malloc(strlen(s) + 1);
-    if (p != NULL)
-        strcpy(p, s);
-
+    struct bucket* p = bucket_alloc();
+    set_key(p, key);
+    set_data(p, data);
     return p;
 }

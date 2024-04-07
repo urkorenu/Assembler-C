@@ -3,10 +3,20 @@
 #include "linked_list.h"
 #include "parser.h"
 
-#define register_code_fmt "r%1d"
+#define REGISTER_CODE_FMT "r%1d"
 
-int countBits(int n) {
+/* Add bits to an in and specific location */
+int
+add_bits(int source, int data, int location)
+{
+    int temp = data << location;
+    return source | temp;
+}
+
+/* Count the number of bits in an integer */
+static int count_bits(int n) {
     int count = 0;
+
     while (n != 0) {
         count++;
         n >>= 1;
@@ -14,46 +24,49 @@ int countBits(int n) {
     return count;
 }
 
+/* Get the code of a register from its string representation */
 int
-get_register_code(char* reg)
+get_register_code(const char* reg)
 {
     int code = 0;
-    assert(sscanf(reg, register_code_fmt, &code) == 1);
+
+    assert(sscanf(reg, REGISTER_CODE_FMT, &code) == 1);
+
     return code;
 }
 
-/* remove first char -> get char -> encode -> get char ..... */
+/* Encode string characters */
 void
-encode_string(struct assembler_data* assembler, char* line)
+encode_string(struct assembler_data* assembler, const char* line)
 {
-    char* word = NULL;
     int i = 0;
     int idx = 0;
+    char* word = NULL;
     int* idx_ptr = &idx;
     word = get_word(line, idx_ptr);
     word = get_word(line, idx_ptr);
     word = get_word(line, idx_ptr);
+
     for (i = 1; word[i] != '\"' && word[i] != '\0'; i++) {
         insert_ll_node(assembler->object_list, (int)word[i]);
         assembler->ic++;
     }
-    /* It should  be 0 */
+    /* last word of string should  be 0 */
     insert_ll_node(assembler->object_list, 0);
     assembler->ic++;
 }
 
-/* get word -> check if valid -> encode -> check for comma -> repeat*/
-
+/* Encode data */
 void
-encode_data(struct assembler_data* assembler, char* line)
+encode_data(struct assembler_data* assembler, const char* line)
 {
 
-    char* word = NULL;
-    int found_comma;
-    int temp = 0;
     int idx = 0;
-    struct bucket* temp_data;
+    int temp = 0;
+    int found_comma;
+    char* word = NULL;
     int* idx_ptr = &idx;
+    struct bucket* temp_data;
     word = get_word(line, idx_ptr);
     word = get_word(line, idx_ptr);
 
@@ -93,6 +106,7 @@ encode_data(struct assembler_data* assembler, char* line)
     }
 }
 
+/* Encode register */
 void
 encode_register(struct assembler_data* assembler,
                 struct line_data* inst,
@@ -100,11 +114,12 @@ encode_register(struct assembler_data* assembler,
                 struct linked_list* source_code,
                 int source)
 {
+    int code = 0;
     int reg_code = 0;
+    char* register_str = inst->destination;
     int bit_location = DESTINATION_REGISTER;
     int operand_location = DESTINATION_OPERAND;
-    char* register_str = inst->destination;
-    int code = 0;
+
     if (source) {
         bit_location = SOURCE_REGISTER;
         operand_location = SOURCE_OPERAND;
@@ -128,6 +143,7 @@ encode_register(struct assembler_data* assembler,
         assembler->ic++;
     }
 }
+
 
 void
 encode_direct(struct assembler_data* assembler,
@@ -175,9 +191,10 @@ encode_index(struct assembler_data* assembler,
              int source,
              char* index)
 {
+    int code;
     struct bucket* temp_data;
     int operand_location = DESTINATION_OPERAND;
-    int code;
+
     if (source) {
         operand_location = SOURCE_OPERAND;
     }
@@ -188,7 +205,7 @@ encode_index(struct assembler_data* assembler,
     assembler->ic++;
     int temp = 0;
     if ((temp = atoi(index)) && (temp >= 0)) {
-        printf("%d\n", countBits(temp)); 
+        printf("%d\n", count_bits(temp)); 
         temp = temp << 2;
         insert_ll_node(assembler->object_list, temp);
         assembler->ic++;
@@ -217,8 +234,9 @@ encode_null(struct assembler_data* assembler,
             struct linked_list* source_code,
             int source)
 {
-    int operand_location = DESTINATION_OPERAND;
     int code = 0;
+    int operand_location = DESTINATION_OPERAND;
+
     if (source) {
         operand_location = SOURCE_OPERAND;
     }

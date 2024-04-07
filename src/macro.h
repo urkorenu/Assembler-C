@@ -12,6 +12,7 @@ struct macro {
 
 extern struct macro*
 create_macro(struct macro** p, fpos_t pos, int lines);
+
 extern void
 insert_macro(struct macro* p, FILE* file, FILE* new_file);
 

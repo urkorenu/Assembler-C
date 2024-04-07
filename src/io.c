@@ -1,14 +1,18 @@
-#include "io.h"
-#include <ctype.h>
-#include <stdio.h>
-#include <string.h>
+/*
+ * File: utils.c
+ * Description: This file contains utility functions for parsing and processing strings.
+ */
 
+#include "io.h"
+
+/* Function to read a line from a file */
 char*
 get_line(char* line, FILE* file)
 {
     return fgets(line, MAXWORD, file);
 }
 
+/* Function to extract a word from a line */
 char*
 get_word(char* line, int* idx)
 {
@@ -16,7 +20,10 @@ get_word(char* line, int* idx)
         return NULL;
     }
 
-    char* p = malloc(sizeof(char) * MAX_LEN);
+    char* p = malloc(sizeof(char) * MAXWORD);
+    if (line == NULL || idx == NULL) {
+        return NULL;
+    }
     if (p == NULL) {
         return NULL;
     }
@@ -35,33 +42,37 @@ get_word(char* line, int* idx)
     return p;
 }
 
+/* Function to remove the last character from a string */
 void
 remove_last_char(char* word)
 {
     int size = strlen(word);
-    word[size - 1] = '\0';
-    return;
+    if (size > 0) {
+        word[size - 1] = '\0';
+    }
 }
 
+/* Function to remove the first character from a string */
 void
 remove_first_char(char* word)
 {
-    word++;
-    return;
+    if (word[0] != '\0') {
+        memmove(word, word + 1, strlen(word));
+    }
 }
 
+/* Function to check if a word is a data store instruction */
 int
-is_data_store_instruction(char* word)
+is_data_store_instruction(const char* word)
 {
-    if (strcmp(word, ".data") == 0)
-        return 1;
-    else if (strcmp(word, ".string") == 0)
+    if (strcmp(word, ".data") == 0 || strcmp(word, ".string") == 0)
         return 1;
     return 0;
 }
 
+/* Function to check if a word is a symbol */
 int
-is_symbol(char* word)
+is_symbol(const char* word)
 {
     int length = strlen(word);
     if (word[length - 1] == ':')
@@ -69,35 +80,40 @@ is_symbol(char* word)
     return 0;
 }
 
+/* Function to check if a word ends with a specific character */
 int
-is_ended_with_x(char* word, char x)
+is_ended_with_x(const char* word, const char x)
 {
     int length = strlen(word);
-    if (word[length - 1] == x)
-        return 1;
+    if (length > 0 && word[length - 1] == x) {
+        return 1; 
+    }
     return 0;
 }
 
+
+/* Function to check if a word starts with a specific character */
 int
-is_starting_with_x(char* word, char x)
+is_starting_with_x(const char* word, const char x)
 {
-    if (word[0] == x)
-        return 1;
-    return 0;
+   if (word[0] == x) {
+        return 1; 
+    }
+    return 0; 
 }
 
+/* Function to check if a word is an E instruction */
 int
-is_e_instruction(char* word)
+is_e_instruction(const char* word)
 {
-    if (strcmp(word, ".extern") == 0)
-        return 1;
-    else if (strcmp(word, ".entry") == 0)
+    if (strcmp(word, ".extern") == 0 || strcmp(word, ".entry") == 0)
         return 1;
     return 0;
 }
 
+/* Function to check if a word is a register */
 int
-is_register(char* word)
+is_register(const char* word)
 {
     int len = strlen(word);
     if (len == 2 && word[0] == 'r' && isdigit(word[len - 1])) {
@@ -106,4 +122,18 @@ is_register(char* word)
             return 1;
     }
     return 0;
+}
+
+/* Function to duplicate a string */
+char*
+mystrdup(char* s)
+{
+    char* p = (char*)malloc(strlen(s) + 1);
+    if (p == NULL) {
+        fprintf(stderr, "Memory allocation failed for string duplication\n");
+        exit(EXIT_FAILURE);
+    }
+
+    strcpy(p, s);
+    return p;
 }

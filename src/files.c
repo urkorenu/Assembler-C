@@ -1,9 +1,11 @@
 #include "files.h"
 
+/* Error message for memory allocation failure */
 const char FILES_ALLOC_ERR[] = {
-    "Failed to allocate memory for struct files - Buy more ram lol!\n"
+    "Failed to allocate memory for struct files - Buy more RAM lol!\n"
 };
 
+/* Default file paths */
 const struct files DEFAULT_FILES_VAL = {
     .assembly_path=ASSEMBLY,
     .processed_path=PROCESSED,
@@ -12,7 +14,7 @@ const struct files DEFAULT_FILES_VAL = {
     .entries_path=ENTRY,
 };
 
-
+/* Allocate memory for struct files */
 extern struct files*
 files_alloc(void)
 {
@@ -24,29 +26,30 @@ files_alloc(void)
     return f;
 }
 
+/* Free memory allocated for struct files */
 extern void
 files_free(struct files* f)
 {
     free(f);
 }
 
-
+/* Modify file path by concatenating with a format */
 char*
 modify_path(const char* path, const char* format)
 {
-
-    char* new_path = malloc(strlen(path) + 1);
+    char* new_path = malloc(strlen(path) + strlen(format) + 1);
     if (new_path == NULL) {
         fprintf(stderr, "Memory allocation failed\n");
         return NULL;
     }
 
-    strcat(new_path, path);
+    strcpy(new_path, path);
     strcat(new_path, format);
 
     return new_path;
 }
 
+/* Set file paths for a files structure */
 void
 set_file_pack(struct files* files, const char* path)
 {
