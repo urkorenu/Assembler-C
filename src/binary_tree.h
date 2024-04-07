@@ -46,7 +46,7 @@ extern struct tnode*
 add_node(struct tnode* p, const char* key, void* data);
 
 extern struct tnode*
-create_tnode(char* key, void* data);
+create_tnode(const char* key, void* data);
 
 /*
  * Memory allocation -

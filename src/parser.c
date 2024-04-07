@@ -358,6 +358,7 @@ parse_first_phase(struct assembler_data* assembler,
     }
     FILE* ob_file = fopen(as_files->object_path, "w");
     print_linked_list(assembler->object_list, ob_file);
+    printf("%s", "\nSymbol Table:\n");
     treeprint(assembler->symbol_table->root);
     return 1;
 }

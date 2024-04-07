@@ -10,7 +10,7 @@ extern char*
 get_line(char* line, FILE* file);
 
 extern char*
-get_word(char* line, int* idx);
+get_word(const char* line, int* idx);
 
 
 extern void
@@ -44,6 +44,6 @@ extern int
 is_register(const char* word);
 
 extern char*
-mystrdup(char* s);
+mystrdup(const char* s);
 
 #endif /*_IO_H*/

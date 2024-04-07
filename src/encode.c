@@ -205,7 +205,6 @@ encode_index(struct assembler_data* assembler,
     assembler->ic++;
     int temp = 0;
     if ((temp = atoi(index)) && (temp >= 0)) {
-        printf("%d\n", count_bits(temp)); 
         temp = temp << 2;
         insert_ll_node(assembler->object_list, temp);
         assembler->ic++;

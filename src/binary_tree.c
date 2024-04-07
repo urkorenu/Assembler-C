@@ -1,5 +1,6 @@
 #include "binary_tree.h"
 #include "bucket.h"
+#include <stdlib.h>
 
 /*/////////////////////////////////////////*/
 /* ///// Binary tree node functions ///////*/
@@ -116,7 +117,7 @@ add_node(struct tnode* root, const char* key, void* data)
 struct tnode*
 create_tnode(const char* key, void* data)
 {
-    struct tnode* node = tnode_alloc();
+    struct tnode* node = malloc(sizeof(struct tnode));
     if (node != NULL) {
         node->node = create_bucket(key, data);
         node->left = NULL;

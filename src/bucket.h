@@ -2,6 +2,7 @@
 #define _BUCKET_H
 
 #include "includes.h"
+#include "io.h"
 
 struct bucket {
     char* key;

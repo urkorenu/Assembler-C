@@ -14,16 +14,13 @@ get_line(char* line, FILE* file)
 
 /* Function to extract a word from a line */
 char*
-get_word(char* line, int* idx)
+get_word(const char* line, int* idx)
 {
     if (line == NULL || idx == NULL) {
         return NULL;
     }
 
     char* p = malloc(sizeof(char) * MAXWORD);
-    if (line == NULL || idx == NULL) {
-        return NULL;
-    }
     if (p == NULL) {
         return NULL;
     }
@@ -126,7 +123,7 @@ is_register(const char* word)
 
 /* Function to duplicate a string */
 char*
-mystrdup(char* s)
+mystrdup(const char* s)
 {
     char* p = (char*)malloc(strlen(s) + 1);
     if (p == NULL) {
