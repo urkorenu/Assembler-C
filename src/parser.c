@@ -23,7 +23,6 @@ assembler_alloc(void)
         fprintf(stderr, ASEMBLER_MEM_ERR);
         return NULL;
     }
-    asm[0] = assembler_init();
     return asm;
 }
 
@@ -38,16 +37,18 @@ assembler_free(struct assembler_data* asm)
     asm = NULL;
 }
 
-struct assembler_data
+struct assembler_data*
 assembler_init(void)
 {
-    struct assembler_data asm = {
-        .errors = create_new_ll_node(0),
-        .object_list = create_new_ll_node(0),
-        .symbol_table = create_new_btree(),
-        .macro_tree = create_new_btree(),
-        .as_files = files_alloc(),
-    };
+    struct assembler_data* asm;
+    asm = assembler_alloc();
+
+    asm->errors = create_new_ll_node(0);
+    asm->object_list = create_new_ll_node(0);
+    asm->symbol_table = create_new_btree();
+    asm->macro_tree = create_new_btree();
+    asm->as_files = files_alloc();
+
     return asm;
 }
 
