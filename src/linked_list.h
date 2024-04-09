@@ -10,7 +10,7 @@
 
 enum node_state {
     DATA_UNSET,
-    DATA_SET,
+    DATA_SET
 };
 
 struct linked_list {
