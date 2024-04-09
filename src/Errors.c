@@ -1,7 +1,7 @@
 #include "Errors.h"
 /*All kinds of possible errors in the code
  We will change as needed*/
-// If you want to select an error then call its number in the function "printf"
+/* If you want to select an error then call its number in the function "printf" */
 Error errors[] = {
     { ERROR_CODE_0, "No Error" },
     { ERROR_CODE_1, "Failed to dynamically allocate memory" },

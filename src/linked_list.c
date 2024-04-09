@@ -115,11 +115,12 @@ _print_linked_list(const struct linked_list* p, FILE* file, const char* sep)
 static void
 int_to_binary(int n, FILE* file)
 {
+    int i;
     if (n == 0) {
         fprintf(file, "?");
         return;
     }
-    for (int i = WORDSIZE - 1; i >= 0; i--)
+    for (i = WORDSIZE - 1; i >= 0; i--)
         fprintf(file, "%0d", GET_BIT(n, i));
 }
 
@@ -127,8 +128,8 @@ int_to_binary(int n, FILE* file)
 static void
 encrypt_binary(int n, FILE *file)
 {
-    int bit_sum, first_bit;
-    for (int i = WORDSIZE - 1; i >= 0; i-=2)
+    int bit_sum, first_bit, i;
+    for (i = WORDSIZE - 1; i >= 0; i-=2)
     {
         first_bit = GET_BIT(n, i) * 2;
         bit_sum = first_bit + GET_BIT(n, i-1);
