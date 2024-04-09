@@ -31,7 +31,7 @@ typedef enum ERROR_CODES {
     ERROR_CODE_17,
     ERROR_CODE_18,
 
-    // if you think about more or less errors you can add or delete.
+    /* if you think about more or less errors you can add or delete. */
 
     /* The following errors are related to reading command assembly lines */    
     ERROR_CODE_28,
@@ -71,7 +71,7 @@ typedef enum ERROR_CODES {
     ERROR_CODE_59
 } ERROR_CODES;
 
-// this func print internal errors.
+/* this func print internal errors. */
 void
 print_in_error(int error_code);
 
