@@ -4,7 +4,7 @@ HIDE := @
 SRC_DIR := src
 TEST_DIR := tests
 INCLUDES := -I./$(SRC_DIR)
-CFLAGS := -ansi -pedantic -Wall -std=c99 -g 
+CFLAGS := -ansi -pedantic -Wall -g
 
 #Files and Directories
 TEST_SOURCES := $(wildcard ./$(TEST_DIR)/*.c)
