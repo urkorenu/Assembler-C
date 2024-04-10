@@ -5,6 +5,35 @@
 #include <stdio.h>
 #include "linked_list.h"
 #include "parser.c"
+/* Helper function to recursively print the linked list the entry words*/
+static void
+_print_linked_list(const struct linked_list* p, FILE* file, const char* sep)
+{
+    if ((p->state == DATA_SET)&&להוסיף תנאי שזה אנטרי  {
+        /*encrypt_binary(get_lnode_data(p, int), file);*/
+        int_to_binary(get_lnode_data(p, int), file);
+    }
+    if (p->next != NULL) {
+        fprintf(file, "%s", sep);
+        _print_linked_list(p->next, file, sep);
+    }
+}
+
+
+void fill_when_zero(struct linked_list* head) {
+    struct linked_list* current = head;
+
+    // Traverse the linked list
+    while (current != NULL) {
+        // Check if the current node's data value is 0
+        if (current->data == 0) {
+            set_data(sourch_code, code);
+        }
+
+        // Move to the next node
+        current = current->next;
+    }
+}
 
 int parse_second_phase(struct assembler_data* assembler,FILE* source_file, struct files* as_files)
 {
@@ -47,10 +76,11 @@ int parse_second_phase(struct assembler_data* assembler,FILE* source_file, struc
                     }
                         else
                         {
+                            //if the symbol noe exist it the table
                            print_in_error(ERROR_CODE_29);
                         }
         }
-        \\לקודד עם הפונקציה של אור 
+        
            if (is_symbol(word)) {
             search_word = word;
             //if the symbol is not found in the table
@@ -58,9 +88,23 @@ int parse_second_phase(struct assembler_data* assembler,FILE* source_file, struc
                 print_in_error(ERROR_CODE_29);
             else
             {
-//--פונקציה של אור - לקחת את הערך מהטבלה ולקודד לבינרי
+                int sourch_code = get_data_by_key(assembler->symbol_table, search_word);
+                code |= add_bits(sourch_code, 3, 0);
+                  fill_when_zero(struct linked_list* head);
+
             }
+     FILE* ob_file = fopen(as_files->object_path, "w");
+    print_linked_list(assembler->object_list, ob_file);
+    printf("%s", "\nSymbol Table:\n");
+    treeprint(assembler->symbol_table->root);
+    return 1;
+}
             if (entry_flag=1 )
+            {
+                 FILE* ob_file = fopen(as_files-> .entries_path, "w");
+               
+
+            }
             {
                //-להדפיס את המערך להדפיס קובץ אנטרי- גם ראיתי שיש פונקציה להדפסה לקובץ 
             }
@@ -69,5 +113,3 @@ int parse_second_phase(struct assembler_data* assembler,FILE* source_file, struc
 
 
         
-
-            
