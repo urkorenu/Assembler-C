@@ -312,7 +312,7 @@ parse_first_phase(struct assembler_data* assembler,
                 if (!get_data_by_key(assembler->symbol_table, symbol)) {
                     insert_node(assembler->symbol_table,
                                 symbol,
-                                create_bucket(DATA, (void *)assembler->ic));
+                                create_bucket(DATA, (void*)assembler->ic));
                     word = get_word(line, idx_ptr);
                     if (!word)
                         word = get_word(line, idx_ptr);
@@ -339,8 +339,9 @@ parse_first_phase(struct assembler_data* assembler,
                     /* maybe need conversion to int or else */
                     insert_node(assembler->symbol_table,
                                 symbol,
-                                create_bucket(CODE, (void *)assembler->ic));
-                } else {;
+                                create_bucket(CODE, (void*)assembler->ic));
+                } else {
+                    ;
                     /* error - symbol already initialized */
                 }
             }

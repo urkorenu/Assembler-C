@@ -7,11 +7,11 @@ const char FILES_ALLOC_ERR[] = {
 
 /* Default file paths */
 const struct files DEFAULT_FILES_VAL = {
-    .assembly_path=ASSEMBLY,
-    .processed_path=PROCESSED,
-    .object_path=OBJECT,
-    .externals_path=EXTERN,
-    .entries_path=ENTRY,
+    .assembly_path = ASSEMBLY,
+    .processed_path = PROCESSED,
+    .object_path = OBJECT,
+    .externals_path = EXTERN,
+    .entries_path = ENTRY,
 };
 
 /* Allocate memory for struct files */

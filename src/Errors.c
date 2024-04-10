@@ -1,7 +1,8 @@
 #include "Errors.h"
 /*All kinds of possible errors in the code
  We will change as needed*/
-/* If you want to select an error then call its number in the function "printf" */
+/* If you want to select an error then call its number in the function "printf"
+ */
 Error errors[] = {
     { ERROR_CODE_0, "No Error" },
     { ERROR_CODE_1, "Failed to dynamically allocate memory" },
@@ -21,7 +22,7 @@ Error errors[] = {
     { ERROR_CODE_15, "Macros expansion in an .as file failed" },
     { ERROR_CODE_16, "Macro call before declaration" },
     { ERROR_CODE_17, "Illegal name for a macro" },
-    { ERROR_CODE_18, "The symbol is not found in the table"},
+    { ERROR_CODE_18, "The symbol is not found in the table" },
     { ERROR_CODE_28, "define key is already initialized" },
     { ERROR_CODE_29, "Missing command" },
     { ERROR_CODE_30, "Line is too long" },

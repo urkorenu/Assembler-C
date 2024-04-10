@@ -26,7 +26,7 @@ set_data(struct bucket* p, void* data)
 static struct bucket*
 bucket_alloc(void)
 {
-    struct bucket *p = (struct bucket *)malloc(sizeof(struct bucket));
+    struct bucket* p = (struct bucket*)malloc(sizeof(struct bucket));
     if (p == NULL) {
         fprintf(stderr, "Memory allocation failed for bucket\n");
         exit(EXIT_FAILURE);

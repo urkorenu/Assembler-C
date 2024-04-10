@@ -23,7 +23,7 @@ _find_node(struct tnode* root, const char* key)
     if (root == NULL || root->node == NULL) {
         return NULL;
     }
-    int cmp  = strcmp(root->node->key, key);
+    int cmp = strcmp(root->node->key, key);
     if (cmp == 0) {
         return root;
     }
@@ -39,7 +39,7 @@ _find_node(struct tnode* root, const char* key)
 struct tnode*
 find_previous_node(struct tnode* root, const char* key)
 {
-    if (root->left == NULL || root->right== NULL || root->left == NULL)
+    if (root->left == NULL || root->right == NULL || root->left == NULL)
         return NULL;
     int cmp = strcmp(root->right->node->key, key);
     if (cmp > 0) {
@@ -99,19 +99,18 @@ struct tnode*
 add_node(struct tnode* root, const char* key, void* data)
 {
     if (root == NULL) {
-        root = create_tnode(key, data);}
-    else {
-        int cmp = strcmp(key, root->node->key);
-    if (cmp == 0) {
         root = create_tnode(key, data);
-    } 
-    else if (cmp > 0)
-        root->left = add_node(root->left, key, data);
-    else
-        root->right = add_node(root->right, key, data);}
+    } else {
+        int cmp = strcmp(key, root->node->key);
+        if (cmp == 0) {
+            root = create_tnode(key, data);
+        } else if (cmp > 0)
+            root->left = add_node(root->left, key, data);
+        else
+            root->right = add_node(root->right, key, data);
+    }
     return root;
 }
-
 
 /* Create a new tree node with the given key and data */
 struct tnode*
@@ -151,7 +150,6 @@ free_tree(struct tnode* root)
     }
 }
 
-
 struct binary_tree*
 btree_alloc(void)
 {
@@ -167,4 +165,3 @@ create_new_btree(void)
 {
     return btree_alloc();
 }
-

@@ -1,16 +1,18 @@
 /*
  * File: linked_list.c
- * Description: This file contains the core and methods of the linked list data structure.
+ * Description: This file contains the core and methods of the linked list data
+ * structure.
  */
 
 #include "linked_list.h"
 
-
 /* Function prototypes */
 static void
 _print_linked_list(const struct linked_list* p, FILE* file, const char* sep);
-static void int_to_binary(int n, FILE* file);
-static void encrypt_binary(int n, FILE *file);
+static void
+int_to_binary(int n, FILE* file);
+static void
+encrypt_binary(int n, FILE* file);
 
 /* Set data and state for the node */
 void
@@ -126,21 +128,19 @@ int_to_binary(int n, FILE* file)
 
 /* Helper function to encrypt binary representation and print to file */
 static void
-encrypt_binary(int n, FILE *file)
+encrypt_binary(int n, FILE* file)
 {
     int bit_sum, first_bit, i;
-    for (i = WORDSIZE - 1; i >= 0; i-=2)
-    {
+    for (i = WORDSIZE - 1; i >= 0; i -= 2) {
         first_bit = GET_BIT(n, i) * 2;
-        bit_sum = first_bit + GET_BIT(n, i-1);
+        bit_sum = first_bit + GET_BIT(n, i - 1);
         if (!bit_sum)
             fprintf(file, "%c", '*');
         else if (bit_sum == 1)
             fprintf(file, "%c", '#');
         else if (bit_sum == 2)
             fprintf(file, "%c", '%');
-        else 
+        else
             fprintf(file, "%c", '!');
-
     }
 }

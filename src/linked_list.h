@@ -8,10 +8,7 @@
 #define BITMASK(N) (1 << (N))
 #define GET_BIT(X, N) (((X) & BITMASK(N)) >> (N))
 
-enum node_state {
-    DATA_UNSET,
-    DATA_SET
-};
+enum node_state { DATA_UNSET, DATA_SET };
 
 struct linked_list {
     int data;
@@ -20,8 +17,7 @@ struct linked_list {
     struct linked_list* pre;
 };
 
-#define get_lnode_data(lnode, dtype)\
-    ((dtype)((lnode)->data))
+#define get_lnode_data(lnode, dtype) ((dtype)((lnode)->data))
 
 extern struct linked_list*
 create_new_ll_node(int data);
@@ -38,11 +34,11 @@ get_last_node(struct linked_list* p);
 extern struct linked_list*
 llalloc(void);
 
-extern void 
-print_linked_list(const struct linked_list *p, FILE *file);
+extern void
+print_linked_list(const struct linked_list* p, FILE* file);
 
 extern void
-ll_fprintf(const struct linked_list *p, FILE *file, const char *sep);
+ll_fprintf(const struct linked_list* p, FILE* file, const char* sep);
 
 extern void
 llfree(struct linked_list* p);

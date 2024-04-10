@@ -64,6 +64,4 @@ btree_free(struct binary_tree* btree);
 extern void
 free_tree(struct tnode* p);
 
-
-
 #endif /* _BINARY_TREE_H */

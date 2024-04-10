@@ -42,19 +42,21 @@ extern struct assembler_data*
 assembler_alloc(void);
 
 extern void
-assembler_free(struct assembler_data *asm);
+assembler_free(struct assembler_data* asm);
 
 extern struct assembler_data*
 assembler_init(void);
 
-void 
-assembler_reset(struct assembler_data *asm);
+void
+assembler_reset(struct assembler_data* asm);
 
 extern int
 add_bits(int source, int data, int location);
 
 extern int
-parse_first_phase(struct assembler_data* host, FILE* source_file, struct files *as_files);
+parse_first_phase(struct assembler_data* host,
+                  FILE* source_file,
+                  struct files* as_files);
 
 extern void
 parse_pre_processor(FILE* file, void* host, FILE* new_file);

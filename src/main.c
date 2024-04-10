@@ -6,11 +6,10 @@
 int
 main(int argc, char* argv[])
 {
-    struct files as_files;
     struct assembler_data* assembler;
     assembler = assembler_init();
-    char* path = NULL
-      ;
+    char* path;
+    path = NULL;
     FILE* original_file;
     FILE* processed_file;
     int file_count = 1;
@@ -21,7 +20,9 @@ main(int argc, char* argv[])
         original_file = fopen(assembler->as_files->assembly_path, "r");
         processed_file = fopen(assembler->as_files->processed_path, "w");
         if (original_file == NULL) {
-            fprintf(stderr, "Error opening file %s: ", assembler->as_files->assembly_path);
+            fprintf(stderr,
+                    "Error opening file %s: ",
+                    assembler->as_files->assembly_path);
             perror("");
             continue;
         }
@@ -29,7 +30,7 @@ main(int argc, char* argv[])
           original_file, assembler->macro_tree, processed_file);
         fclose(processed_file);
         processed_file = fopen(assembler->as_files->processed_path, "r");
-        if (parse_first_phase(assembler, processed_file, &as_files)) {
+        if (parse_first_phase(assembler, processed_file, assembler->as_files)) {
         } /* second phase here */;
         fclose(original_file);
         fclose(processed_file);

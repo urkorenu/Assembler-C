@@ -1,10 +1,10 @@
 #ifndef ENCODE_H
 #define ENCODE_H
 
+#include "includes.h"
 #include "instruction.h"
 #include "linked_list.h"
 #include "parser.h"
-#include "includes.h"
 
 extern int
 add_bits(int source, int data, int location);

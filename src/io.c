@@ -1,6 +1,7 @@
 /*
  * File: utils.c
- * Description: This file contains utility functions for parsing and processing strings.
+ * Description: This file contains utility functions for parsing and processing
+ * strings.
  */
 
 #include "io.h"
@@ -83,20 +84,19 @@ is_ended_with_x(const char* word, const char x)
 {
     int length = strlen(word);
     if (length > 0 && word[length - 1] == x) {
-        return 1; 
+        return 1;
     }
     return 0;
 }
-
 
 /* Function to check if a word starts with a specific character */
 int
 is_starting_with_x(const char* word, const char x)
 {
-   if (word[0] == x) {
-        return 1; 
+    if (word[0] == x) {
+        return 1;
     }
-    return 0; 
+    return 0;
 }
 
 /* Function to check if a word is an E instruction */

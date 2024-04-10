@@ -14,7 +14,9 @@ add_bits(int source, int data, int location)
 }
 
 /* Count the number of bits in an integer */
-static int count_bits(int n) {
+static int
+count_bits(int n)
+{
     int count = 0;
 
     while (n != 0) {
@@ -138,12 +140,11 @@ encode_register(struct assembler_data* assembler,
     }
     code |= add_bits(source_code->data, REGISTER_ADDRESS, operand_location);
     set_data(source_code, code);
-    if (!found_register){
+    if (!found_register) {
         insert_ll_node(assembler->object_list, reg_code);
         assembler->ic++;
     }
 }
-
 
 void
 encode_direct(struct assembler_data* assembler,
@@ -166,7 +167,7 @@ encode_direct(struct assembler_data* assembler,
     } else {
 
         if ((temp_data =
-               get_data_by_key(assembler->symbol_table, val_str +1))) {
+               get_data_by_key(assembler->symbol_table, val_str + 1))) {
             if (strcmp(temp_data->data, MDEFINE) == 0) {
                 if ((temp = atoi(temp_data->key))) {
                     temp = temp << 2;
@@ -244,4 +245,3 @@ encode_null(struct assembler_data* assembler,
     insert_ll_node(assembler->object_list, 0);
     assembler->ic++;
 }
-
