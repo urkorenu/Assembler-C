@@ -7,7 +7,7 @@
 #include "parser.c"
 /* Helper function to recursively print the linked list the entry words*/
 static void
-_print_linked_list(const struct linked_list* p, FILE* file, const char* sep)
+_print_entry_linked_list(const struct linked_list* p, FILE* file, const char* sep)
 {
     if ((p->state == DATA_SET)&&להוסיף תנאי שזה אנטרי  {
         /*encrypt_binary(get_lnode_data(p, int), file);*/
@@ -19,7 +19,7 @@ _print_linked_list(const struct linked_list* p, FILE* file, const char* sep)
     }
 }
 
-
+//fill the linked list when there us a 0 cell
 void fill_when_zero(struct linked_list* head) {
     struct linked_list* current = head;
 
