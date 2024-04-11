@@ -30,7 +30,7 @@ main(int argc, char* argv[])
           original_file, assembler->macro_tree, processed_file);
         fclose(processed_file);
         processed_file = fopen(assembler->as_files->processed_path, "r");
-        if (parse_first_phase(assembler, processed_file, assembler->as_files)) {
+        if (parse_first_phase(assembler, processed_file)) {
         } /* second phase here */;
         fclose(original_file);
         fclose(processed_file);

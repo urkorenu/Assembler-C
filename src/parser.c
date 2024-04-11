@@ -10,57 +10,57 @@
 #include "linked_list.h"
 #include "macro.h"
 
-const char ASEMBLER_MEM_ERR[] = {
+const char ASSEMBLER_MEM_ERR[] = {
     "FATAL ERROR: Failed to allocate memory for struct assembler_data\n"
 };
 
 struct assembler_data*
 assembler_alloc(void)
 {
-    struct assembler_data* asm = malloc(sizeof(struct assembler_data));
+    struct assembler_data* assembler = malloc(sizeof(struct assembler_data));
 
-    if (asm == NULL) {
-        fprintf(stderr, ASEMBLER_MEM_ERR);
+    if (assembler == NULL) {
+        fprintf(stderr, ASSEMBLER_MEM_ERR);
         return NULL;
     }
-    return asm;
+    return assembler;
 }
 
 void
-assembler_free(struct assembler_data* asm)
+assembler_free(struct assembler_data* assembler)
 {
-    if (asm == NULL)
+    if (assembler == NULL)
         return;
 
-    assembler_reset(asm);
-    free(asm);
-    asm = NULL;
+    assembler_reset(assembler);
+    free(assembler);
+    assembler = NULL;
 }
 
 struct assembler_data*
 assembler_init(void)
 {
-    struct assembler_data* asm;
-    asm = assembler_alloc();
+    struct assembler_data* assembler;
+    assembler = assembler_alloc();
 
-    asm->errors = create_new_ll_node(0);
-    asm->object_list = create_new_ll_node(0);
-    asm->symbol_table = create_new_btree();
-    asm->macro_tree = create_new_btree();
-    asm->as_files = files_alloc();
+    assembler->errors = create_new_ll_node(0);
+    assembler->object_list = create_new_ll_node(0);
+    assembler->symbol_table = create_new_btree();
+    assembler->macro_tree = create_new_btree();
+    assembler->as_files = files_alloc();
 
-    return asm;
+    return assembler;
 }
 
 void
-assembler_reset(struct assembler_data* asm)
+assembler_reset(struct assembler_data* assembler)
 {
-    llfree(asm->errors);
-    llfree(asm->object_list);
-    btree_free(asm->symbol_table);
-    btree_free(asm->macro_tree);
-    files_free(asm->as_files);
-    memset(asm, 0, sizeof(struct assembler_data));
+    llfree(assembler->errors);
+    llfree(assembler->object_list);
+    btree_free(assembler->symbol_table);
+    btree_free(assembler->macro_tree);
+    files_free(assembler->as_files);
+    memset(assembler, 0, sizeof(struct assembler_data));
 }
 
 /**
@@ -266,8 +266,7 @@ line_to_bin_1st(struct assembler_data* assembler,
 
 int
 parse_first_phase(struct assembler_data* assembler,
-                  FILE* source_file,
-                  struct files* as_files)
+                  FILE* source_file)
 {
     char line[MAXWORD];
     char* key = NULL;
@@ -358,7 +357,7 @@ parse_first_phase(struct assembler_data* assembler,
         reading_symbol = 0;
         inst = NULL;
     }
-    FILE* ob_file = fopen(as_files->object_path, "w");
+    FILE* ob_file = fopen(assembler->as_files->object_path, "w");
     print_linked_list(assembler->object_list, ob_file);
     printf("%s", "\nSymbol Table:\n");
     treeprint(assembler->symbol_table->root);
