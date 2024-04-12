@@ -11,7 +11,10 @@ _print_entry_linked_list(const struct linked_list* p,
                          FILE* file,
                          const char* sep)
 {
-    if ((p->state == DATA_SET)&&להוסיף תנאי שזה אנטרי  {
+     if (p == NULL) {
+        return; // Exit the function if the list is empty
+    }
+    if ((p->state == DATA_SET)&&(strcmp(p, ".entry") == 0)) {
         /*encrypt_binary(get_lnode_data(p, int), file);*/
         int_to_binary(get_lnode_data(p, int), file);
     }
