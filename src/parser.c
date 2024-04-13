@@ -37,17 +37,16 @@ assembler_free(struct assembler_data* assembler)
     assembler = NULL;
 }
 
-struct assembler_data*
+struct assembler_data
 assembler_init(void)
 {
-    struct assembler_data* assembler;
-    assembler = assembler_alloc();
+    struct assembler_data assembler;
 
-    assembler->errors = create_new_ll_node(0);
-    assembler->object_list = create_new_ll_node(0);
-    assembler->symbol_table = create_new_btree();
-    assembler->macro_tree = create_new_btree();
-    assembler->as_files = files_alloc();
+    assembler.errors = create_new_ll_node(0);
+    assembler.object_list = create_new_ll_node(0);
+    assembler.symbol_table = create_new_btree();
+    assembler.macro_tree = create_new_btree();
+    assembler.as_files = files_alloc();
 
     return assembler;
 }
@@ -135,14 +134,14 @@ parse_pre_processor(FILE* file, void* host, FILE* new_file)
 static char*
 get_index(char* word)
 {
-    char* p = malloc(sizeof(char) * MAX_LEN);
-    if (p == NULL) {
-        return NULL;
-    }
     int i;
     int j = 0;
     int len = strlen(word);
     int inside_square_brackets = 0;
+    char* p = malloc(sizeof(char) * MAX_LEN);
+    if (p == NULL) {
+        return NULL;
+    }
     for (i = 0; i <= len; i++) {
         if (word[i] == '[')
             inside_square_brackets = 1;
@@ -265,8 +264,7 @@ line_to_bin_1st(struct assembler_data* assembler,
 }
 
 int
-parse_first_phase(struct assembler_data* assembler,
-                  FILE* source_file)
+parse_first_phase(struct assembler_data* assembler, FILE* source_file)
 {
     char line[MAXWORD];
     char* key = NULL;
@@ -275,8 +273,11 @@ parse_first_phase(struct assembler_data* assembler,
     char* word = NULL;
     char* symbol = NULL;
     int reading_symbol = 0;
-    assembler->ic = 100;
     struct line_data* inst = NULL;
+    FILE* ob_file = fopen(assembler->as_files->object_path, "w");
+
+    assembler->ic = 100;
+
     while (get_line(line, source_file) != NULL) {
         inst = init_instruction(inst);
         word = get_word(line, idx_ptr);
@@ -311,7 +312,7 @@ parse_first_phase(struct assembler_data* assembler,
                 if (!get_data_by_key(assembler->symbol_table, symbol)) {
                     insert_node(assembler->symbol_table,
                                 symbol,
-                                create_bucket(DATA, (void*)assembler->ic));
+                                create_bucket(DATA, (void*)(&assembler->ic)));
                     word = get_word(line, idx_ptr);
                     if (!word)
                         word = get_word(line, idx_ptr);
@@ -335,10 +336,13 @@ parse_first_phase(struct assembler_data* assembler,
         } else {
             if (reading_symbol) {
                 if (!get_data_by_key(assembler->symbol_table, symbol)) {
+                    int* iptr;
+                    struct bucket *b = create_bucket(CODE, NULL);
+                    iptr = malloc(sizeof(int));
+                    iptr[0] = assembler->ic;
+                    b->data = iptr;
                     /* maybe need conversion to int or else */
-                    insert_node(assembler->symbol_table,
-                                symbol,
-                                create_bucket(CODE, (void*)assembler->ic));
+                    insert_node(assembler->symbol_table, symbol, b);
                 } else {
                     ;
                     /* error - symbol already initialized */
@@ -357,7 +361,6 @@ parse_first_phase(struct assembler_data* assembler,
         reading_symbol = 0;
         inst = NULL;
     }
-    FILE* ob_file = fopen(assembler->as_files->object_path, "w");
     print_linked_list(assembler->object_list, ob_file);
     printf("%s", "\nSymbol Table:\n");
     treeprint(assembler->symbol_table->root);

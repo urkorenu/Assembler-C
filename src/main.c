@@ -6,31 +6,31 @@
 int
 main(int argc, char* argv[])
 {
-    struct assembler_data* assembler;
-    assembler = assembler_init();
-    char* path;
-    path = NULL;
+    struct assembler_data assembler;
+    char* path = NULL;
     FILE* original_file;
     FILE* processed_file;
     int file_count = 1;
 
+    assembler = assembler_init();
+
     while (file_count < argc) {
         path = argv[file_count++];
-        set_file_pack(assembler->as_files, path);
-        original_file = fopen(assembler->as_files->assembly_path, "r");
-        processed_file = fopen(assembler->as_files->processed_path, "w");
+        set_file_pack(assembler.as_files, path);
+        original_file = fopen(assembler.as_files->assembly_path, "r");
+        processed_file = fopen(assembler.as_files->processed_path, "w");
         if (original_file == NULL) {
             fprintf(stderr,
                     "Error opening file %s: ",
-                    assembler->as_files->assembly_path);
+                    assembler.as_files->assembly_path);
             perror("");
             continue;
         }
         parse_pre_processor(
-          original_file, assembler->macro_tree, processed_file);
+          original_file, assembler.macro_tree, processed_file);
         fclose(processed_file);
-        processed_file = fopen(assembler->as_files->processed_path, "r");
-        if (parse_first_phase(assembler, processed_file)) {
+        processed_file = fopen(assembler.as_files->processed_path, "r");
+        if (parse_first_phase(&assembler, processed_file)) {
         } /* second phase here */;
         fclose(original_file);
         fclose(processed_file);

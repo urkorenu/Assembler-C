@@ -8,22 +8,27 @@
 
 /* Static functions */
 
-/* Allocate memory for a new tree node */
-static struct tnode*
-tree_alloc(void)
+struct tnode
+tnode_init(void)
 {
-    return (struct tnode*)malloc(sizeof(struct tnode));
+    struct tnode node;
+    node.node = bucket_alloc();
+    node.left = NULL;
+    node.right = NULL;
+    return node;
 }
+
 
 /* Find a node with the given key in the binary tree */
 static struct tnode*
 _find_node(struct tnode* root, const char* key)
 {
 
+    int cmp;
     if (root == NULL || root->node == NULL) {
         return NULL;
     }
-    int cmp = strcmp(root->node->key, key);
+    cmp = strcmp(root->node->key, key);
     if (cmp == 0) {
         return root;
     }
@@ -39,9 +44,10 @@ _find_node(struct tnode* root, const char* key)
 struct tnode*
 find_previous_node(struct tnode* root, const char* key)
 {
+    int cmp;
     if (root->left == NULL || root->right == NULL || root->left == NULL)
         return NULL;
-    int cmp = strcmp(root->right->node->key, key);
+    cmp = strcmp(root->right->node->key, key);
     if (cmp > 0) {
         if (strcmp(root->right->node->key, key) == 0)
             return root;
@@ -71,11 +77,13 @@ void
 treeprint(struct tnode* p)
 {
 
+    struct bucket* temp_buck;
     if (p != NULL) {
+        if (p->node != NULL)
+            temp_buck = p->node->data;
         treeprint(p->left);
         printf("key : %s, ", p->node->key);
-        struct bucket* temp_buck = p->node->data;
-        printf("ic : %d", (int)temp_buck->data);
+        printf("ic : %d", ((int*)temp_buck->data)[0]);
         printf("\n");
         treeprint(p->right);
     }
@@ -118,9 +126,9 @@ create_tnode(const char* key, void* data)
 {
     struct tnode* node = malloc(sizeof(struct tnode));
     if (node != NULL) {
-        node->node = create_bucket(key, data);
-        node->left = NULL;
-        node->right = NULL;
+        node[0] = tnode_init();
+        bucket_set_key(node->node, key);
+        bucket_set_data(node->node, data);
     }
     return node;
 }

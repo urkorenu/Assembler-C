@@ -17,16 +17,17 @@ get_line(char* line, FILE* file)
 char*
 get_word(const char* line, int* idx)
 {
+    char* p;
+    int i = 0;
     if (line == NULL || idx == NULL) {
         return NULL;
     }
 
-    char* p = malloc(sizeof(char) * MAXWORD);
+    p = malloc(sizeof(char) * MAXWORD);
     if (p == NULL) {
         return NULL;
     }
 
-    int i = 0;
 
     while (line[*idx] == ' ' || line[*idx] == '\t')
         (*idx)++;

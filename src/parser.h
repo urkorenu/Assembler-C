@@ -44,7 +44,7 @@ assembler_alloc(void);
 extern void
 assembler_free(struct assembler_data* assembler);
 
-extern struct assembler_data*
+extern struct assembler_data
 assembler_init(void);
 
 void

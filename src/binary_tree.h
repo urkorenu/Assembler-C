@@ -26,6 +26,9 @@ struct binary_tree {
  *  Get -
  * */
 
+struct tnode
+tnode_init(void);
+
 extern struct tnode*
 find_previous_node(struct tnode* root, const char* key);
 
