@@ -1,10 +1,17 @@
 #ifndef PARSER_H
 #define PARSER_H
 
+#include "Errors.h"
+#include "assembler.h"
 #include "binary_tree.h"
+#include "bucket.h"
+#include "encode.h"
 #include "files.h"
 #include "includes.h"
+#include "instruction.h"
+#include "io.h"
 #include "linked_list.h"
+#include "macro.h"
 
 #define CODE "code"
 #define MDEFINE "mdefine"
@@ -24,40 +31,21 @@
 #define INDEX_ADDRESS 2
 #define REGISTER_ADDRESS 3
 
-struct assembler_data {
-    struct linked_list* errors;
-    struct linked_list* object_list;
-    struct binary_tree* symbol_table;
-    struct binary_tree* macro_tree;
-    struct files* as_files;
-    int ic;
-    int dc;
-};
-
-extern const char ASSEMBLER_MEM_ERR[];
-
 #define to_void_ptr(val) ((void*)(&(val)))
-
-extern struct assembler_data*
-assembler_alloc(void);
-
-extern void
-assembler_free(struct assembler_data* assembler);
-
-extern struct assembler_data
-assembler_init(void);
-
-void
-assembler_reset(struct assembler_data* assembler);
 
 extern int
 add_bits(int source, int data, int location);
 
-extern int
-parse_first_phase(struct assembler_data* host,
-                  FILE* source_file);
-
 extern void
 parse_pre_processor(FILE* file, void* host, FILE* new_file);
 
+extern int
+parse_line(struct assembler_data* assembler,
+           char* line,
+           struct line_data* inst);
+
+extern int
+line_to_bin_1st(struct assembler_data* assembler,
+                char* line,
+                struct line_data* inst);
 #endif /*PARSER_H*/

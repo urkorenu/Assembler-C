@@ -18,6 +18,18 @@ bucket_set_data(struct bucket* p, void* data)
     p->data = data;
 }
 
+void
+set_bucket_ic(struct bucket* b, int ic)
+{
+    int* iptr;
+
+    if (!b && !ic)
+        return;
+
+    iptr = malloc(sizeof(int));
+    iptr[0] = ic;
+    b->data = iptr;
+}
 /*//////////////////*/
 /* Memory functions */
 /*//////////////////*/

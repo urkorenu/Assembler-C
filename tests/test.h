@@ -1,34 +1,33 @@
 #ifndef TEST_H_
 #define TEST_H_
 
+#include "encode.h"
 #include "includes.h"
 #include "parser.h"
-#include "encode.h"
 
 #define int_checker_check(checker) _int_checker_check(#checker, checker)
 #define print_int_checker(checker) _print_int_checker(#checker, checker)
 
 typedef struct int_checker_s {
-    int *input;
+    int* input;
     int expected;
     int actual;
     size_t input_size;
 } int_checker_t;
 
-const int_checker_t default_checker = {0, 0, 0, 0};
+const int_checker_t default_checker = { 0, 0, 0, 0 };
 
-extern void 
+extern void
 _int_checker_check(const char* name, int_checker_t checker);
 
 extern void
 _print_int_checker(const char* name, int_checker_t checker);
 
-
 #endif /* TEST_H_ */
 
 #ifdef TEST_IMPLEMENTATION
 
-void 
+void
 _int_checker_check(const char* name, int_checker_t checker)
 {
     _print_int_checker(name, checker);
@@ -50,8 +49,7 @@ _print_int_checker(const char* name, int_checker_t checker)
         fprintf(stdout, "%d", checker.input[0]);
         for (i = 1; i < checker.input_size; i++)
             fprintf(stdout, ", %d", checker.input[i]);
-    }
-    else {
+    } else {
         fprintf(stdout, "input:  (NULL / UNKNOWN)\n");
     }
     fprintf(stdout, "}\n");

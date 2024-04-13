@@ -1,8 +1,10 @@
 #ifndef ENCODE_H
 #define ENCODE_H
 
+#include "assembler.h"
 #include "includes.h"
 #include "instruction.h"
+#include "io.h"
 #include "linked_list.h"
 #include "parser.h"
 

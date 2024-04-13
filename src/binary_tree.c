@@ -18,7 +18,6 @@ tnode_init(void)
     return node;
 }
 
-
 /* Find a node with the given key in the binary tree */
 static struct tnode*
 _find_node(struct tnode* root, const char* key)
@@ -37,8 +36,9 @@ _find_node(struct tnode* root, const char* key)
     else
         return _find_node(root->left, key);
 }
-
+/*/////////////*/
 /* Get methods */
+/*/////////////*/
 
 /* Find the previous node of a given key in the binary tree */
 struct tnode*
@@ -79,13 +79,14 @@ treeprint(struct tnode* p)
 
     struct bucket* temp_buck;
     if (p != NULL) {
-        if (p->node != NULL)
+        if (p->node != NULL) {
             temp_buck = p->node->data;
-        treeprint(p->left);
-        printf("key : %s, ", p->node->key);
-        printf("ic : %d", ((int*)temp_buck->data)[0]);
-        printf("\n");
-        treeprint(p->right);
+            treeprint(p->left);
+            printf("key : %s, ", p->node->key);
+            printf("ic : %d", ((int*)temp_buck->data)[0]);
+            printf("\n");
+            treeprint(p->right);
+        }
     }
 }
 

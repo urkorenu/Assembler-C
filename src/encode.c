@@ -1,7 +1,4 @@
 #include "encode.h"
-#include "io.h"
-#include "linked_list.h"
-#include "parser.h"
 
 #define REGISTER_CODE_FMT "r%1d"
 
@@ -9,8 +6,8 @@
 int
 add_bits(int source, int data, int location)
 {
-    int code = data << location;
-    return source | code;
+    int temp = data << location;
+    return source | temp;
 }
 
 /* Count the number of bits in an integer */
@@ -64,7 +61,7 @@ encode_data(struct assembler_data* assembler, const char* line)
 {
 
     int idx = 0;
-    int code = 0;
+    int temp = 0;
     int found_comma;
     char* word = NULL;
     int* idx_ptr = &idx;
@@ -77,14 +74,14 @@ encode_data(struct assembler_data* assembler, const char* line)
             found_comma = 1;
             remove_last_char(word);
         }
-        if ((code = atoi(word))) {
-            insert_ll_node(assembler->object_list, code);
+        if ((temp = atoi(word))) {
+            insert_ll_node(assembler->object_list, temp);
             assembler->ic++;
         } else {
             if ((temp_data = get_data_by_key(assembler->symbol_table, word))) {
                 if (strcmp(temp_data->data, MDEFINE) == 0) {
-                    if ((code = atoi(temp_data->key))) {
-                        insert_ll_node(assembler->object_list, code);
+                    if ((temp = atoi(temp_data->key))) {
+                        insert_ll_node(assembler->object_list, temp);
                         assembler->ic++;
                     } else
                         ;
@@ -152,7 +149,7 @@ encode_direct(struct assembler_data* assembler,
               struct linked_list* source_code,
               int source)
 {
-    int code = 0;
+    int temp = 0;
     struct bucket* temp_data;
     char* val_str = inst->destination;
 
@@ -160,18 +157,18 @@ encode_direct(struct assembler_data* assembler,
         val_str = inst->source;
     }
 
-    if ((code = atoi(val_str + 1))) {
-        code = code << 2;
-        insert_ll_node(assembler->object_list, code);
+    if ((temp = atoi(val_str + 1))) {
+        temp = temp << 2;
+        insert_ll_node(assembler->object_list, temp);
         assembler->ic++;
     } else {
 
         if ((temp_data =
                get_data_by_key(assembler->symbol_table, val_str + 1))) {
             if (strcmp(temp_data->data, MDEFINE) == 0) {
-                if ((code = atoi(temp_data->key))) {
-                    code = code << 2;
-                    insert_ll_node(assembler->object_list, code);
+                if ((temp = atoi(temp_data->key))) {
+                    temp = temp << 2;
+                    insert_ll_node(assembler->object_list, temp);
                     assembler->ic++;
                 } else
                     ;
@@ -194,6 +191,7 @@ encode_index(struct assembler_data* assembler,
 {
     struct bucket* temp_data;
     int operand_location = DESTINATION_OPERAND;
+    int temp;
     int code;
 
     if (source) {
@@ -204,17 +202,17 @@ encode_index(struct assembler_data* assembler,
     /* It should change later at 2nd phase */
     insert_ll_node(assembler->object_list, 0);
     assembler->ic++;
-    if ((code = atoi(index)) && (code >= 0)) {
-        code = code << 2;
-        insert_ll_node(assembler->object_list, code);
+    if ((temp = atoi(index)) && (temp >= 0)) {
+        temp = temp << 2;
+        insert_ll_node(assembler->object_list, temp);
         assembler->ic++;
     } else {
         if ((temp_data = get_data_by_key(assembler->symbol_table, index))) {
             if (strcmp(temp_data->data, MDEFINE) == 0) {
-                if ((code = atoi(temp_data->key)) && code >= 0) {
-                    code = code << 2;
+                if ((temp = atoi(temp_data->key)) && temp >= 0) {
+                    temp = temp << 2;
 
-                    insert_ll_node(assembler->object_list, code);
+                    insert_ll_node(assembler->object_list, temp);
                     assembler->ic++;
                 } else
                     ;

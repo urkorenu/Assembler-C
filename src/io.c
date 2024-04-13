@@ -28,7 +28,6 @@ get_word(const char* line, int* idx)
         return NULL;
     }
 
-
     while (line[*idx] == ' ' || line[*idx] == '\t')
         (*idx)++;
 
