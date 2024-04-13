@@ -1,13 +1,15 @@
 #include "encode.h"
+#include "io.h"
 
 #define REGISTER_CODE_FMT "r%1d"
 
 /* Add bits to an in and specific location */
 int
-add_bits(int source, int data, int location)
+add_bits(void* source, int data, int location)
 {
+    int source_int = ((int*)source)[0];
     int temp = data << location;
-    return source | temp;
+    return  source_int | temp;
 }
 
 /* Count the number of bits in an integer */
@@ -47,7 +49,7 @@ encode_string(struct assembler_data* assembler, const char* line)
     word = get_word(line, idx_ptr);
 
     for (i = 1; word[i] != '\"' && word[i] != '\0'; i++) {
-        insert_ll_node(assembler->object_list, (int)word[i]);
+        insert_ll_node(assembler->object_list, int_to_voidp((int)word[i]));
         assembler->ic++;
     }
     /* last word of string should  be 0 */
@@ -75,13 +77,13 @@ encode_data(struct assembler_data* assembler, const char* line)
             remove_last_char(word);
         }
         if ((temp = atoi(word))) {
-            insert_ll_node(assembler->object_list, temp);
+            insert_ll_node(assembler->object_list, int_to_voidp(temp));
             assembler->ic++;
         } else {
             if ((temp_data = get_data_by_key(assembler->symbol_table, word))) {
                 if (strcmp(temp_data->data, MDEFINE) == 0) {
                     if ((temp = atoi(temp_data->key))) {
-                        insert_ll_node(assembler->object_list, temp);
+                        insert_ll_node(assembler->object_list, int_to_voidp(temp));
                         assembler->ic++;
                     } else
                         ;
@@ -130,15 +132,15 @@ encode_register(struct assembler_data* assembler,
     if (found_register) {
         struct linked_list* temp_node;
         temp_node = get_last_node(assembler->object_list);
-        code |= add_bits(get_lnode_data(temp_node, int),
+        code |= add_bits(temp_node->data,
                          get_register_code(register_str),
                          bit_location);
-        set_data(temp_node, code);
+        set_data_int(temp_node, code);
     }
     code |= add_bits(source_code->data, REGISTER_ADDRESS, operand_location);
-    set_data(source_code, code);
+    set_data_int(source_code, code);
     if (!found_register) {
-        insert_ll_node(assembler->object_list, reg_code);
+        insert_ll_node(assembler->object_list, int_to_voidp(reg_code));
         assembler->ic++;
     }
 }
@@ -159,7 +161,7 @@ encode_direct(struct assembler_data* assembler,
 
     if ((temp = atoi(val_str + 1))) {
         temp = temp << 2;
-        insert_ll_node(assembler->object_list, temp);
+        insert_ll_node(assembler->object_list, int_to_voidp(temp));
         assembler->ic++;
     } else {
 
@@ -168,7 +170,7 @@ encode_direct(struct assembler_data* assembler,
             if (strcmp(temp_data->data, MDEFINE) == 0) {
                 if ((temp = atoi(temp_data->key))) {
                     temp = temp << 2;
-                    insert_ll_node(assembler->object_list, temp);
+                    insert_ll_node(assembler->object_list, int_to_voidp(temp));
                     assembler->ic++;
                 } else
                     ;
@@ -193,18 +195,21 @@ encode_index(struct assembler_data* assembler,
     int operand_location = DESTINATION_OPERAND;
     int temp;
     int code;
+    int* iptr;
+    iptr = malloc(sizeof(int));
 
     if (source) {
         operand_location = SOURCE_OPERAND;
     }
     code = add_bits(source_code->data, INDEX_ADDRESS, operand_location);
-    source_code->data = code;
+    iptr[0] = code;
+    source_code->data = iptr;
     /* It should change later at 2nd phase */
     insert_ll_node(assembler->object_list, 0);
     assembler->ic++;
     if ((temp = atoi(index)) && (temp >= 0)) {
         temp = temp << 2;
-        insert_ll_node(assembler->object_list, temp);
+        insert_ll_node(assembler->object_list, int_to_voidp(temp));
         assembler->ic++;
     } else {
         if ((temp_data = get_data_by_key(assembler->symbol_table, index))) {
@@ -212,7 +217,7 @@ encode_index(struct assembler_data* assembler,
                 if ((temp = atoi(temp_data->key)) && temp >= 0) {
                     temp = temp << 2;
 
-                    insert_ll_node(assembler->object_list, temp);
+                    insert_ll_node(assembler->object_list, int_to_voidp(temp));
                     assembler->ic++;
                 } else
                     ;
@@ -234,11 +239,12 @@ encode_null(struct assembler_data* assembler,
     int code = 0;
     int operand_location = DESTINATION_OPERAND;
 
+
     if (source) {
         operand_location = SOURCE_OPERAND;
     }
     code = add_bits(source_code->data, DIRECT_ADDRESS, operand_location);
-    source_code->data = code;
+    set_data_int(source_code, code);
     insert_ll_node(assembler->object_list, 0);
     assembler->ic++;
 }

@@ -9,7 +9,7 @@
 #include "parser.h"
 
 extern int
-add_bits(int source, int data, int location);
+add_bits(void * source, int data, int location);
 
 extern int
 get_register_code(const char* reg);

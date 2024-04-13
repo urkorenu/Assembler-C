@@ -39,4 +39,7 @@ is_register(const char* word);
 extern char*
 mystrdup(const char* s);
 
+extern void*
+int_to_voidp(int data);
+
 #endif /*_IO_H*/

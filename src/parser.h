@@ -33,9 +33,6 @@
 
 #define to_void_ptr(val) ((void*)(&(val)))
 
-extern int
-add_bits(int source, int data, int location);
-
 extern void
 parse_pre_processor(FILE* file, void* host, FILE* new_file);
 

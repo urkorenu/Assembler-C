@@ -5,6 +5,7 @@
  */
 
 #include "io.h"
+#include <stdlib.h>
 
 /* Function to read a line from a file */
 char*
@@ -133,4 +134,13 @@ mystrdup(const char* s)
 
     strcpy(p, s);
     return p;
+}
+
+void*
+int_to_voidp(int data)
+{
+    int* iptr;
+    iptr = malloc(sizeof(int));
+    iptr[0] = data;
+    return iptr;
 }

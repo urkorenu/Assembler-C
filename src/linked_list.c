@@ -16,15 +16,25 @@ encrypt_binary(int n, FILE* file);
 
 /* Set data and state for the node */
 void
-set_data(struct linked_list* p, int data)
+set_data(struct linked_list* p, void* data)
 {
     p->data = data;
     p->state = DATA_SET;
 }
 
+void
+set_data_int(struct linked_list* p, int data)
+{
+    int* iptr;
+    iptr = malloc(sizeof(int));
+    iptr[0] = data;
+    p->data = iptr;
+    p->state = DATA_SET;
+}
+
 /* Allocate memory for a new linked list node */
 struct linked_list*
-create_new_ll_node(int data)
+create_new_ll_node(void* data)
 {
     struct linked_list* new_node;
     new_node = (struct linked_list*)malloc(sizeof(struct linked_list));
@@ -41,7 +51,7 @@ create_new_ll_node(int data)
 
 /* Insert a new node at the end of the linked list */
 struct linked_list*
-insert_ll_node(struct linked_list* head, int data)
+insert_ll_node(struct linked_list* head, void * data)
 {
     struct linked_list* last_node;
 
@@ -105,7 +115,7 @@ _print_linked_list(const struct linked_list* p, FILE* file, const char* sep)
 {
     if (p->state == DATA_SET) {
         /*encrypt_binary(get_lnode_data(p, int), file);*/
-        int_to_binary(get_lnode_data(p, int), file);
+        int_to_binary(((int*)p->data)[0], file);
     }
     if (p->next != NULL) {
         fprintf(file, "%s", sep);
