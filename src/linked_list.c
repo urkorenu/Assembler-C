@@ -5,6 +5,7 @@
  */
 
 #include "linked_list.h"
+#include <stdio.h>
 
 /* Function prototypes */
 static void
@@ -51,7 +52,7 @@ create_new_ll_node(void* data)
 
 /* Insert a new node at the end of the linked list */
 struct linked_list*
-insert_ll_node(struct linked_list* head, void * data)
+insert_ll_node(struct linked_list* head, void* data)
 {
     struct linked_list* last_node;
 
@@ -114,8 +115,9 @@ static void
 _print_linked_list(const struct linked_list* p, FILE* file, const char* sep)
 {
     if (p->state == DATA_SET) {
-        /*encrypt_binary(get_lnode_data(p, int), file);*/
-        int_to_binary(((int*)p->data)[0], file);
+        if (p->data)
+            /*encrypt_binary(get_lnode_data(p, int), file);*/
+            int_to_binary(((int*)p->data)[0], file);
     }
     if (p->next != NULL) {
         fprintf(file, "%s", sep);

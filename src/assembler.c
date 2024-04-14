@@ -110,6 +110,7 @@ parse_first_phase(struct assembler_data* assembler, FILE* source_file)
         reading_symbol = 0;
         inst = NULL;
     }
+    printf("printing object list into file....\n");
     print_linked_list(assembler->object_list, ob_file);
     printf("%s", "\nSymbol Table:\n");
     treeprint(assembler->symbol_table->root);
