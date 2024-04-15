@@ -18,6 +18,9 @@ extern const char ASSEMBLER_MEM_ERR[];
 extern int
 parse_first_phase(struct assembler_data* host, FILE* source_file);
 
+extern int
+parse_second_phase(struct assembler_data* assembler, FILE* source_file);
+
 extern struct assembler_data*
 assembler_alloc(void);
 
