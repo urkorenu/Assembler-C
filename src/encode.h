@@ -39,6 +39,7 @@ add_bits(int source, int data, int location);
  
  * @return An integer indicatingthe the extracted integer code.
  * If the parsing fails, the program terminates.
+  */
  
 extern int
 get_register_code(const char* reg);
