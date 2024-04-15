@@ -26,6 +26,20 @@
 extern int
 add_bits(int source, int data, int location);
 
+/**
+ * @brief This function extracts an integer code from a register name string.
+ *
+ * The function Initializes an integer variable code to 0.
+   Uses sscanf to parse the register name string according to a specified format (REGISTER_CODE_FMT)
+   and store the parsed integer into the code variable.
+ * Uses assert to ensure that the parsing was successful. If the parsing fails, the program terminates.
+   Returns the extracted integer 
+ 
+ * @param reg: Pointer to a constant character string representing a register name.
+ 
+ * @return An integer indicatingthe the extracted integer code.
+ * If the parsing fails, the program terminates.
+ 
 extern int
 get_register_code(const char* reg);
 
