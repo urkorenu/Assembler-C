@@ -36,6 +36,9 @@
 extern void
 parse_pre_processor(FILE* file, void* host, FILE* new_file);
 
+extern char*
+get_index(char* word);
+
 extern int
 parse_line(struct assembler_data* assembler,
            char* line,

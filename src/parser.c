@@ -70,7 +70,7 @@ parse_pre_processor(FILE* file, void* host, FILE* new_file)
     }
 }
 
-static char*
+char*
 get_index(char* word)
 {
     int i;
