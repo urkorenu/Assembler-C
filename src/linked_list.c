@@ -5,6 +5,7 @@
  */
 
 #include "linked_list.h"
+#include "bucket.h"
 #include <stdio.h>
 
 /* Function prototypes */
@@ -68,6 +69,16 @@ insert_ll_node(struct linked_list* head, void* data)
     return last_node;
 }
 
+struct linked_list*
+get_last_unset_node(struct linked_list* p, int* ic)
+{
+    while (p->next != NULL && p->state != DATA_UNSET) {
+        p = p->next;
+        ic++;
+    }
+    return p;
+}
+
 /* Get the last node of the linked list */
 struct linked_list*
 get_last_node(struct linked_list* p)
@@ -122,6 +133,23 @@ _print_linked_list(const struct linked_list* p, FILE* file, const char* sep)
     if (p->next != NULL) {
         fprintf(file, "%s", sep);
         _print_linked_list(p->next, file, sep);
+    }
+}
+
+void
+print_e_list(const struct linked_list* p, FILE* file, const char* sep)
+{
+    struct bucket* b;
+    if (p != NULL) {
+        if (p->data != NULL) {
+            b = p->data;
+            fprintf(file, "%s", b->key);
+            fprintf(file, "4%d", ((int*)b->data)[0]);
+        }
+    }
+    if (p->next != NULL) {
+        fprintf(file, "%s", sep);
+        print_e_list(p->next, file, sep);
     }
 }
 

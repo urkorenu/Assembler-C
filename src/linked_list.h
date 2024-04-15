@@ -32,6 +32,9 @@ extern struct linked_list*
 insert_ll_node(struct linked_list* head, void* data);
 
 extern struct linked_list*
+get_last_unset_node(struct linked_list* p, int* ic);
+
+extern struct linked_list*
 get_last_node(struct linked_list* p);
 
 extern struct linked_list*
@@ -39,6 +42,9 @@ llalloc(void);
 
 extern void
 print_linked_list(const struct linked_list* p, FILE* file);
+
+extern void
+print_e_list(const struct linked_list* p, FILE* file, const char* sep);
 
 extern void
 ll_fprintf(const struct linked_list* p, FILE* file, const char* sep);
