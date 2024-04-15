@@ -1,3 +1,4 @@
+#include "assembler.h"
 #include "binary_tree.h"
 #include "files.h"
 #include "linked_list.h"
@@ -8,8 +9,7 @@ main(int argc, char* argv[])
 {
     struct assembler_data assembler;
     char* path = NULL;
-    FILE* original_file;
-    FILE* processed_file;
+    FILE *original_file, *processed_file, *object_file;
     int file_count = 1;
 
     assembler = assembler_init();
@@ -26,12 +26,22 @@ main(int argc, char* argv[])
             perror("");
             continue;
         }
+
         parse_pre_processor(
           original_file, assembler.macro_tree, processed_file);
         fclose(processed_file);
+
         processed_file = fopen(assembler.as_files->processed_path, "r");
         if (parse_first_phase(&assembler, processed_file)) {
-        } /* second phase here */;
+            if (parse_second_phase(&assembler, processed_file)) {
+                object_file = fopen(assembler.as_files->object_path, "w");
+                print_linked_list(assembler.object_list, object_file);
+            } else {
+                printf("Second phase failed\n");
+            }
+        } else {
+            printf("First phase failed\n");
+        }
         fclose(original_file);
         fclose(processed_file);
     }
