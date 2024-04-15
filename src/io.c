@@ -144,3 +144,13 @@ int_to_voidp(int data)
     iptr[0] = data;
     return iptr;
 }
+
+void
+remove_square_brackets(char* word)
+{
+    int i;
+    i = 0;
+    while (word[i] != '[');
+    word[++i] = '\0';
+    return;
+}

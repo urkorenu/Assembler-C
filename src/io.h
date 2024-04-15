@@ -42,4 +42,7 @@ mystrdup(const char* s);
 extern void*
 int_to_voidp(int data);
 
+extern void
+remove_square_brackets(char* word);
+
 #endif /*_IO_H*/
