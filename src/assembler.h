@@ -10,7 +10,8 @@ struct assembler_data {
     struct binary_tree* macro_tree;
     struct files* as_files;
     int ic;
-    int dc;
+    int data_c;
+    int instruction_c;
 };
 
 extern const char ASSEMBLER_MEM_ERR[];
