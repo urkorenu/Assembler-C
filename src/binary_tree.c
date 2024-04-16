@@ -83,7 +83,9 @@ treeprint(struct tnode* p)
             temp_buck = p->node->data;
             treeprint(p->left);
             printf("key : %s, ", p->node->key);
-            printf("ic : %d", ((int*)temp_buck->data)[0]);
+            if (temp_buck->data != NULL) {
+                printf("ic : %d", ((int*)temp_buck->data)[0]);
+            }
             printf("\n");
             treeprint(p->right);
         }
