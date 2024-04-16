@@ -6,6 +6,7 @@
 
 #include "io.h"
 #include <stdlib.h>
+#include <string.h>
 
 /* Function to read a line from a file */
 char*
@@ -145,12 +146,24 @@ int_to_voidp(int data)
     return iptr;
 }
 
-void
+char *
 remove_square_brackets(char* word)
 {
+    int len = strlen(word);
+    int j = 0;
     int i;
-    i = 0;
-    while (word[i] != '[');
-    word[++i] = '\0';
-    return;
+    int found_brackets = 0;
+
+    for (i = 0; i < len; i++) {
+        if (word[i] != '[' && found_brackets == 0) {
+            word[j++] = word[i];
+        }
+        else {
+            word[i] = '\0';
+            found_brackets = 1;
+        }
+    }
+
+    word[j] = '\0';
+    return word;
 }
