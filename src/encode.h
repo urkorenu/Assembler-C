@@ -1,8 +1,10 @@
 #ifndef ENCODE_H
 #define ENCODE_H
 
+#include "assembler.h"
 #include "includes.h"
 #include "instruction.h"
+#include "io.h"
 #include "linked_list.h"
 #include "parser.h"
 
@@ -24,7 +26,7 @@
  * @return An extern integer indicatingthe the number after adding the bits.
  */
 extern int
-add_bits(int source, int data, int location);
+add_bits(void * source, int data, int location);
 
 /**
  * @brief This function extracts an integer code from a register name string.

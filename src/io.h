@@ -39,4 +39,10 @@ is_register(const char* word);
 extern char*
 mystrdup(const char* s);
 
+extern void*
+int_to_voidp(int data);
+
+extern char*
+remove_square_brackets(char* word);
+
 #endif /*_IO_H*/

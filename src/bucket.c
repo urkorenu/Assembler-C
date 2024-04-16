@@ -5,25 +5,37 @@
 /*/////////////*/
 
 /* Set the key for a bucket.*/
-static void
-set_key(struct bucket* p, const char* key)
+void
+bucket_set_key(struct bucket* p, const char* key)
 {
     p->key = mystrdup(key);
 }
 
 /* Set the data for a bucket.*/
-static void
-set_data(struct bucket* p, void* data)
+void
+bucket_set_data(struct bucket* p, void* data)
 {
     p->data = data;
 }
 
+void
+set_bucket_ic(struct bucket* b, int ic)
+{
+    int* iptr;
+
+    if (!b && !ic)
+        return;
+
+    iptr = malloc(sizeof(int));
+    iptr[0] = ic;
+    b->data = iptr;
+}
 /*//////////////////*/
 /* Memory functions */
 /*//////////////////*/
 
 /* Allocate memory for a bucket. */
-static struct bucket*
+struct bucket*
 bucket_alloc(void)
 {
     struct bucket* p = (struct bucket*)malloc(sizeof(struct bucket));
@@ -57,7 +69,7 @@ struct bucket*
 create_bucket(const char* key, void* data)
 {
     struct bucket* p = bucket_alloc();
-    set_key(p, key);
-    set_data(p, data);
+    bucket_set_key(p, key);
+    bucket_set_data(p, data);
     return p;
 }

@@ -5,6 +5,8 @@
  */
 
 #include "io.h"
+#include <stdlib.h>
+#include <string.h>
 
 /* Function to read a line from a file */
 char*
@@ -17,16 +19,16 @@ get_line(char* line, FILE* file)
 char*
 get_word(const char* line, int* idx)
 {
+    char* p;
+    int i = 0;
     if (line == NULL || idx == NULL) {
         return NULL;
     }
 
-    char* p = malloc(sizeof(char) * MAXWORD);
+    p = malloc(sizeof(char) * MAXWORD);
     if (p == NULL) {
         return NULL;
     }
-
-    int i = 0;
 
     while (line[*idx] == ' ' || line[*idx] == '\t')
         (*idx)++;
@@ -133,4 +135,35 @@ mystrdup(const char* s)
 
     strcpy(p, s);
     return p;
+}
+
+void*
+int_to_voidp(int data)
+{
+    int* iptr;
+    iptr = malloc(sizeof(int));
+    iptr[0] = data;
+    return iptr;
+}
+
+char *
+remove_square_brackets(char* word)
+{
+    int len = strlen(word);
+    int j = 0;
+    int i;
+    int found_brackets = 0;
+
+    for (i = 0; i < len; i++) {
+        if (word[i] != '[' && found_brackets == 0) {
+            word[j++] = word[i];
+        }
+        else {
+            word[i] = '\0';
+            found_brackets = 1;
+        }
+    }
+
+    word[j] = '\0';
+    return word;
 }

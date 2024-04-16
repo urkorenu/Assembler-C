@@ -1,67 +1,5 @@
 #include "parser.h"
-#include "Errors.h"
-#include "binary_tree.h"
-#include "bucket.h"
-#include "encode.h"
-#include "files.h"
-#include "includes.h"
-#include "instruction.h"
 #include "io.h"
-#include "linked_list.h"
-#include "macro.h"
-
-const char ASSEMBLER_MEM_ERR[] = {
-    "FATAL ERROR: Failed to allocate memory for struct assembler_data\n"
-};
-
-struct assembler_data*
-assembler_alloc(void)
-{
-    struct assembler_data* assembler = malloc(sizeof(struct assembler_data));
-
-    if (assembler == NULL) {
-        fprintf(stderr, ASSEMBLER_MEM_ERR);
-        return NULL;
-    }
-    return assembler;
-}
-
-void
-assembler_free(struct assembler_data* assembler)
-{
-    if (assembler == NULL)
-        return;
-
-    assembler_reset(assembler);
-    free(assembler);
-    assembler = NULL;
-}
-
-struct assembler_data*
-assembler_init(void)
-{
-    struct assembler_data* assembler;
-    assembler = assembler_alloc();
-
-    assembler->errors = create_new_ll_node(0);
-    assembler->object_list = create_new_ll_node(0);
-    assembler->symbol_table = create_new_btree();
-    assembler->macro_tree = create_new_btree();
-    assembler->as_files = files_alloc();
-
-    return assembler;
-}
-
-void
-assembler_reset(struct assembler_data* assembler)
-{
-    llfree(assembler->errors);
-    llfree(assembler->object_list);
-    btree_free(assembler->symbol_table);
-    btree_free(assembler->macro_tree);
-    files_free(assembler->as_files);
-    memset(assembler, 0, sizeof(struct assembler_data));
-}
 
 /**
  * @brief Parses the file and operate the pre-processor into a file.
@@ -132,17 +70,17 @@ parse_pre_processor(FILE* file, void* host, FILE* new_file)
     }
 }
 
-static char*
+char*
 get_index(char* word)
 {
-    char* p = malloc(sizeof(char) * MAX_LEN);
-    if (p == NULL) {
-        return NULL;
-    }
     int i;
     int j = 0;
     int len = strlen(word);
     int inside_square_brackets = 0;
+    char* p = malloc(sizeof(char) * MAX_LEN);
+    if (p == NULL) {
+        return NULL;
+    }
     for (i = 0; i <= len; i++) {
         if (word[i] == '[')
             inside_square_brackets = 1;
@@ -232,7 +170,7 @@ line_to_bin_1st(struct assembler_data* assembler,
     int found_reg = 0;
     char* index = NULL;
     struct linked_list* source_code =
-      insert_ll_node(assembler->object_list, opcode);
+      insert_ll_node(assembler->object_list, int_to_voidp(opcode));
     assembler->ic++;
     if (inst->source) {
         if (is_register(inst->source)) {
@@ -262,104 +200,4 @@ line_to_bin_1st(struct assembler_data* assembler,
 
     free(index);
     return 0;
-}
-
-int
-parse_first_phase(struct assembler_data* assembler,
-                  FILE* source_file)
-{
-    char line[MAXWORD];
-    char* key = NULL;
-    int idx = 0;
-    int* idx_ptr = &idx;
-    char* word = NULL;
-    char* symbol = NULL;
-    int reading_symbol = 0;
-    assembler->ic = 100;
-    struct line_data* inst = NULL;
-    while (get_line(line, source_file) != NULL) {
-        inst = init_instruction(inst);
-        word = get_word(line, idx_ptr);
-
-        if (strcmp(word, ".define") == 0) {
-            key = get_word(line, idx_ptr);
-            if (!get_data_by_key(assembler->symbol_table, key)) {
-                word = get_word(line, idx_ptr);
-                if (strcmp(word, "=") == 0) {
-                    word = get_word(line, idx_ptr);
-                    /* maybe need conversion to int or else */
-                    insert_node(assembler->symbol_table,
-                                key,
-                                create_bucket(word, to_void_ptr(MDEFINE)));
-                } else {
-                    /* error - invalid syntax")*/;
-                }
-
-            } else {
-                print_in_error(ERROR_CODE_28);
-            }
-        } else if (is_symbol(word)) {
-            int i = 0;
-            int* temp_ptr = &i;
-            symbol = get_word(word, temp_ptr);
-            word = get_word(line, idx_ptr);
-            reading_symbol = 1;
-        }
-
-        if (is_data_store_instruction(word)) {
-            if (reading_symbol) {
-                if (!get_data_by_key(assembler->symbol_table, symbol)) {
-                    insert_node(assembler->symbol_table,
-                                symbol,
-                                create_bucket(DATA, (void*)assembler->ic));
-                    word = get_word(line, idx_ptr);
-                    if (!word)
-                        word = get_word(line, idx_ptr);
-                    if (is_starting_with_x(word, '\"') &&
-                        is_ended_with_x(word, '\"')) {
-                        encode_string(assembler, line);
-                    } else {
-                        encode_data(assembler, line);
-                    }
-                } else {
-                    /* error - "symbol is already initialized")*/;
-                }
-            }
-        }
-        if (is_e_instruction(word)) {
-            if (strcmp(word, ".extern") == 0) {
-                key = get_word(line, idx_ptr);
-                insert_node(
-                  assembler->symbol_table, key, create_bucket(NULL, EXTERNAL));
-            }
-        } else {
-            if (reading_symbol) {
-                if (!get_data_by_key(assembler->symbol_table, symbol)) {
-                    /* maybe need conversion to int or else */
-                    insert_node(assembler->symbol_table,
-                                symbol,
-                                create_bucket(CODE, (void*)assembler->ic));
-                } else {
-                    ;
-                    /* error - symbol already initialized */
-                }
-            }
-            if (get_instruction(inst, word)) {
-                parse_line(assembler, line, inst);
-                line_to_bin_1st(assembler, line, inst);
-            }
-            /* process commands */
-        }
-        word = NULL;
-        symbol = NULL;
-        idx = 0;
-        memset(line, 0, MAXWORD);
-        reading_symbol = 0;
-        inst = NULL;
-    }
-    FILE* ob_file = fopen(assembler->as_files->object_path, "w");
-    print_linked_list(assembler->object_list, ob_file);
-    printf("%s", "\nSymbol Table:\n");
-    treeprint(assembler->symbol_table->root);
-    return 1;
 }
