@@ -8,6 +8,7 @@
 #include "io.h"
 #include "linked_list.h"
 #include "parser.h"
+#include <stdio.h>
 
 const char ASSEMBLER_MEM_ERR[] = {
     "FATAL ERROR: Failed to allocate memory for struct assembler_data\n"
@@ -57,7 +58,9 @@ parse_first_phase(struct assembler_data* assembler, FILE* source_file)
                 printf("err 2");
             }
         } else if (is_symbol(word)) {
-            symbol = mystrdup(word);
+            int i = 0;
+            int* temp_ptr = &i;
+            symbol = get_word(word, temp_ptr);
             word = get_word(line, idx_ptr);
             reading_symbol = 1;
         }
@@ -70,6 +73,7 @@ parse_first_phase(struct assembler_data* assembler, FILE* source_file)
                     iptr = malloc(sizeof(int));
                     iptr[0] = assembler->ic;
                     b->data = iptr;
+                    remove_last_char(symbol);
                     insert_node(assembler->symbol_table, symbol, b);
                     word = get_word(line, idx_ptr);
                     if (!word)
@@ -92,13 +96,14 @@ parse_first_phase(struct assembler_data* assembler, FILE* source_file)
             if (strcmp(word, ".extern") == 0) {
                 key = get_word(line, idx_ptr);
                 insert_node(
-                  assembler->symbol_table, key, create_bucket(NULL, EXTERNAL));
+                  assembler->symbol_table, key, create_bucket(EXTERNAL, NULL));
             }
         } else {
             if (reading_symbol && !reading_data) {
                 if (!get_data_by_key(assembler->symbol_table, symbol)) {
                     struct bucket* b = create_bucket(CODE, NULL);
                     set_bucket_ic(b, assembler->ic);
+                    remove_last_char(symbol);
                     insert_node(assembler->symbol_table, symbol, b);
                 } else {
                     is_valid = 0;
@@ -136,6 +141,7 @@ parse_second_phase(struct assembler_data* assembler, FILE* source_file)
     char* word = NULL;
     int code = 0;
     int ic;
+    int line_counter = 0;
     int node_ic = 100;
     int* node_ptr = &node_ic;
     struct bucket* data;
@@ -148,47 +154,63 @@ parse_second_phase(struct assembler_data* assembler, FILE* source_file)
     int is_valid = 1;
     assembler->ic = 100;
     last_unset_node = get_last_unset_node(assembler->object_list, node_ptr);
+    fseek(source_file, 0, SEEK_SET);
     while (get_line(line, source_file) != NULL) {
+        line_counter++;
+        code = 0;
         inst = init_instruction(inst);
         word = get_word(line, idx_ptr);
         if (is_symbol(word)) {
             word = get_word(line, idx_ptr);
-        } else if ((is_data_store_instruction(word)) ||
-                   ((strcmp(word, ".extern") == 0))) {
+        }
+        if ((is_data_store_instruction(word)) ||
+            ((strcmp(word, ".extern") == 0))) {
             continue;
         } else if ((strcmp(word, ".entry") == 0)) {
             word = get_word(line, idx_ptr);
             if ((data = (get_data_by_key(assembler->symbol_table, word)))) {
-                if ((ic = atoi(data->key))) {
-                    insert_ll_node(entry_list,
-                                   create_bucket(word, int_to_voidp(ic)));
-                    entry_flag = 1;
-                    continue;
-                }
+                ic = ((int*)data->data)[0];
+                insert_ll_node(entry_list,
+                               create_bucket(word, int_to_voidp(ic)));
+                entry_flag = 1;
             } else {
                 /* if the symbol not exist it the table */
                 print_in_error(ERROR_CODE_29);
                 is_valid = 0;
-                printf("err 5");
+                printf("line : %d\n", line_counter);
             }
-        }
-        while ((word = get_word(line, idx_ptr)) != NULL) {
-            /* remove index from word */
-            if (is_ended_with_x(word, ']'))
-                remove_square_brackets(word);
-            /* if the symbol is not found in the table */
-            if ((data = get_data_by_key(assembler->symbol_table, word)) ==
-                NULL) {
-                continue;
-            } else {
-                code |= add_bits(0, 3, 0);
-                set_data_int(last_unset_node, code);
-                insert_ll_node(extern_list,
-                               create_bucket(word, int_to_voidp(node_ic)));
+        } else {
+            while (word[0] != NULL) {
+                if (is_ended_with_x(word, COMMA))
+                        remove_last_char(word);
+                /* remove index from word */
+                if (is_ended_with_x(word, ']'))
+                    word = remove_square_brackets(word);
+                /* if the symbol is not found in the table */
+                data = get_data_by_key(assembler->symbol_table, word);
+                if (!data) {
+                    word = get_word(line, idx_ptr);
+                    continue;
+                } else if (data->data != NULL && (strcmp(data->key, CODE) == 0)) {
+                    code = add_bits(int_to_voidp(code), 2, 0);
+                    code = add_bits(int_to_voidp(code), ((int*)data->data)[0], 2);
+                    set_data_int(last_unset_node, code);
 
-                last_unset_node =
-                  get_last_unset_node(last_unset_node, node_ptr);
-                extern_flag = 1;
+                    last_unset_node =
+                      get_last_unset_node(last_unset_node, node_ptr);
+                }
+
+                else if (data->data == NULL) {
+                    code = add_bits(int_to_voidp(code), 1, 0);
+                    set_data_int(last_unset_node, code);
+                    insert_ll_node(extern_list,
+                                   create_bucket(word, int_to_voidp(node_ic-1)));
+                    extern_flag = 1;
+                    last_unset_node =
+                      get_last_unset_node(last_unset_node, node_ptr);
+                }
+
+                word = get_word(line, idx_ptr);
             }
         }
         word = NULL;
