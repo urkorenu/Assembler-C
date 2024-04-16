@@ -1,5 +1,6 @@
 #include "encode.h"
 #include "io.h"
+#include "linked_list.h"
 
 #define REGISTER_CODE_FMT "r%1d"
 
@@ -44,6 +45,7 @@ encode_string(struct assembler_data* assembler, const char* line)
     int idx = 0;
     char* word = NULL;
     int* idx_ptr = &idx;
+    struct linked_list* last_node;
     word = get_word(line, idx_ptr);
     word = get_word(line, idx_ptr);
     word = get_word(line, idx_ptr);
@@ -53,7 +55,8 @@ encode_string(struct assembler_data* assembler, const char* line)
         assembler->ic++;
     }
     /* last word of string should  be 0 */
-    insert_ll_node(assembler->object_list, 0);
+    last_node = insert_ll_node(assembler->object_list, 0);
+    last_node->state = DATA_SET;
     assembler->ic++;
 }
 
