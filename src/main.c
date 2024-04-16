@@ -35,7 +35,7 @@ main(int argc, char* argv[])
         if (parse_first_phase(&assembler, processed_file)) {
             if (parse_second_phase(&assembler, processed_file)) {
                 object_file = fopen(assembler.as_files->object_path, "w");
-                print_linked_list(assembler.object_list, object_file);
+                print_linked_list(assembler.object_list, object_file, &assembler);
             } else {
                 printf("Second phase failed\n");
             }

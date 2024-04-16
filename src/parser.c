@@ -171,6 +171,7 @@ line_to_bin_1st(struct assembler_data* assembler,
     char* index = NULL;
     struct linked_list* source_code =
       insert_ll_node(assembler->object_list, int_to_voidp(opcode));
+    assembler->instruction_c++;
     assembler->ic++;
     if (inst->source) {
         if (is_register(inst->source)) {

@@ -5,12 +5,16 @@
  */
 
 #include "linked_list.h"
+#include "assembler.h"
 #include "bucket.h"
 #include <stdio.h>
 
 /* Function prototypes */
 static void
-_print_linked_list(const struct linked_list* p, FILE* file, const char* sep);
+_print_linked_list(const struct linked_list* p,
+                   FILE* file,
+                   const char* sep,
+                   int ic);
 static void
 int_to_binary(int n, FILE* file);
 static void
@@ -108,38 +112,49 @@ llfree(struct linked_list* p)
     free(p);
 }
 
-/* Print the linked list to a file */
-void
-print_linked_list(const struct linked_list* p, FILE* file)
-{
-    ll_fprintf(p, file, "\n");
-}
-
 /* Print the linked list to a file with a custom separator */
 void
-ll_fprintf(const struct linked_list* p, FILE* file, const char* sep)
+ll_fprintf(const struct linked_list* p,
+           FILE* file,
+           const char* sep,
+           int ic,
+           struct assembler_data* assembler)
 {
     if (file == NULL) {
         fprintf(stderr, "Error: Invalid file pointer.\n");
     } else if (p != NULL) {
-        _print_linked_list(p, file, ((sep == NULL) ? "\n" : sep));
+        fprintf(file, "   %d %d", assembler->instruction_c, assembler->data_c);
+        _print_linked_list(p, file, ((sep == NULL) ? "\n" : sep), ic);
     }
+}
+
+/* Print the linked list to a file */
+void
+print_linked_list(const struct linked_list* p,
+                  FILE* file,
+                  struct assembler_data* assembler)
+{
+    ll_fprintf(p, file, "\n", 100, assembler);
 }
 
 /* Helper function to recursively print the linked list */
 static void
-_print_linked_list(const struct linked_list* p, FILE* file, const char* sep)
+_print_linked_list(const struct linked_list* p,
+                   FILE* file,
+                   const char* sep,
+                   int ic)
 {
     if (p->state == DATA_SET) {
+        fprintf(file, "0%d  ", ic++);
         if (p->data)
             encrypt_binary(((int*)p->data)[0], file);
-            /*int_to_binary(((int*)p->data)[0], file);*/
+        /*int_to_binary(((int*)p->data)[0], file);*/
         if (p->data == 0)
             encrypt_binary(0, file);
     }
     if (p->next != NULL) {
         fprintf(file, "%s", sep);
-        _print_linked_list(p->next, file, sep);
+        _print_linked_list(p->next, file, sep, ic);
     }
 }
 

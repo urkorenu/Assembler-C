@@ -1,6 +1,7 @@
 #ifndef LINKED_LIST_H
 #define LINKED_LIST_H
 
+#include "assembler.h"
 #include "includes.h"
 
 #define WORDSIZE 14
@@ -41,13 +42,12 @@ extern struct linked_list*
 llalloc(void);
 
 extern void
-print_linked_list(const struct linked_list* p, FILE* file);
+print_linked_list(const struct linked_list* p,
+                  FILE* file,
+                  struct assembler_data* assembler);
 
 extern void
 print_e_list(const struct linked_list* p, FILE* file, const char* sep);
-
-extern void
-ll_fprintf(const struct linked_list* p, FILE* file, const char* sep);
 
 extern void
 llfree(struct linked_list* p);
