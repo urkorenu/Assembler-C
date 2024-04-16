@@ -28,9 +28,6 @@ parse_first_phase(struct assembler_data* assembler, FILE* source_file)
     int is_valid = 1;
     int line_counter = 0;
     struct line_data* inst = NULL;
-
-    assembler->ic = 100;
-
     while (get_line(line, source_file) != NULL) {
         line_counter++;
         inst = init_instruction(inst);
@@ -260,7 +257,9 @@ assembler_init(void)
     assembler.symbol_table = create_new_btree();
     assembler.macro_tree = create_new_btree();
     assembler.as_files = files_alloc();
-
+    assembler.ic = 100;
+    assembler.instruction_c = 0;
+    assembler.data_c = 0;
     return assembler;
 }
 
