@@ -62,19 +62,24 @@ insert_ll_node(struct linked_list* head, void* data)
     else
         last_node = get_last_node(head);
 
-    if (last_node->state == DATA_SET)
-        last_node = last_node->next = create_new_ll_node(data);
+    last_node = last_node->next = create_new_ll_node(data);
 
     set_data(last_node, data);
+    if (data == 0)
+        last_node->state = DATA_UNSET;
     return last_node;
 }
 
 struct linked_list*
 get_last_unset_node(struct linked_list* p, int* ic)
 {
-    while (p->next != NULL && p->state != DATA_UNSET) {
+    while (p->next != NULL) {
+        if (p->next->state == DATA_UNSET) {
+            (*ic)++;
+            return p->next;
+        }
         p = p->next;
-        ic++;
+        (*ic)++;
     }
     return p;
 }
@@ -127,8 +132,10 @@ _print_linked_list(const struct linked_list* p, FILE* file, const char* sep)
 {
     if (p->state == DATA_SET) {
         if (p->data)
-            /*encrypt_binary(get_lnode_data(p, int), file);*/
-            int_to_binary(((int*)p->data)[0], file);
+            encrypt_binary(((int*)p->data)[0], file);
+            /*int_to_binary(((int*)p->data)[0], file);*/
+        if (p->data == 0)
+            encrypt_binary(0, file);
     }
     if (p->next != NULL) {
         fprintf(file, "%s", sep);
@@ -143,8 +150,8 @@ print_e_list(const struct linked_list* p, FILE* file, const char* sep)
     if (p != NULL) {
         if (p->data != NULL) {
             b = p->data;
-            fprintf(file, "%s", b->key);
-            fprintf(file, "4%d", ((int*)b->data)[0]);
+            fprintf(file, "%s ", b->key);
+            fprintf(file, "0%-4d", ((int*)b->data)[0]);
         }
     }
     if (p->next != NULL) {
