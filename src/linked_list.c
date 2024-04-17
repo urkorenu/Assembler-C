@@ -7,7 +7,7 @@
 #include "linked_list.h"
 #include "assembler.h"
 #include "bucket.h"
-#include <stdio.h>
+#include "files.h"
 
 /* Function prototypes */
 static void
@@ -15,8 +15,6 @@ _print_linked_list(const struct linked_list* p,
                    FILE* file,
                    const char* sep,
                    int ic);
-static void
-int_to_binary(int n, FILE* file);
 static void
 encrypt_binary(int n, FILE* file);
 
@@ -130,11 +128,10 @@ ll_fprintf(const struct linked_list* p,
 
 /* Print the linked list to a file */
 void
-print_linked_list(const struct linked_list* p,
-                  FILE* file,
-                  struct assembler_data* assembler)
+print_linked_list(struct assembler_data* assembler)
 {
-    ll_fprintf(p, file, "\n", 100, assembler);
+    FILE* file = fopen(assembler->as_files->object_path, "w");
+    ll_fprintf(assembler->object_list, file, "\n", 100, assembler);
 }
 
 /* Helper function to recursively print the linked list */
@@ -148,7 +145,6 @@ _print_linked_list(const struct linked_list* p,
         fprintf(file, "0%d  ", ic++);
         if (p->data)
             encrypt_binary(((int*)p->data)[0], file);
-        /*int_to_binary(((int*)p->data)[0], file);*/
         if (p->data == 0)
             encrypt_binary(0, file);
     }
@@ -173,19 +169,6 @@ print_e_list(const struct linked_list* p, FILE* file, const char* sep)
         fprintf(file, "%s", sep);
         print_e_list(p->next, file, sep);
     }
-}
-
-/* Helper function to convert an integer to binary and print to file */
-static void
-int_to_binary(int n, FILE* file)
-{
-    int i;
-    if (n == 0) {
-        fprintf(file, "?");
-        return;
-    }
-    for (i = WORDSIZE - 1; i >= 0; i--)
-        fprintf(file, "%0d", GET_BIT(n, i));
 }
 
 /* Helper function to encrypt binary representation and print to file */
