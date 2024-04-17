@@ -1,6 +1,4 @@
 #include "assembler.h"
-#include "binary_tree.h"
-#include "files.h"
 #include "linked_list.h"
 #include "parser.h"
 
@@ -8,43 +6,24 @@ int
 main(int argc, char* argv[])
 {
     struct assembler_data assembler;
-    char* path = NULL;
-    FILE *original_file, *processed_file, *object_file;
+    char* path;
+    int is_valid = EXIT_SUCCESS;
     int file_count = 1;
-
-    assembler = assembler_init();
 
     while (file_count < argc) {
         path = argv[file_count++];
-        set_file_pack(assembler.as_files, path);
-        original_file = fopen(assembler.as_files->assembly_path, "r");
-        processed_file = fopen(assembler.as_files->processed_path, "w");
-        if (original_file == NULL) {
-            fprintf(stderr,
-                    "Error opening file %s: ",
-                    assembler.as_files->assembly_path);
-            perror("");
-            continue;
-        }
-
-        parse_pre_processor(
-          original_file, assembler.macro_tree, processed_file);
-        fclose(processed_file);
-
-        processed_file = fopen(assembler.as_files->processed_path, "r");
-        if (parse_first_phase(&assembler, processed_file)) {
-            if (parse_second_phase(&assembler, processed_file)) {
-                object_file = fopen(assembler.as_files->object_path, "w");
-                print_linked_list(assembler.object_list, object_file, &assembler);
+        assembler = assembler_init(path);
+        parse_pre_processor(&assembler);
+        if (parse_first_phase(&assembler) == is_valid) {
+            if (parse_second_phase(&assembler) == is_valid) {
+                print_linked_list(&assembler);
             } else {
-                printf("Second phase failed\n");
+                is_valid = EXIT_FAILURE;
             }
         } else {
-            printf("First phase failed\n");
+            is_valid = EXIT_FAILURE;
         }
-        fclose(original_file);
-        fclose(processed_file);
+        /* assembler_free(&assembler); */
     }
-
-    return 0;
+    return is_valid;
 }
