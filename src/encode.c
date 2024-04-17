@@ -13,19 +13,6 @@ add_bits(void* source, int data, int location)
     return source_int | temp;
 }
 
-/* Count the number of bits in an integer */
-static int
-count_bits(int n)
-{
-    int count = 0;
-
-    while (n != 0) {
-        count++;
-        n >>= 1;
-    }
-    return count;
-}
-
 /* Get the code of a register from its string representation */
 int
 get_register_code(const char* reg)
