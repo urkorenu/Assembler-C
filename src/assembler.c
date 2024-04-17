@@ -8,14 +8,13 @@
 #include "io.h"
 #include "linked_list.h"
 #include "parser.h"
-#include <stdio.h>
 
 const char ASSEMBLER_MEM_ERR[] = {
     "FATAL ERROR: Failed to allocate memory for struct assembler_data\n"
 };
 
 int
-parse_first_phase(struct assembler_data* assembler, FILE* source_file)
+parse_first_phase(struct assembler_data* assembler)
 {
     char line[MAXWORD];
     char* key = NULL;
@@ -27,7 +26,9 @@ parse_first_phase(struct assembler_data* assembler, FILE* source_file)
     int reading_data = 0;
     int is_valid = 1;
     int line_counter = 0;
+    FILE* source_file;
     struct line_data* inst = NULL;
+    source_file = fopen(assembler->as_files->processed_path, "r");
     while (get_line(line, source_file) != NULL) {
         line_counter++;
         inst = init_instruction(inst);
@@ -123,14 +124,12 @@ parse_first_phase(struct assembler_data* assembler, FILE* source_file)
         reading_data = 0;
         inst = NULL;
     }
-    /* tests : */
-    printf("%s", "\nSymbol Table:\n");
-    treeprint(assembler->symbol_table->root);
-    return is_valid;
+    fclose(source_file);
+    return (is_valid ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
 int
-parse_second_phase(struct assembler_data* assembler, FILE* source_file)
+parse_second_phase(struct assembler_data* assembler)
 {
     char line[MAXWORD];
     int idx = 0;
@@ -147,10 +146,11 @@ parse_second_phase(struct assembler_data* assembler, FILE* source_file)
     struct linked_list* entry_list = create_new_ll_node(0);
     struct linked_list* extern_list = create_new_ll_node(0);
     struct linked_list* last_unset_node;
-    FILE *en_file, *ex_file;
+    FILE *en_file, *ex_file, *source_file;
     int is_valid = 1;
     assembler->ic = 100;
     last_unset_node = get_last_unset_node(assembler->object_list, node_ptr);
+    source_file = fopen(assembler->as_files->processed_path, "r");
     fseek(source_file, 0, SEEK_SET);
     while (get_line(line, source_file) != NULL) {
         line_counter++;
@@ -179,7 +179,7 @@ parse_second_phase(struct assembler_data* assembler, FILE* source_file)
         } else {
             while (word[0] != NULL) {
                 if (is_ended_with_x(word, COMMA))
-                        remove_last_char(word);
+                    remove_last_char(word);
                 /* remove index from word */
                 if (is_ended_with_x(word, ']'))
                     word = remove_square_brackets(word);
@@ -188,9 +188,11 @@ parse_second_phase(struct assembler_data* assembler, FILE* source_file)
                 if (!data) {
                     word = get_word(line, idx_ptr);
                     continue;
-                } else if (data->data != NULL && (strcmp(data->key, CODE) == 0)) {
+                } else if (data->data != NULL &&
+                           (strcmp(data->key, CODE) == 0)) {
                     code = add_bits(int_to_voidp(code), 2, 0);
-                    code = add_bits(int_to_voidp(code), ((int*)data->data)[0], 2);
+                    code =
+                      add_bits(int_to_voidp(code), ((int*)data->data)[0], 2);
                     set_data_int(last_unset_node, code);
 
                     last_unset_node =
@@ -200,8 +202,9 @@ parse_second_phase(struct assembler_data* assembler, FILE* source_file)
                 else if (data->data == NULL) {
                     code = add_bits(int_to_voidp(code), 1, 0);
                     set_data_int(last_unset_node, code);
-                    insert_ll_node(extern_list,
-                                   create_bucket(word, int_to_voidp(node_ic-1)));
+                    insert_ll_node(
+                      extern_list,
+                      create_bucket(word, int_to_voidp(node_ic - 1)));
                     extern_flag = 1;
                     last_unset_node =
                       get_last_unset_node(last_unset_node, node_ptr);
@@ -223,8 +226,9 @@ parse_second_phase(struct assembler_data* assembler, FILE* source_file)
         ex_file = fopen(assembler->as_files->externals_path, "w");
         print_e_list(extern_list, ex_file, "\n");
     }
-    return is_valid;
+    return (is_valid ? EXIT_SUCCESS : EXIT_FAILURE);
 }
+
 struct assembler_data*
 assembler_alloc(void)
 {
@@ -248,10 +252,9 @@ assembler_free(struct assembler_data* assembler)
 }
 
 struct assembler_data
-assembler_init(void)
+assembler_init(char* path)
 {
     struct assembler_data assembler;
-
     assembler.errors = create_new_ll_node(0);
     assembler.object_list = create_new_ll_node(0);
     assembler.symbol_table = create_new_btree();
@@ -260,6 +263,7 @@ assembler_init(void)
     assembler.ic = 100;
     assembler.instruction_c = 0;
     assembler.data_c = 0;
+    set_file_pack(assembler.as_files, path);
     return assembler;
 }
 
@@ -272,4 +276,5 @@ assembler_reset(struct assembler_data* assembler)
     btree_free(assembler->macro_tree);
     files_free(assembler->as_files);
     memset(assembler, 0, sizeof(struct assembler_data));
+    free(assembler);
 }

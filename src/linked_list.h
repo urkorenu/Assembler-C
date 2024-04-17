@@ -42,9 +42,7 @@ extern struct linked_list*
 llalloc(void);
 
 extern void
-print_linked_list(const struct linked_list* p,
-                  FILE* file,
-                  struct assembler_data* assembler);
+print_linked_list(struct assembler_data* assembler);
 
 extern void
 print_e_list(const struct linked_list* p, FILE* file, const char* sep);

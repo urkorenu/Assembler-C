@@ -34,7 +34,7 @@
 #define to_void_ptr(val) ((void*)(&(val)))
 
 extern void
-parse_pre_processor(FILE* file, void* host, FILE* new_file);
+parse_pre_processor(struct assembler_data* assembler);
 
 extern char*
 get_index(char* word);
