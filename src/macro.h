@@ -37,6 +37,11 @@ insert_macro(struct macro* p, FILE* file, FILE* new_file);
 extern void
 free_macro(struct macro* p);
 
+/**
+ * @brief This function resets the content of a macro set them to zero .
+ * @param p pointer to a struct macro object or structure in memory,
+   which will be reset to zero by the function.
+ */
 extern void
 reset_macro(struct macro* p);
 
