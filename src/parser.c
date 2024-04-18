@@ -182,7 +182,7 @@ parse_line(struct assembler_data* assembler, char* line, struct line_data* inst)
     int idx = 0;
     int found_comma;
     word = get_word(line, &idx);
-    while (word[0] != NULL) {
+    while (word[0]) {
         if (is_symbol(word)) {
             inst->symbol = mystrdup(word);
             word = get_word(line, &idx);
@@ -222,7 +222,7 @@ parse_line(struct assembler_data* assembler, char* line, struct line_data* inst)
                 inst->destination = mystrdup(word);
             }
             word = get_word(line, &idx);
-            if (word[0] != NULL) {
+            if (word[0]) {
                 inst->is_valid = 0;
                 /* error  - too much text */
                 print_in_error(ERROR_CODE_32);
@@ -237,30 +237,6 @@ parse_line(struct assembler_data* assembler, char* line, struct line_data* inst)
         }
     }
     return 1;
-}
-
-void
-encode_operand(struct assembler_data* assembler,
-               struct line_data* inst,
-               struct linked_list* source_code,
-               char* operand,
-               int is_source,
-               int* found_reg)
-{
-    if (is_register(operand)) {
-        encode_register(assembler, inst, (*found_reg), source_code, is_source);
-        (*found_reg) = 1;
-    } else if (is_starting_with_x(operand, HASH)) {
-        encode_direct(assembler, inst, source_code, is_source);
-    } else {
-        char* index = get_index(operand);
-        if (index) {
-            encode_index(assembler, inst, source_code, is_source, index);
-            free(index);
-        } else {
-            encode_null(assembler, inst, source_code, is_source);
-        }
-    }
 }
 
 int
@@ -286,4 +262,137 @@ line_to_bin_1st(struct assembler_data* assembler,
 
     free(index);
     return 0;
+}
+
+int
+parse_define(struct assembler_data* assembler, char* line, int* idx)
+{
+    char* word = NULL;
+    char* key = get_word(line, idx);
+    if (key == NULL) {
+        printf("Error: Invalid syntax for .define.\n");
+        return 0;
+    }
+
+    if (get_data_by_key(assembler->symbol_table, key)) {
+        print_in_error(ERROR_CODE_28);
+        printf("Error: Symbol '%s' already defined.\n", key);
+        return 0;
+    }
+
+    word = get_word(line, idx);
+    if (word == NULL || strcmp(word, "=") != 0) {
+        printf("Error: Invalid syntax for .define.\n");
+        return 0;
+    }
+
+    word = get_word(line, idx);
+    if (word == NULL) {
+        printf("Error: Invalid syntax for .define.\n");
+        return 0;
+    }
+
+    insert_node(
+      assembler->symbol_table, key, create_bucket(word, to_void_ptr(MDEFINE)));
+    return 1;
+}
+
+static int
+handle_symbol(struct assembler_data* assembler, char* symbol, int* idx)
+{
+    int* iptr;
+    struct bucket* b = create_bucket(CODE, NULL);
+
+    if (get_data_by_key(assembler->symbol_table, symbol)) {
+        /* error - "symbol is already initialized")*/;
+        return 0;
+    }
+
+    iptr = malloc(sizeof(int));
+    iptr[0] = assembler->ic;
+    b->data = iptr;
+    remove_last_char(symbol);
+    insert_node(assembler->symbol_table, symbol, b);
+    return 1;
+}
+
+static void
+process_data(struct assembler_data* assembler,
+             char* line,
+             int* reading_data,
+             int* idx)
+{
+    char* word = get_word(line, idx);
+    if (!word)
+        word = get_word(line, idx);
+    if (is_starting_with_x(word, '\"') && is_ended_with_x(word, '\"')) {
+        encode_string(assembler, line);
+    } else {
+        encode_data(assembler, line);
+    }
+    (*reading_data) = 1;
+}
+
+int
+parse_data_store_instruction(struct assembler_data* assembler,
+                             char* line,
+                             char* word,
+                             int* reading_symbol,
+                             int* reading_data,
+                             char* symbol,
+                             int* idx)
+{
+    if ((*reading_symbol)) {
+        if (!handle_symbol(assembler, symbol, idx))
+            return 0;
+
+        process_data(assembler, line, reading_data, idx);
+    }
+    return 1;
+}
+
+int
+parse_extern(struct assembler_data* assembler, char* line, int* idx)
+{
+    char* key = get_word(line, idx);
+    if (key == NULL) {
+        printf("Error: Invalid syntax for .extern.\n");
+        return 0;
+    }
+
+    insert_node(assembler->symbol_table, key, create_bucket(EXTERNAL, NULL));
+    return 1;
+}
+
+int
+parse_instruction(struct assembler_data* assembler,
+                  char* line,
+                  int* idx,
+                  int* reading_data,
+                  int* reading_symbol,
+                  char* symbol,
+                  int* line_counter,
+                  char* word)
+{
+    struct line_data* inst = NULL;
+    struct bucket* b = create_bucket(CODE, NULL);
+    inst = init_instruction(inst);
+    if ((*reading_symbol) && !(*reading_data)) {
+        if (get_data_by_key(assembler->symbol_table, symbol)) {
+            /* error - symbol already initialized */
+            printf("At line: %d\n", (*line_counter));
+            return 0;
+        }
+        set_bucket_ic(b, assembler->ic);
+        remove_last_char(symbol);
+        insert_node(assembler->symbol_table, symbol, b);
+    }
+
+    if (get_instruction(inst, word)) {
+        parse_line(assembler, line, inst);
+        line_to_bin_1st(assembler, line, inst);
+    }
+
+    inst = NULL;
+    return 1;
 }

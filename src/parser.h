@@ -48,4 +48,30 @@ extern int
 line_to_bin_1st(struct assembler_data* assembler,
                 char* line,
                 struct line_data* inst);
+
+extern int
+parse_define(struct assembler_data* assembler, char* line, int* idx);
+
+extern int
+parse_data_store_instruction(struct assembler_data* assembler,
+                             char* line,
+                             char* word,
+                             int* reading_symbol,
+                             int* reading_data,
+                             char* symbol,
+                             int* idx);
+
+extern int
+parse_extern(struct assembler_data* assembler, char* line, int* idx);
+
+extern int
+parse_instruction(struct assembler_data* assembler,
+                  char* line,
+                  int* idx,
+                  int* reading_data,
+                  int* reading_symbol,
+                  char* symbol,
+                  int* line_counter,
+                  char* word);
+
 #endif /*PARSER_H*/
