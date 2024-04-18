@@ -74,6 +74,19 @@ parse_line(struct assembler_data* assembler,
            char* line,
            struct line_data* inst);
 
+/**
+ * @brief Converts the first pass of an assembly code line into binary format.
+ * This function Calculates the opcode and inserts it into the object list.
+   Encodes the source and destination operands based on their types (register, direct, index).
+ * @param assembler A pointer to a structure (struct assembler_data) containing data and tools for assembling code.
+   It is used to access assembler-specific information and functionalities.
+ * @param line A pointer to a character array representing a line of assembly code. 
+   This is the input line that needs to be converted into binary format.
+ * @param inst A pointer to a structure (struct line_data)
+   representing the parsed information of the assembly code line. 
+   It contains details such as the opcode, symbol, source operand, and destination operand.
+   @return An integer value, 0.
+*/
 extern int
 line_to_bin_1st(struct assembler_data* assembler,
                 char* line,
