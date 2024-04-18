@@ -41,6 +41,7 @@ add_bits(void * source, int data, int location);
  
 extern int
 get_register_code(const char* reg);
+
 /**
  * @brief This function encodes a string word into a linked list and converts each character to its ascii representation
  * @param assembler: Pointer to a struct assembler_data.
@@ -49,6 +50,14 @@ get_register_code(const char* reg);
 extern void
 encode_string(struct assembler_data* assembler, const char* line);
 
+/**
+ * @brief This function encodes data from the input string according to the assembler instructions 
+   and adds it to a linked list in the structure of the assembler
+   Errors are handled by returning from the function with appropriate error messages or conditions.
+   The function uses various helper functions to parse the string.
+ * @param assembler: Pointer to a struct assembler_data.
+ * @param line: and a pointer to a constant character string.
+ */
 extern void
 encode_data(struct assembler_data* assembler, const char* line);
 
