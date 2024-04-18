@@ -10,6 +10,13 @@ struct macro {
     int lines;
 };
 
+/**
+ * @brief This function creates a new macro structure and initializes it with the provided position and number of lines.
+ * @param p Pointer to a pointer to a struct macro. 
+ * @param pos Represents a file position, typically used for tracking positions in files.
+ * @param lines Represents the number of lines in the macro
+ * @return a pointer to the newly created struct macro.
+ */
 extern struct macro*
 create_macro(struct macro** p, fpos_t pos, int lines);
 
