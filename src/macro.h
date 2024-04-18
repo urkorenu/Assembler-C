@@ -48,13 +48,17 @@ reset_macro(struct macro* p);
 /**
  * @brief This function updates the starting position (start) of a struct macro object 
    to the value provided as an argument to the function.
- * @param macro a pointer to a struct macro
+ * @param macro a pointer to a struct macro.
  * @param start represents a file position (fpos_t). 
    It holds the value that will be assigned to the start field of the struct macro object.
  */
 extern void
 set_start(struct macro* macro, fpos_t start);
 
+/**
+ * @brief This function sets the number of lines in a macro.
+ * @param macro a pointer to a struct macro object.
+ */
 extern void
 set_lines(struct macro* macro, int lines);
 
