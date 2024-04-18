@@ -92,6 +92,19 @@ line_to_bin_1st(struct assembler_data* assembler,
                 char* line,
                 struct line_data* inst);
 
+
+/**
+ * @brief Parses the .define directive in the assembly code.
+ * This function Verifies the syntax of the .define directive.
+   Checks if the symbol defined by the .define directive is already present in the symbol table.
+ * @param assembler A pointer to a structure (struct assembler_data) containing data and tools for assembling code.
+   It is used to access assembler-specific information and functionalities.
+ * @param line A pointer to a character array representing a line of assembly code.
+   This line typically contains the .define directive that needs to be parsed.
+ * @param idx A pointer to an integer that represents the current index in the line being parsed.
+   It is used to keep track of the position within the line while parsing
+   @return Returns 0 if any errors are encountered during parsing, otherwise continues parsing.
+*/
 extern int
 parse_define(struct assembler_data* assembler, char* line, int* idx);
 
