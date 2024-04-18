@@ -13,20 +13,22 @@
 /**
  * @brief This function adds bits to a number in a certain position
  *
- * The function takes integer type number, which is the number to which we want to add bits, 
-   integer type number the bits we want to add, and integer type nuber the position where we want to add the bits
+ * The function takes integer type number, which is the number to which we want
+ to add bits, integer type number the bits we want to add, and integer type
+ nuber the position where we want to add the bits
 
  * The function performs one iteration unless requested otherwise
- 
- 
+
+
  * @param source: An integer type number to which we want to add bits
  * @param data: An integer type number that represents the number we want to add
- * @param location: A variable of type int that symbolizes the position where we want to add the bits
- 
+ * @param location: A variable of type int that symbolizes the position where we
+ want to add the bits
+
  * @return An extern integer indicatingthe the number after adding the bits.
  */
 extern int
-add_bits(void * source, int data, int location);
+add_bits(void* source, int data, int location);
 
 /**
  * @brief This function extracts and returns the code associated with a register from its name string.
@@ -38,7 +40,6 @@ add_bits(void * source, int data, int location);
  * If the parsing fails, the program terminates.
  
  */
- 
 extern int
 get_register_code(const char* reg);
 
@@ -87,4 +88,11 @@ encode_null(struct assembler_data* assembler,
             struct linked_list* source_code,
             int source);
 
+extern void
+encode_operand(struct assembler_data* assembler,
+               struct line_data* inst,
+               struct linked_list* source_code,
+               char* operand,
+               int is_source,
+               int* found_reg);
 #endif /* ENCODE_H*/

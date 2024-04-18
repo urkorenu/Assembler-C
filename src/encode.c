@@ -248,3 +248,27 @@ encode_null(struct assembler_data* assembler,
     assembler->instruction_c++;
     assembler->ic++;
 }
+
+void
+encode_operand(struct assembler_data* assembler,
+               struct line_data* inst,
+               struct linked_list* source_code,
+               char* operand,
+               int is_source,
+               int* found_reg)
+{
+    if (is_register(operand)) {
+        encode_register(assembler, inst, (*found_reg), source_code, is_source);
+        (*found_reg) = 1;
+    } else if (is_starting_with_x(operand, HASH)) {
+        encode_direct(assembler, inst, source_code, is_source);
+    } else {
+        char* index = get_index(operand);
+        if (index) {
+            encode_index(assembler, inst, source_code, is_source, index);
+            free(index);
+        } else {
+            encode_null(assembler, inst, source_code, is_source);
+        }
+    }
+}
