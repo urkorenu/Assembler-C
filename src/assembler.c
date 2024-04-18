@@ -17,9 +17,7 @@ int
 parse_first_phase(struct assembler_data* assembler)
 {
     char line[MAXWORD];
-    char* key = NULL;
     int idx = 0;
-    int* idx_ptr = &idx;
     char* word = NULL;
     char* symbol = NULL;
     int reading_symbol = 0;
@@ -27,94 +25,45 @@ parse_first_phase(struct assembler_data* assembler)
     int is_valid = 1;
     int line_counter = 0;
     FILE* source_file;
-    struct line_data* inst = NULL;
+
     source_file = fopen(assembler->as_files->processed_path, "r");
+    
     while (get_line(line, source_file) != NULL) {
         line_counter++;
-        inst = init_instruction(inst);
-        word = get_word(line, idx_ptr);
+        word = get_word(line, &idx);
 
         if (strcmp(word, ".define") == 0) {
-            key = get_word(line, idx_ptr);
-            if (!get_data_by_key(assembler->symbol_table, key)) {
-                word = get_word(line, idx_ptr);
-                if (strcmp(word, "=") == 0) {
-                    word = get_word(line, idx_ptr);
-                    /* maybe need conversion to int or else */
-                    insert_node(assembler->symbol_table,
-                                key,
-                                create_bucket(word, to_void_ptr(MDEFINE)));
-                } else {
-                    is_valid = 0;
-                    printf("err 1");
-                    /* error - invalid syntax")*/;
-                }
+            is_valid = parse_define(assembler, line, &idx);
 
-            } else {
-                is_valid = 0;
-                print_in_error(ERROR_CODE_28);
-                printf("err 2");
-            }
         } else if (is_symbol(word)) {
-            int i = 0;
-            int* temp_ptr = &i;
-            symbol = get_word(word, temp_ptr);
-            word = get_word(line, idx_ptr);
+            int temp_index = 0;
+            symbol = get_word(word, &temp_index);
+            word = get_word(line, &idx);
             reading_symbol = 1;
         }
 
         if (is_data_store_instruction(word)) {
-            if (reading_symbol) {
-                if (!get_data_by_key(assembler->symbol_table, symbol)) {
-                    int* iptr;
-                    struct bucket* b = create_bucket(CODE, NULL);
-                    iptr = malloc(sizeof(int));
-                    iptr[0] = assembler->ic;
-                    b->data = iptr;
-                    remove_last_char(symbol);
-                    insert_node(assembler->symbol_table, symbol, b);
-                    word = get_word(line, idx_ptr);
-                    if (!word)
-                        word = get_word(line, idx_ptr);
-                    if (is_starting_with_x(word, '\"') &&
-                        is_ended_with_x(word, '\"')) {
-                        encode_string(assembler, line);
-                    } else {
-                        encode_data(assembler, line);
-                    }
-                    reading_data = 1;
-                } else {
-                    is_valid = 0;
-                    printf("err 3");
-                    /* error - "symbol is already initialized")*/;
-                }
-            }
+            is_valid = parse_data_store_instruction(assembler,
+                                                    line,
+                                                    word,
+                                                    &reading_symbol,
+                                                    &reading_data,
+                                                    symbol,
+                                                    &idx);
         }
         if (is_e_instruction(word)) {
             if (strcmp(word, ".extern") == 0) {
-                key = get_word(line, idx_ptr);
-                insert_node(
-                  assembler->symbol_table, key, create_bucket(EXTERNAL, NULL));
+                is_valid = parse_extern(assembler, line, &idx);
             }
         } else {
-            if (reading_symbol && !reading_data) {
-                if (!get_data_by_key(assembler->symbol_table, symbol)) {
-                    struct bucket* b = create_bucket(CODE, NULL);
-                    set_bucket_ic(b, assembler->ic);
-                    remove_last_char(symbol);
-                    insert_node(assembler->symbol_table, symbol, b);
-                } else {
-                    is_valid = 0;
-                    printf("err 4\n");
-                    printf("At line: %d\n", line_counter);
-                    printf("%s", line);
-                    /* error - symbol already initialized */
-                }
-            }
-            if (get_instruction(inst, word)) {
-                parse_line(assembler, line, inst);
-                line_to_bin_1st(assembler, line, inst);
-            }
+            is_valid = parse_instruction(assembler,
+                                         line,
+                                         &idx,
+                                         &reading_data,
+                                         &reading_symbol,
+                                         symbol,
+                                         &line_counter,
+                                         word);
         }
         word = NULL;
         symbol = NULL;
@@ -122,7 +71,6 @@ parse_first_phase(struct assembler_data* assembler)
         memset(line, 0, MAXWORD);
         reading_symbol = 0;
         reading_data = 0;
-        inst = NULL;
     }
     fclose(source_file);
     return (is_valid ? EXIT_SUCCESS : EXIT_FAILURE);
@@ -133,7 +81,6 @@ parse_second_phase(struct assembler_data* assembler)
 {
     char line[MAXWORD];
     int idx = 0;
-    int* idx_ptr = &idx;
     char* word = NULL;
     int code = 0;
     int ic;
@@ -156,15 +103,15 @@ parse_second_phase(struct assembler_data* assembler)
         line_counter++;
         code = 0;
         inst = init_instruction(inst);
-        word = get_word(line, idx_ptr);
+        word = get_word(line, &idx);
         if (is_symbol(word)) {
-            word = get_word(line, idx_ptr);
+            word = get_word(line, &idx);
         }
         if ((is_data_store_instruction(word)) ||
             ((strcmp(word, ".extern") == 0))) {
             continue;
         } else if ((strcmp(word, ".entry") == 0)) {
-            word = get_word(line, idx_ptr);
+            word = get_word(line, &idx);
             if ((data = (get_data_by_key(assembler->symbol_table, word)))) {
                 ic = ((int*)data->data)[0];
                 insert_ll_node(entry_list,
@@ -177,7 +124,7 @@ parse_second_phase(struct assembler_data* assembler)
                 printf("line : %d\n", line_counter);
             }
         } else {
-            while (word[0] != NULL) {
+            while (word[0]) {
                 if (is_ended_with_x(word, COMMA))
                     remove_last_char(word);
                 /* remove index from word */
@@ -186,7 +133,7 @@ parse_second_phase(struct assembler_data* assembler)
                 /* if the symbol is not found in the table */
                 data = get_data_by_key(assembler->symbol_table, word);
                 if (!data) {
-                    word = get_word(line, idx_ptr);
+                    word = get_word(line, &idx);
                     continue;
                 } else if (data->data != NULL &&
                            (strcmp(data->key, CODE) == 0)) {
@@ -210,7 +157,7 @@ parse_second_phase(struct assembler_data* assembler)
                       get_last_unset_node(last_unset_node, node_ptr);
                 }
 
-                word = get_word(line, idx_ptr);
+                word = get_word(line, &idx);
             }
         }
         word = NULL;
