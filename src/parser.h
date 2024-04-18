@@ -32,6 +32,14 @@
 #define REGISTER_ADDRESS 3
 
 #define to_void_ptr(val) ((void*)(&(val)))
+/**
+ * @brief Parses the file and operate the pre-processor into a file.
+ * This function reads pre-processor directives from the given file and performs
+   appropriate actions based on the directives encountered.
+ * @param file Pointer to the input file.
+ * @param host Pointer to the host data structure.
+ * @param new_file Pointer to the output file.
+ */
 
 extern void
 parse_pre_processor(struct assembler_data* assembler);
