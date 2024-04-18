@@ -44,6 +44,14 @@
 extern void
 parse_pre_processor(struct assembler_data* assembler);
 
+/**
+ * @brief Searches for the index and return it.
+ * This function searches for the index of the opening square bracket [ in the given word and returns that index.
+ * @param word A pointer that points to the first character of the input string
+ * @return An integer value, which represents the index of the opening square bracket [ in the input word.
+   If the opening bracket is found, the function returns the index of that bracket.
+   If the opening bracket is not found in the word, the function returns -1 to indicate its absence.
+ */
 extern char*
 get_index(char* word);
 
