@@ -130,4 +130,15 @@ parse_instruction(struct assembler_data* assembler,
                   int* line_counter,
                   char* word);
 
+extern int
+process_line(struct assembler_data* assembler,
+             char* line,
+             int* line_counter,
+             struct linked_list* entry_list,
+             int* entry_flag,
+             struct linked_list* extern_list,
+             int* extern_flag,
+             struct linked_list* last_unset_node,
+             int* node_ic);
+
 #endif /*PARSER_H*/

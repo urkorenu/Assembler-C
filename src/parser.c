@@ -1,6 +1,7 @@
 #include "parser.h"
 #include "assembler.h"
 #include "io.h"
+#include "linked_list.h"
 
 void
 process_regular_line(FILE* read_file,
@@ -240,9 +241,9 @@ parse_line(struct assembler_data* assembler, char* line, struct line_data* inst)
 }
 
 int
-line_to_bin_1st(struct assembler_data* assembler,
-                char* line,
-                struct line_data* inst)
+line_to_bin(struct assembler_data* assembler,
+            char* line,
+            struct line_data* inst)
 {
     int opcode = inst->code << 6;
     int found_reg = 0;
@@ -390,9 +391,113 @@ parse_instruction(struct assembler_data* assembler,
 
     if (get_instruction(inst, word)) {
         parse_line(assembler, line, inst);
-        line_to_bin_1st(assembler, line, inst);
+        line_to_bin(assembler, line, inst);
     }
 
     inst = NULL;
     return 1;
+}
+
+static int
+process_entry(struct assembler_data* assembler,
+              char* line,
+              int* line_counter,
+              struct linked_list* entry_list,
+              int* entry_flag,
+              int* idx,
+              char* word)
+{
+
+    int ic;
+    struct bucket* data;
+    word = get_word(line, idx);
+    if (!(data = (get_data_by_key(assembler->symbol_table, word)))) {
+        /* if the symbol not exist it the table */
+        print_in_error(ERROR_CODE_29);
+        printf("line : %d\n", (*line_counter));
+        return 0;
+    }
+    ic = ((int*)data->data)[0];
+    insert_ll_node(entry_list, create_bucket(word, int_to_voidp(ic)));
+    (*entry_flag) = 1;
+    return 1;
+}
+
+static void
+process_words(struct assembler_data* assembler,
+              char* word,
+              char* line,
+              int* idx,
+              struct linked_list* extern_list,
+              int* extern_flag,
+              int* node_ic,
+              struct linked_list* last_unset_node)
+{
+    int code = 0;
+    struct bucket* data;
+
+    while (word[0]) {
+        clean_word(word);
+        data = get_data_by_key(assembler->symbol_table, word);
+        if (!data) {
+            /* not in symbol table */
+            word = get_word(line, idx);
+            continue;
+        } else if (data->data != NULL && (strcmp(data->key, CODE) == 0)) {
+            /* in symbol table and its code */
+            code = add_bits(int_to_voidp(2), ((int*)data->data)[0], 2);
+            printf("The code is %d at ",code);
+            set_data_int(last_unset_node, code);
+
+            last_unset_node = get_last_unset_node(last_unset_node, node_ic);
+        }
+
+        else if (data->data == NULL ) {
+            /* in symbol table but its null (extern) */
+            code = add_bits(int_to_voidp(code), 1, 0);
+            set_data_int(last_unset_node, code);
+            insert_ll_node(extern_list,
+                           create_bucket(word, int_to_voidp((*node_ic) - 1)));
+            (*extern_flag) = 1;
+            last_unset_node = get_last_unset_node(last_unset_node, node_ic);
+        }
+
+        word = get_word(line, idx);
+    }
+}
+
+int
+process_line(struct assembler_data* assembler,
+             char* line,
+             int* line_counter,
+             struct linked_list* entry_list,
+             int* entry_flag,
+             struct linked_list* extern_list,
+             int* extern_flag,
+             struct linked_list* last_unset_node,
+             int* node_ic)
+{
+    char* word = NULL;
+    int idx = 0;
+    int is_valid = 1;
+    word = get_word(line, &idx);
+    if (is_symbol(word)) {
+        word = get_word(line, &idx);
+    }
+    if ((is_data_store_instruction(word)) || ((strcmp(word, ".extern") == 0))) {
+        return is_valid;
+    } else if ((strcmp(word, ".entry") == 0)) {
+        is_valid = process_entry(
+          assembler, line, line_counter, entry_list, entry_flag, &idx, word);
+    } else {
+        process_words(assembler,
+                      word,
+                      line,
+                      &idx,
+                      extern_list,
+                      extern_flag,
+                      node_ic,
+                      last_unset_node);
+    }
+    return is_valid;
 }

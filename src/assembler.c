@@ -27,7 +27,7 @@ parse_first_phase(struct assembler_data* assembler)
     FILE* source_file;
 
     source_file = fopen(assembler->as_files->processed_path, "r");
-    
+
     while (get_line(line, source_file) != NULL) {
         line_counter++;
         word = get_word(line, &idx);
@@ -80,96 +80,36 @@ int
 parse_second_phase(struct assembler_data* assembler)
 {
     char line[MAXWORD];
-    int idx = 0;
-    char* word = NULL;
-    int code = 0;
-    int ic;
     int line_counter = 0;
     int node_ic = 100;
-    int* node_ptr = &node_ic;
-    struct bucket* data;
-    int entry_flag, extern_flag = 0;
-    struct line_data* inst = NULL;
+    int entry_flag = 0, extern_flag = 0;
     struct linked_list* entry_list = create_new_ll_node(0);
     struct linked_list* extern_list = create_new_ll_node(0);
     struct linked_list* last_unset_node;
     FILE *en_file, *ex_file, *source_file;
     int is_valid = 1;
     assembler->ic = 100;
-    last_unset_node = get_last_unset_node(assembler->object_list, node_ptr);
+    last_unset_node = get_last_unset_node(assembler->object_list, &node_ic);
     source_file = fopen(assembler->as_files->processed_path, "r");
-    fseek(source_file, 0, SEEK_SET);
     while (get_line(line, source_file) != NULL) {
         line_counter++;
-        code = 0;
-        inst = init_instruction(inst);
-        word = get_word(line, &idx);
-        if (is_symbol(word)) {
-            word = get_word(line, &idx);
-        }
-        if ((is_data_store_instruction(word)) ||
-            ((strcmp(word, ".extern") == 0))) {
-            continue;
-        } else if ((strcmp(word, ".entry") == 0)) {
-            word = get_word(line, &idx);
-            if ((data = (get_data_by_key(assembler->symbol_table, word)))) {
-                ic = ((int*)data->data)[0];
-                insert_ll_node(entry_list,
-                               create_bucket(word, int_to_voidp(ic)));
-                entry_flag = 1;
-            } else {
-                /* if the symbol not exist it the table */
-                print_in_error(ERROR_CODE_29);
-                is_valid = 0;
-                printf("line : %d\n", line_counter);
-            }
-        } else {
-            while (word[0]) {
-                if (is_ended_with_x(word, COMMA))
-                    remove_last_char(word);
-                /* remove index from word */
-                if (is_ended_with_x(word, ']'))
-                    word = remove_square_brackets(word);
-                /* if the symbol is not found in the table */
-                data = get_data_by_key(assembler->symbol_table, word);
-                if (!data) {
-                    word = get_word(line, &idx);
-                    continue;
-                } else if (data->data != NULL &&
-                           (strcmp(data->key, CODE) == 0)) {
-                    code = add_bits(int_to_voidp(code), 2, 0);
-                    code =
-                      add_bits(int_to_voidp(code), ((int*)data->data)[0], 2);
-                    set_data_int(last_unset_node, code);
-
-                    last_unset_node =
-                      get_last_unset_node(last_unset_node, node_ptr);
-                }
-
-                else if (data->data == NULL) {
-                    code = add_bits(int_to_voidp(code), 1, 0);
-                    set_data_int(last_unset_node, code);
-                    insert_ll_node(
-                      extern_list,
-                      create_bucket(word, int_to_voidp(node_ic - 1)));
-                    extern_flag = 1;
-                    last_unset_node =
-                      get_last_unset_node(last_unset_node, node_ptr);
-                }
-
-                word = get_word(line, &idx);
-            }
-        }
-        word = NULL;
-        idx = 0;
-        memset(line, 0, MAXWORD);
-        inst = NULL;
+        is_valid = process_line(assembler,
+                                line,
+                                &line_counter,
+                                entry_list,
+                                &entry_flag,
+                                extern_list,
+                                &extern_flag,
+                                last_unset_node,
+                                &node_ic);
     }
-    if (entry_flag == 1) {
+    memset(line, 0, MAXWORD);
+
+    if (entry_flag == 1 && is_valid) {
         en_file = fopen(assembler->as_files->entries_path, "w");
         print_e_list(entry_list, en_file, "\n");
     }
-    if (extern_flag == 1) {
+    if (extern_flag == 1 && is_valid) {
         ex_file = fopen(assembler->as_files->externals_path, "w");
         print_e_list(extern_list, ex_file, "\n");
     }
