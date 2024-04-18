@@ -30,6 +30,10 @@ create_macro(struct macro** p, fpos_t pos, int lines);
 extern void
 insert_macro(struct macro* p, FILE* file, FILE* new_file);
 
+/**
+ * @brief This function frees the memory allocated for a macro.
+ * @param p pointer to the memory allocated for a macro structure that needs to be freed.
+ */
 extern void
 free_macro(struct macro* p);
 
