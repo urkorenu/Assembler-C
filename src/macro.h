@@ -13,7 +13,7 @@ struct macro {
 /**
  * @brief This function creates a new macro structure and initializes it with the provided position and number of lines.
  * @param p Pointer to a pointer to a struct macro. 
- * @param pos Represents a file position, typically used for tracking positions in files.
+ * @param pos Represents a file position.
  * @param lines Represents the number of lines in the macro
  * @return a pointer to the newly created struct macro.
  */
