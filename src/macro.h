@@ -20,6 +20,13 @@ struct macro {
 extern struct macro*
 create_macro(struct macro** p, fpos_t pos, int lines);
 
+/**
+ * @brief This function reads the lines of a macro from a given file and inserts them into another file.
+ * @param p a pointer to the macro structure that contains information about the macro to be inserted.
+ * @param pos  a pointer to a file stream that used for reading lines from the input file that contains the macro.
+ * @param new_file a pointer to a file stream that used for writing lines to the output file
+   where the macro will be inserted.
+ */
 extern void
 insert_macro(struct macro* p, FILE* file, FILE* new_file);
 
