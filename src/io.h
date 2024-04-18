@@ -45,4 +45,7 @@ int_to_voidp(int data);
 extern char*
 remove_square_brackets(char* word);
 
+extern void
+clean_word(char* word);
+
 #endif /*_IO_H*/

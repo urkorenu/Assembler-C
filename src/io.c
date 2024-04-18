@@ -5,8 +5,8 @@
  */
 
 #include "io.h"
-#include <stdlib.h>
-#include <string.h>
+#include "parser.h"
+
 
 /* Function to read a line from a file */
 char*
@@ -146,7 +146,7 @@ int_to_voidp(int data)
     return iptr;
 }
 
-char *
+char*
 remove_square_brackets(char* word)
 {
     int len = strlen(word);
@@ -157,8 +157,7 @@ remove_square_brackets(char* word)
     for (i = 0; i < len; i++) {
         if (word[i] != '[' && found_brackets == 0) {
             word[j++] = word[i];
-        }
-        else {
+        } else {
             word[i] = '\0';
             found_brackets = 1;
         }
@@ -166,4 +165,13 @@ remove_square_brackets(char* word)
 
     word[j] = '\0';
     return word;
+}
+
+void
+clean_word(char* word)
+{
+    if (is_ended_with_x(word, COMMA))
+        remove_last_char(word);
+    if (is_ended_with_x(word, ']'))
+        word = remove_square_brackets(word);
 }
