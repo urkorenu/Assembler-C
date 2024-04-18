@@ -55,6 +55,21 @@ parse_pre_processor(struct assembler_data* assembler);
 extern char*
 get_index(char* word);
 
+/**
+ * @brief Parses a line of assembly code, extracting information about symbols, instructions, and operands.
+ * This function 
+ * @param assembler A pointer to a data structure representing the assembler, 
+   which contains information and tools for parsing assembly code.
+ * @param line A pointer to a string representing the line of assembly code to be parsed.
+ * @param inst A pointer to a data structure of type struct line_data,
+   which contains information about the parsed line, including symbols, commands, and operands.
+ * @return An integer value. 
+ It returns 1 if the line of assembly code is successfully parsed without any errors,
+  indicating that the line is valid. 
+  If any errors are encountered during parsing, such as missing symbols, invalid commands, 
+  or extraneous characters, 
+  the function returns 0 to indicate that the line is not valid.
+*/
 extern int
 parse_line(struct assembler_data* assembler,
            char* line,
