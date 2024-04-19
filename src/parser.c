@@ -434,6 +434,7 @@ process_words(struct assembler_data* assembler,
               struct linked_list* last_unset_node)
 {
     int code = 0;
+    int ic;
     struct bucket* data;
 
     while (word[0]) {
@@ -443,25 +444,23 @@ process_words(struct assembler_data* assembler,
             /* not in symbol table */
             word = get_word(line, idx);
             continue;
-        } else if (data->data != NULL && (strcmp(data->key, CODE) == 0)) {
+        } 
+        else if (data->data != NULL && (strcmp(data->key, CODE) == 0)) {
             /* in symbol table and its code */
             code = add_bits(int_to_voidp(code), 2, 0);
-
-            code = add_bits(int_to_voidp(code), ((int*)data->data)[0], 2);
-            printf("The code is %d at %d\n", code, (*node_ic));
+            code = add_bits(int_to_voidp(2), ((int*)data->data)[0], 2);
             set_data_int(last_unset_node, code);
-
-            last_unset_node = get_last_unset_node(last_unset_node, node_ic);
+            last_unset_node = get_first_unset_node(assembler->object_list, node_ic);
         }
-
         else if (data->data == NULL) {
             /* in symbol table but its null (extern) */
             code = add_bits(int_to_voidp(code), 1, 0);
             set_data_int(last_unset_node, code);
+            ic = (*node_ic);
             insert_ll_node(extern_list,
-                           create_bucket(word, int_to_voidp((*node_ic) - 1)));
+                           create_bucket(word, int_to_voidp(ic - 1)));
             (*extern_flag) = 1;
-            last_unset_node = get_last_unset_node(last_unset_node, node_ic);
+            last_unset_node = get_first_unset_node(assembler->object_list, node_ic);
         }
 
         word = get_word(line, idx);
