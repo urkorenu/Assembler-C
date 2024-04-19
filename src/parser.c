@@ -440,15 +440,14 @@ process_words(struct assembler_data* assembler,
             /* not in symbol table */
             word = get_word(line, idx);
             continue;
-        } 
-        else if (data->data != NULL && (strcmp(data->key, CODE) == 0)) {
+        } else if (data->data != NULL && (strcmp(data->key, CODE) == 0)) {
             /* in symbol table and its code */
             code = add_bits(int_to_voidp(code), 2, 0);
             code = add_bits(int_to_voidp(2), ((int*)data->data)[0], 2);
             set_data_int(last_unset_node, code);
-            last_unset_node = get_first_unset_node(assembler->object_list, node_ic);
-        }
-        else if (data->data == NULL) {
+            last_unset_node =
+              get_first_unset_node(assembler->object_list, node_ic);
+        } else if (data->data == NULL) {
             /* in symbol table but its null (extern) */
             code = add_bits(int_to_voidp(code), 1, 0);
             set_data_int(last_unset_node, code);
@@ -456,7 +455,8 @@ process_words(struct assembler_data* assembler,
             insert_ll_node(extern_list,
                            create_bucket(word, int_to_voidp(ic - 1)));
             (*extern_flag) = 1;
-            last_unset_node = get_first_unset_node(assembler->object_list, node_ic);
+            last_unset_node =
+              get_first_unset_node(assembler->object_list, node_ic);
         }
 
         word = get_word(line, idx);
