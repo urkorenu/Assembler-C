@@ -127,7 +127,14 @@ add_node(struct tnode* root, const char* key, void* data)
 struct tnode*
 create_tnode(const char* key, void* data)
 {
-    struct tnode* node = malloc(sizeof(struct tnode));
+    struct tnode* node;
+
+    if (!key) {
+        fprintf(stderr, "Key is null! (key=%p)\n", (void*)key);
+        return NULL;
+    }
+
+    node = malloc(sizeof(struct tnode));
     if (node != NULL) {
         node[0] = tnode_init();
         bucket_set_key(node->node, key);

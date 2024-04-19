@@ -6,7 +6,26 @@
 
 #include "io.h"
 #include "parser.h"
+#include <stdio.h>
 
+
+FILE*
+verbose_fopen(const char *fp, const char *modes)
+{
+    FILE* f;
+
+    if (!fp)
+        return NULL;
+    if (!modes)
+        modes = "r";
+
+    f = fopen(fp, modes);
+
+    if (!f)
+        print_file_error(fp);
+
+    return f;
+}
 
 /* Function to read a line from a file */
 char*
@@ -30,7 +49,7 @@ get_word(const char* line, int* idx)
         return NULL;
     }
 
-    while (line[*idx] == ' ' || line[*idx] == '\t')
+    while (isspace(line[*idx]))
         (*idx)++;
 
     while ((line[*idx] != '\0' && isgraph(line[*idx])) || line[*idx] == '\"') {

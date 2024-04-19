@@ -1,5 +1,18 @@
 #include "Errors.h"
-/*All kinds of possible errors in the code
+
+void
+print_file_error(const char* fp)
+{
+    if (!errno)
+        return;
+    fprintf(stderr, "Fatal Error:\n%*s\"%s\": ", 4, " ", fp);
+    perror("");
+}
+
+/* Bruh...
+ * tf...
+ *
+ *All kinds of possible errors in the code
  We will change as needed*/
 /* If you want to select an error then call its number in the function "printf"
  */
@@ -8,7 +21,7 @@ Error errors[] = {
     { ERROR_CODE_1, "Failed to dynamically allocate memory" },
     { ERROR_CODE_2, ".as files name is missing" },
     { ERROR_CODE_3, "The file name is too long" },
-    { ERROR_CODE_4, "The provided file name is not exist" },
+    { ERROR_CODE_4, "The provided file name does not exist" },
     { ERROR_CODE_5, ".am file is missing" },
     { ERROR_CODE_6, "The Line is too long" },
     { ERROR_CODE_7, "Failed to open new file for writing" },

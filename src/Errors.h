@@ -2,6 +2,7 @@
 #define ERROR_H
 
 #include "includes.h"
+
 /* Represents an error with an associated error ID and error message */
 typedef struct Error {
     int error_id;    /* Unique identifier for the error */
@@ -71,8 +72,12 @@ typedef enum ERROR_CODES {
     ERROR_CODE_59
 } ERROR_CODES;
 
+
 /* this func print internal errors. */
-void
+extern void
 print_in_error(int error_code);
+
+extern void
+print_file_error(const char *fp);
 
 #endif /* ERROR_H */

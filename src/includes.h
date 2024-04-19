@@ -2,6 +2,7 @@
 #define INCLUDES_H_
 
 #include <assert.h>
+#include <errno.h>
 #include <ctype.h>
 #include <math.h>
 #include <stdarg.h>

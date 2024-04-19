@@ -2,6 +2,10 @@
 #include "assembler.h"
 #include "io.h"
 #include "linked_list.h"
+#include <stdio.h>
+
+static int
+try_init_files(struct files paths, FILE **fread, FILE **fwrite);
 
 void
 process_regular_line(FILE* read_file,
@@ -38,23 +42,17 @@ process_macro_line(FILE* read_file,
 void
 parse_pre_processor(struct assembler_data* assembler)
 {
-    FILE *read_file, *write_file;
-    int line_count = 1;
-    char line[MAXWORD];
-    char* key = NULL;
     int start_idx;
+    int line_count = 1;
     int reading_macro = 0;
+    char* key = NULL;
+    char line[MAXWORD] = {0};
+    FILE *read_file = NULL;
+    FILE *write_file = NULL;
     fpos_t temp_pos;
-
-    read_file = fopen(assembler->as_files->assembly_path, "r");
-    if (read_file == NULL) {
-        fprintf(stderr,
-                "Error opening read_file %s: ",
-                assembler->as_files->assembly_path);
-        perror("");
+    
+    if (!try_init_files((*assembler->as_files), &read_file, &write_file))
         return;
-    }
-    write_file = fopen(assembler->as_files->processed_path, "w");
 
     while (get_line(line, read_file) != NULL) {
         if (!reading_macro) {
@@ -82,8 +80,6 @@ parse_pre_processor(struct assembler_data* assembler)
                                &reading_macro);
         }
     }
-    memset(line, 0, MAXWORD);
-
     fclose(read_file);
     fclose(write_file);
 }
@@ -106,8 +102,7 @@ process_regular_line(FILE* read_file,
     word = get_word(line, &idx);
     if (strcmp(word, "mcr") == 0) {
         (*reading_macro) = 1;
-
-        *key = get_word(line, &idx);
+        (*key) = get_word(line, &idx);
         (*start_idx) = ++(*line_count);
         fgetpos(read_file, temp_pos);
     } else {
@@ -502,4 +497,18 @@ process_line(struct assembler_data* assembler,
                       last_unset_node);
     }
     return is_valid;
+}
+
+static int
+try_init_files(struct files paths, FILE **fread, FILE **fwrite)
+{
+    if (!fread || !fwrite)
+        return 0;
+
+    *fread = verbose_fopen(paths.assembly_path, "r");
+
+    if ((*fread) != NULL)
+        *fwrite = verbose_fopen(paths.processed_path, "w");
+
+    return (fread[0] != NULL && fwrite[0] != NULL);
 }
