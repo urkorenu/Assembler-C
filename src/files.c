@@ -5,23 +5,13 @@ const char FILES_ALLOC_ERR[] = {
     "Failed to allocate memory for struct files - Buy more RAM lol!\n"
 };
 
-/* Default file paths */
-const struct files DEFAULT_FILES_VAL = {
-    .assembly_path = ASSEMBLY,
-    .processed_path = PROCESSED,
-    .object_path = OBJECT,
-    .externals_path = EXTERN,
-    .entries_path = ENTRY,
-};
 
 /* Allocate memory for struct files */
 extern struct files*
 files_alloc(void)
 {
     struct files* f = malloc(sizeof(struct files));
-    if (f != NULL)
-        f[0] = (DEFAULT_FILES_VAL);
-    else
+    if (f == NULL)
         fprintf(stderr, FILES_ALLOC_ERR);
     return f;
 }
