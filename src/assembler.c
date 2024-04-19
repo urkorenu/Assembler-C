@@ -79,18 +79,20 @@ parse_first_phase(struct assembler_data* assembler)
 int
 parse_second_phase(struct assembler_data* assembler)
 {
+    int is_valid = 1;
+    int node_ic = 100;
     char line[MAXWORD];
     int line_counter = 0;
-    int node_ic = 100;
-    int entry_flag = 0, extern_flag = 0;
-    struct linked_list* entry_list = create_new_ll_node(0);
-    struct linked_list* extern_list = create_new_ll_node(0);
+    int entry_flag, extern_flag = 0;
     struct linked_list* last_unset_node;
     FILE *en_file, *ex_file, *source_file;
-    int is_valid = 1;
+    struct linked_list* entry_list = create_new_ll_node(0);
+    struct linked_list* extern_list = create_new_ll_node(0);
+
     assembler->ic = 100;
     last_unset_node = get_last_unset_node(assembler->object_list, &node_ic);
     source_file = fopen(assembler->as_files->processed_path, "r");
+
     while (get_line(line, source_file) != NULL) {
         line_counter++;
         is_valid = process_line(assembler,
