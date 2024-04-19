@@ -11,8 +11,8 @@ process_regular_line(FILE* read_file,
                      struct assembler_data* assembler,
                      int* reading_macro,
                      int* start_idx,
-                     fpos_t temp_pos,
-                     char* key);
+                     fpos_t* temp_pos,
+                     char** key);
 void
 process_macro_line(FILE* read_file,
                    FILE* write_file,
@@ -65,8 +65,8 @@ parse_pre_processor(struct assembler_data* assembler)
                                  assembler,
                                  &reading_macro,
                                  &start_idx,
-                                 temp_pos,
-                                 key);
+                                 &temp_pos,
+                                 &key);
 
         }
 
@@ -96,8 +96,8 @@ process_regular_line(FILE* read_file,
                      struct assembler_data* assembler,
                      int* reading_macro,
                      int* start_idx,
-                     fpos_t temp_pos,
-                     char* key)
+                     fpos_t* temp_pos,
+                     char** key)
 {
     char* word = NULL;
     int idx = 0;
@@ -106,15 +106,16 @@ process_regular_line(FILE* read_file,
     word = get_word(line, &idx);
     if (strcmp(word, "mcr") == 0) {
         (*reading_macro) = 1;
-        key = get_word(line, &idx);
+
+        *key = get_word(line, &idx);
         (*start_idx) = ++(*line_count);
-        fgetpos(read_file, &temp_pos);
+        fgetpos(read_file, temp_pos);
     } else {
         temp = get_data_by_key(assembler->macro_tree, word);
         if (temp) {
-            fgetpos(read_file, &temp_pos);
+            fgetpos(read_file, temp_pos);
             insert_macro(temp, read_file, write_file);
-            fsetpos(read_file, &temp_pos);
+            fsetpos(read_file, temp_pos);
             ++(*line_count);
         } else {
             fprintf(write_file, "%s", line);
@@ -444,15 +445,14 @@ process_words(struct assembler_data* assembler,
             /* not in symbol table */
             word = get_word(line, idx);
             continue;
-        } 
-        else if (data->data != NULL && (strcmp(data->key, CODE) == 0)) {
+        } else if (data->data != NULL && (strcmp(data->key, CODE) == 0)) {
             /* in symbol table and its code */
             code = add_bits(int_to_voidp(code), 2, 0);
             code = add_bits(int_to_voidp(2), ((int*)data->data)[0], 2);
             set_data_int(last_unset_node, code);
-            last_unset_node = get_first_unset_node(assembler->object_list, node_ic);
-        }
-        else if (data->data == NULL) {
+            last_unset_node =
+              get_first_unset_node(assembler->object_list, node_ic);
+        } else if (data->data == NULL) {
             /* in symbol table but its null (extern) */
             code = add_bits(int_to_voidp(code), 1, 0);
             set_data_int(last_unset_node, code);
@@ -460,7 +460,8 @@ process_words(struct assembler_data* assembler,
             insert_ll_node(extern_list,
                            create_bucket(word, int_to_voidp(ic - 1)));
             (*extern_flag) = 1;
-            last_unset_node = get_first_unset_node(assembler->object_list, node_ic);
+            last_unset_node =
+              get_first_unset_node(assembler->object_list, node_ic);
         }
 
         word = get_word(line, idx);
