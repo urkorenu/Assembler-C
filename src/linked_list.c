@@ -73,7 +73,7 @@ insert_ll_node(struct linked_list* head, void* data)
 }
 
 struct linked_list*
-get_last_unset_node(struct linked_list* p, int* ic)
+get_first_unset_node(struct linked_list* p, int* ic)
 {
     while (p->next != NULL) {
         if (p->next->state == DATA_UNSET) {

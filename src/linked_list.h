@@ -33,7 +33,7 @@ extern struct linked_list*
 insert_ll_node(struct linked_list* head, void* data);
 
 extern struct linked_list*
-get_last_unset_node(struct linked_list* p, int* ic);
+get_first_unset_node(struct linked_list* p, int* ic);
 
 extern struct linked_list*
 get_last_node(struct linked_list* p);
