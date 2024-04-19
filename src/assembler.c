@@ -27,7 +27,10 @@ parse_first_phase(struct assembler_data* assembler)
     int line_counter = 0;
     FILE* source_file;
 
-    source_file = fopen(assembler->as_files->processed_path, "r");
+    source_file = verbose_fopen(assembler->as_files->processed_path, "r");
+
+    if (!source_file)
+        return EXIT_FAILURE;
 
     while (get_line(line, source_file) != NULL) {
         line_counter++;

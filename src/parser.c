@@ -42,18 +42,17 @@ process_macro_line(FILE* read_file,
 void
 parse_pre_processor(struct assembler_data* assembler)
 {
-    FILE *read_file = NULL, *write_file = NULL;
-    int line_count = 1;
-    char line[MAXWORD];
-    char* key = NULL;
     int start_idx;
+    int line_count = 1;
     int reading_macro = 0;
+    char* key = NULL;
+    char line[MAXWORD] = {0};
+    FILE *read_file = NULL;
+    FILE *write_file = NULL;
     fpos_t temp_pos;
-
     
     if (!try_init_files((*assembler->as_files), &read_file, &write_file))
         return;
-    fgetpos(read_file, &temp_pos);
 
     while (get_line(line, read_file) != NULL) {
         if (!reading_macro) {
@@ -81,8 +80,6 @@ parse_pre_processor(struct assembler_data* assembler)
                                &reading_macro);
         }
     }
-    memset(line, 0, MAXWORD);
-
     fclose(read_file);
     fclose(write_file);
 }
@@ -505,10 +502,13 @@ process_line(struct assembler_data* assembler,
 static int
 try_init_files(struct files paths, FILE **fread, FILE **fwrite)
 {
+    if (!fread || !fwrite)
+        return 0;
+
     *fread = verbose_fopen(paths.assembly_path, "r");
 
     if ((*fread) != NULL)
         *fwrite = verbose_fopen(paths.assembly_path, "w");
 
-    return ((*fread) != NULL && (*fwrite) != NULL);
+    return (fread[0] != NULL && fwrite[0] != NULL);
 }

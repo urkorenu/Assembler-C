@@ -3,7 +3,7 @@
 void
 print_file_error(const char* fp)
 {
-    fprintf(stderr, "File error for file path: %s\n", fp);
+    fprintf(stderr, "File error: \"%s\": ", fp);
     perror("");
 }
 
