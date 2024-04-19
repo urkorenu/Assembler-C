@@ -31,7 +31,4 @@ assembler_free(struct assembler_data* assembler);
 extern struct assembler_data
 assembler_init(char* path);
 
-void
-assembler_reset(struct assembler_data* assembler);
-
 #endif /* ASSEMBLER_H */

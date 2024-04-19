@@ -8,6 +8,7 @@
 #include "io.h"
 #include "linked_list.h"
 #include "parser.h"
+#include <stdlib.h>
 
 const char ASSEMBLER_MEM_ERR[] = {
     "FATAL ERROR: Failed to allocate memory for struct assembler_data\n"
@@ -90,8 +91,11 @@ parse_second_phase(struct assembler_data* assembler)
     struct linked_list* extern_list = create_new_ll_node(0);
 
     assembler->ic = 100;
-    last_unset_node = get_last_unset_node(assembler->object_list, &node_ic);
+    last_unset_node = get_first_unset_node(assembler->object_list, &node_ic);
     source_file = fopen(assembler->as_files->processed_path, "r");
+
+    if (!source_file)
+        return EXIT_FAILURE;
 
     while (get_line(line, source_file) != NULL) {
         line_counter++;
@@ -104,17 +108,30 @@ parse_second_phase(struct assembler_data* assembler)
                                 &extern_flag,
                                 last_unset_node,
                                 &node_ic);
+        node_ic = 100;
+        last_unset_node =
+          get_first_unset_node(assembler->object_list, &node_ic);
     }
     memset(line, 0, MAXWORD);
 
     if (entry_flag == 1 && is_valid) {
         en_file = fopen(assembler->as_files->entries_path, "w");
-        print_e_list(entry_list, en_file, "\n");
+        if (en_file) {
+            print_e_list(entry_list, en_file, "\n");
+            fclose(en_file);
+            en_file = NULL;
+        }
     }
     if (extern_flag == 1 && is_valid) {
         ex_file = fopen(assembler->as_files->externals_path, "w");
-        print_e_list(extern_list, ex_file, "\n");
+        if (ex_file) {
+            print_e_list(extern_list, ex_file, "\n");
+            fclose(ex_file);
+            ex_file = NULL;
+        }
     }
+
+    fclose(source_file);
     return (is_valid ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
@@ -135,9 +152,11 @@ assembler_free(struct assembler_data* assembler)
     if (assembler == NULL)
         return;
 
-    assembler_reset(assembler);
-    free(assembler);
-    assembler = NULL;
+    llfree(assembler->object_list);
+    btree_free(assembler->symbol_table);
+    btree_free(assembler->macro_tree);
+    files_free(assembler->as_files);
+    memset(assembler, 0, sizeof(struct assembler_data));
 }
 
 struct assembler_data
@@ -154,16 +173,4 @@ assembler_init(char* path)
     assembler.data_c = 0;
     set_file_pack(assembler.as_files, path);
     return assembler;
-}
-
-void
-assembler_reset(struct assembler_data* assembler)
-{
-    llfree(assembler->errors);
-    llfree(assembler->object_list);
-    btree_free(assembler->symbol_table);
-    btree_free(assembler->macro_tree);
-    files_free(assembler->as_files);
-    memset(assembler, 0, sizeof(struct assembler_data));
-    free(assembler);
 }
