@@ -508,7 +508,7 @@ try_init_files(struct files paths, FILE **fread, FILE **fwrite)
     *fread = verbose_fopen(paths.assembly_path, "r");
 
     if ((*fread) != NULL)
-        *fwrite = verbose_fopen(paths.assembly_path, "w");
+        *fwrite = verbose_fopen(paths.processed_path, "w");
 
     return (fread[0] != NULL && fwrite[0] != NULL);
 }

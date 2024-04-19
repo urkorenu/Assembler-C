@@ -133,9 +133,6 @@ create_tnode(const char* key, void* data)
         fprintf(stderr, "Key is null! (key=%p)\n", (void*)key);
         return NULL;
     }
-    else {
-        fprintf(stdout, "Key is ok. (key=%s)\n", key);
-    }
 
     node = malloc(sizeof(struct tnode));
     if (node != NULL) {
