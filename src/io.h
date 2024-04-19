@@ -6,6 +6,9 @@
 #define MAX_LEN 81
 #define MAX_INDEX_LENGTH 4
 
+extern FILE*
+verbose_fopen(const char *fp, const char *modes);
+
 extern char*
 get_line(char* line, FILE* file);
 

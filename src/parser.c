@@ -2,6 +2,10 @@
 #include "assembler.h"
 #include "io.h"
 #include "linked_list.h"
+#include <stdio.h>
+
+static int
+try_init_files(struct files paths, FILE **fread, FILE **fwrite);
 
 void
 process_regular_line(FILE* read_file,
@@ -11,8 +15,8 @@ process_regular_line(FILE* read_file,
                      struct assembler_data* assembler,
                      int* reading_macro,
                      int* start_idx,
-                     fpos_t temp_pos,
-                     char* key);
+                     fpos_t* temp_pos,
+                     char** key);
 void
 process_macro_line(FILE* read_file,
                    FILE* write_file,
@@ -38,7 +42,7 @@ process_macro_line(FILE* read_file,
 void
 parse_pre_processor(struct assembler_data* assembler)
 {
-    FILE *read_file, *write_file;
+    FILE *read_file = NULL, *write_file = NULL;
     int line_count = 1;
     char line[MAXWORD];
     char* key = NULL;
@@ -46,15 +50,10 @@ parse_pre_processor(struct assembler_data* assembler)
     int reading_macro = 0;
     fpos_t temp_pos;
 
-    read_file = fopen(assembler->as_files->assembly_path, "r");
-    if (read_file == NULL) {
-        fprintf(stderr,
-                "Error opening read_file %s: ",
-                assembler->as_files->assembly_path);
-        perror("");
+    
+    if (!try_init_files((*assembler->as_files), &read_file, &write_file))
         return;
-    }
-    write_file = fopen(assembler->as_files->processed_path, "w");
+    fgetpos(read_file, &temp_pos);
 
     while (get_line(line, read_file) != NULL) {
         if (!reading_macro) {
@@ -65,8 +64,8 @@ parse_pre_processor(struct assembler_data* assembler)
                                  assembler,
                                  &reading_macro,
                                  &start_idx,
-                                 temp_pos,
-                                 key);
+                                 &temp_pos,
+                                 &key);
 
         }
 
@@ -96,8 +95,8 @@ process_regular_line(FILE* read_file,
                      struct assembler_data* assembler,
                      int* reading_macro,
                      int* start_idx,
-                     fpos_t temp_pos,
-                     char* key)
+                     fpos_t* temp_pos,
+                     char** key)
 {
     char* word = NULL;
     int idx = 0;
@@ -106,15 +105,15 @@ process_regular_line(FILE* read_file,
     word = get_word(line, &idx);
     if (strcmp(word, "mcr") == 0) {
         (*reading_macro) = 1;
-        key = get_word(line, &idx);
+        (*key) = get_word(line, &idx);
         (*start_idx) = ++(*line_count);
-        fgetpos(read_file, &temp_pos);
+        fgetpos(read_file, temp_pos);
     } else {
         temp = get_data_by_key(assembler->macro_tree, word);
         if (temp) {
-            fgetpos(read_file, &temp_pos);
+            fgetpos(read_file, temp_pos);
             insert_macro(temp, read_file, write_file);
-            fsetpos(read_file, &temp_pos);
+            fsetpos(read_file, temp_pos);
             ++(*line_count);
         } else {
             fprintf(write_file, "%s", line);
@@ -501,4 +500,15 @@ process_line(struct assembler_data* assembler,
                       last_unset_node);
     }
     return is_valid;
+}
+
+static int
+try_init_files(struct files paths, FILE **fread, FILE **fwrite)
+{
+    *fread = verbose_fopen(paths.assembly_path, "r");
+
+    if ((*fread) != NULL)
+        *fwrite = verbose_fopen(paths.assembly_path, "w");
+
+    return ((*fread) != NULL && (*fwrite) != NULL);
 }
