@@ -1,7 +1,7 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include "Errors.h"
+#include "error.h"
 #include "assembler.h"
 #include "binary_tree.h"
 #include "bucket.h"

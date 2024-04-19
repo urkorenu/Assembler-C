@@ -1,4 +1,4 @@
-#include "Errors.h"
+#include "error.h"
 
 void
 print_file_error(const char* fp)

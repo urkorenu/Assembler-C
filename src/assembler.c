@@ -1,5 +1,5 @@
 #include "assembler.h"
-#include "Errors.h"
+#include "error.h"
 #include "binary_tree.h"
 #include "bucket.h"
 #include "encode.h"
