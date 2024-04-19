@@ -23,7 +23,7 @@ main(int argc, char* argv[])
         } else {
             is_valid = EXIT_FAILURE;
         }
-        /* assembler_free(&assembler); */
+        assembler_free(&assembler);
     }
     return is_valid;
 }
