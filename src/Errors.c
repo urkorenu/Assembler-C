@@ -3,7 +3,9 @@
 void
 print_file_error(const char* fp)
 {
-    fprintf(stderr, "File error: \"%s\": ", fp);
+    if (!errno)
+        return;
+    fprintf(stderr, "Fatal Error:\n%*s\"%s\": ", 4, " ", fp);
     perror("");
 }
 
