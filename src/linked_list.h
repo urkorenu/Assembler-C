@@ -66,7 +66,6 @@ get_first_unset_node(struct linked_list* p, int* ic);
 
  /**
  * @brief This function gets the last node of the linked list.
-   and returns the first node with its data state unset.
  * @param p A pointer to the current node from which the traversal begins.
  * @return Returns a pointer to the last node in the linked list.
  */ 
