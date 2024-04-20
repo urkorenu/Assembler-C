@@ -81,6 +81,11 @@ print_linked_list(struct assembler_data* assembler);
 extern void
 print_e_list(const struct linked_list* p, FILE* file, const char* sep);
 
+
+ /**
+ * @brief This function recursively frees the memory allocated for each node in the linked list
+ * @param p A pointer to the current node from which the traversal begins.
+ */ 
 extern void
 llfree(struct linked_list* p);
 
