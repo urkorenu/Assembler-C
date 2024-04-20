@@ -75,6 +75,11 @@ get_last_node(struct linked_list* p);
 extern struct linked_list*
 llalloc(void);
 
+ /**
+ * @brief This function prints the contents of the object list linked list to a file.
+ * @param assembler A pointer to the assembler data structure containing information about the assembly process.
+ * @param file A file pointer used to write to the file.
+ */ 
 extern void
 print_linked_list(struct assembler_data* assembler);
 
