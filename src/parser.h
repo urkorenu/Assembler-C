@@ -108,6 +108,28 @@ line_to_bin_1st(struct assembler_data* assembler,
 extern int
 parse_define(struct assembler_data* assembler, char* line, int* idx);
 
+/**
+ * @brief Parses the data store instruction in the assembly code.
+ * This function handles the reading of symbols and data during the parsing process.
+   Invokes functions to handle symbols and process data accordingly.
+ * @param assembler A pointer to a structure (struct assembler_data) containing data and tools for assembling code.
+   It provides access to assembler-specific information and functionalities.
+ * @param line A pointer to a character array representing a line of assembly code.
+   This line typically contains the data store instruction to be parsed.
+ * @param word A pointer to a character array representing a word extracted from the assembly code line.
+    It may contain a symbol or data value being parsed.
+ * @param reading_symbol A pointer to an integer flag indicating whether the function 
+    is currently reading a symbol in the assembly code line.
+ * @param reading_data A pointer to an integer flag indicating whether the function
+    is currently reading data in the assembly code line.
+ * @param symbol A pointer to a character array representing a symbol extracted from the assembly code line.
+    It is used when handling symbols during parsing.
+ * @param idx A pointer to an integer representing the current index in the line being parsed.
+    It is used to keep track of the position within the line while parsing.
+   @return Returns an integer value. 
+    It returns 1 after successful parsing of the data store instruction, indicating that the function has completed.
+    It return 0 if any errors occur during the parsing, to indicate that the parsing process was unsuccessful.
+*/
 extern int
 parse_data_store_instruction(struct assembler_data* assembler,
                              char* line,
@@ -117,9 +139,56 @@ parse_data_store_instruction(struct assembler_data* assembler,
                              char* symbol,
                              int* idx);
 
+/**
+ * @brief Parses the .extern directive in the assembly code.
+ * This function Verifies the syntax of the .extern directive.
+   Inserts the symbol specified by the .extern directive into the symbol table with the appropriate type (EXTERNAL).
+ * @param assembler A pointer to a structure (struct assembler_data) containing data and tools for assembling code. 
+    It provides access to assembler-specific information and functionalities, such as the symbol table.
+ * @param line A pointer to a character array representing a line of assembly code.
+    This line typically contains the .extern directive to be parsed.
+ * @param idx A pointer to an integer representing the current index in the line being parsed.
+   It is used to keep track of the position within the line while parsing.
+ * @param key A pointer to a character array representing the symbol specified by the .extern directive.
+    It is extracted from the assembly code line and used to insert the symbol into the symbol table.
+   @return Returns 1 if the directive is successfully parsed and the symbol is inserted into the symbol table
+    Returns 0 if the analysis failed. If we encountered any errors during the analysis.
+    */
 extern int
 parse_extern(struct assembler_data* assembler, char* line, int* idx);
 
+/**
+ * @brief Parses an instruction in the assembly code.
+ * This function Manages the reading of symbols and data during the parsing process.
+   Initializes an instruction structure and a code bucket.
+   Checks if the symbol associated with the instruction is already initialized.
+   Sets the instruction counter for the code bucket.
+   Parses the instruction line and converts it into binary format.
+ * @param assembler containing data and tools for assembling code.
+   It provides access to assembler-specific information and functionalities, 
+   such as the symbol table and instruction counter.
+ * @param line A pointer to a character array representing a line of assembly code.
+    This line typically contains the instruction to be parsed.
+ * @param idx A pointer to an integer representing the current index in the line being parsed.
+   It is used to keep track of the position within the line while parsing.
+ * @param reading_data A pointer to an integer flag indicating whether the function
+    is currently reading data in the assembly code line.
+    It is used to control the parsing process.
+ * @param reading_symbol A pointer to an integer flag indicating whether the function 
+    is currently reading a symbol in the assembly code line.
+    It is used to control the parsing process.
+ * @param symbol A pointer to a character array representing a symbol associated with the instruction. 
+ * @param line_counter A pointer to an integer representing the current line number being processed.
+    It is used for error reporting.
+ * @param word A pointer to a character array representing a word extracted from the assembly code line.
+    It may contain the opcode or operand of the instruction.
+ * @param b A pointer to a structure (struct bucket) representing a code bucket associated with the instruction.
+    It is used to store information about the instruction in the symbol table.
+ * @param inst A pointer to a structure (struct line_data) representing the parsed information 
+   of the assembly code instruction.
+   @return Returns 1 if the directive is successfully parsed and the symbol is inserted into the symbol table
+    Returns 0 if the analysis failed. If we encountered any errors during the analysis.
+    */
 extern int
 parse_instruction(struct assembler_data* assembler,
                   char* line,
