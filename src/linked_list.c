@@ -9,7 +9,15 @@
 #include "bucket.h"
 #include "files.h"
 
+
 /* Function prototypes */
+/**
+ * @brief This function prints the contents of a linked list to a file
+ * @param p A pointer to the linked list structure containing the data to be printed.
+ * @param file A pointer to the file where the contents will be printed.
+ * @param sep The separator string used to separate each element in the output.
+ * @param ic The instruction counter value appended to each element in the output.
+ */ 
 static void
 _print_linked_list(const struct linked_list* p,
                    FILE* file,
