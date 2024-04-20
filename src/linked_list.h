@@ -83,6 +83,12 @@ llalloc(void);
 extern void
 print_linked_list(struct assembler_data* assembler);
 
+/**
+ * @brief This function print the elements of a linked list to a file. 
+ * @param  p Pointer to the current node of the linked list.
+ * @param file File pointer representing the file where the elements will be printed.
+ * @param sep Separator string used to separate elements in the file.
+ */ 
 extern void
 print_e_list(const struct linked_list* p, FILE* file, const char* sep);
 
