@@ -1,14 +1,9 @@
 #include "assembler.h"
-#include "error.h"
 #include "binary_tree.h"
-#include "bucket.h"
-#include "encode.h"
 #include "files.h"
-#include "instruction.h"
 #include "io.h"
 #include "linked_list.h"
 #include "parser.h"
-#include <stdlib.h>
 
 const char ASSEMBLER_MEM_ERR[] = {
     "FATAL ERROR: Failed to allocate memory for struct assembler_data\n"

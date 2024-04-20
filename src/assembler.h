@@ -12,6 +12,7 @@ struct assembler_data {
     int ic; /* Instruction Counter */
     int data_c; /* The count of data elements encountered during assembly.*/
     int instruction_c; /* The count of instructions encountered during assembly.*/
+};
 
 extern const char ASSEMBLER_MEM_ERR[];
 
