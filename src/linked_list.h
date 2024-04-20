@@ -31,9 +31,20 @@ create_new_ll_node(void* data);
 extern void
 set_data(struct linked_list* p, void* data);
 
+ /**
+ * @brief This function sets the data of a linked list node to an integer value
+ * @param p A pointer to the linked list node whose data will be set.
+ * @param data The integer value to be assigned to the linked list node.
+ */ 
 extern void
 set_data_int(struct linked_list* p, int data);
 
+/**
+ * @brief This function allocates memory for a new linked list node.
+ * @param new_node A pointer to the newly created linked list node.
+ * @param data The data to be stored in the new linked list node.
+ * @return Returns a pointer to the newly created linked list node.
+ */ 
 extern struct linked_list*
 insert_ll_node(struct linked_list* head, void* data);
 
