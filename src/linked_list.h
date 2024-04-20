@@ -23,6 +23,11 @@ struct linked_list {
 extern struct linked_list*
 create_new_ll_node(void* data);
 
+ /**
+ * @brief This function sets the data pointer of a linked list node to a specified value and updates its state to indicate that the data has been set.
+ * @param  p A pointer to the linked list node whose data will be set.
+ * @param data The data value to be assigned to the linked list node.
+ */ 
 extern void
 set_data(struct linked_list* p, void* data);
 
