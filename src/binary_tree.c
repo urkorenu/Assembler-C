@@ -67,9 +67,8 @@ get_data_by_key(struct binary_tree* tree, const char* key)
     struct tnode* node = _find_node(tree->root, key);
     if (node != NULL && node->node != NULL && node->node->data != NULL) {
         return node->node->data;
-    } else {
-        return NULL;
     }
+    return NULL;
 }
 
 /* Print binary tree by its key and ic - suited for symbol table */

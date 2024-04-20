@@ -56,4 +56,7 @@ modify_path(const char* path, const char* format);
 extern void
 set_file_pack(struct files* files, const char* path);
 
+extern int
+try_init_files(struct files paths, FILE** fread, FILE** fwrite);
+
 #endif /*_FILES_H*/

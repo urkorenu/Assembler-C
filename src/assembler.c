@@ -1,5 +1,6 @@
 #include "assembler.h"
 #include "binary_tree.h"
+#include "error.h"
 #include "files.h"
 #include "io.h"
 #include "linked_list.h"
@@ -24,15 +25,17 @@ parse_first_phase(struct assembler_data* assembler)
 
     source_file = verbose_fopen(assembler->as_files->processed_path, "r");
 
-    if (!source_file)
-        return EXIT_FAILURE;
+    if (!source_file) {
+        print_in_error(FAILED_OPEN_READING, 0);
+        return 0;
+    }
 
     while (get_line(line, source_file) != NULL) {
         line_counter++;
         word = get_word(line, &idx);
 
         if (strcmp(word, ".define") == 0) {
-            is_valid = parse_define(assembler, line, &idx);
+            is_valid = parse_define(assembler, line, &idx, line_counter);
 
         } else if (is_symbol(word)) {
             int temp_index = 0;
@@ -48,21 +51,24 @@ parse_first_phase(struct assembler_data* assembler)
                                                     &reading_symbol,
                                                     &reading_data,
                                                     symbol,
-                                                    &idx);
+                                                    &idx,
+                                                    line_counter);
         }
         if (is_e_instruction(word)) {
             if (strcmp(word, ".extern") == 0) {
-                is_valid = parse_extern(assembler, line, &idx);
+                is_valid = parse_extern(assembler, line, &idx, line_counter);
             }
+
         } else {
             is_valid = parse_instruction(assembler,
                                          line,
                                          &idx,
-                                         &reading_data,
-                                         &reading_symbol,
+                                         reading_data,
+                                         reading_symbol,
                                          symbol,
                                          &line_counter,
-                                         word);
+                                         word,
+                                         line_counter);
         }
         word = NULL;
         symbol = NULL;
@@ -72,7 +78,7 @@ parse_first_phase(struct assembler_data* assembler)
         reading_data = 0;
     }
     fclose(source_file);
-    return (is_valid ? EXIT_SUCCESS : EXIT_FAILURE);
+    return is_valid;
 }
 
 int
@@ -93,7 +99,7 @@ parse_second_phase(struct assembler_data* assembler)
     source_file = fopen(assembler->as_files->processed_path, "r");
 
     if (!source_file)
-        return EXIT_FAILURE;
+        return 0;
 
     while (get_line(line, source_file) != NULL) {
         line_counter++;
@@ -130,7 +136,7 @@ parse_second_phase(struct assembler_data* assembler)
     }
 
     fclose(source_file);
-    return (is_valid ? EXIT_SUCCESS : EXIT_FAILURE);
+    return is_valid;
 }
 
 struct assembler_data*

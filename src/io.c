@@ -8,9 +8,8 @@
 #include "parser.h"
 #include <stdio.h>
 
-
 FILE*
-verbose_fopen(const char *fp, const char *modes)
+verbose_fopen(const char* fp, const char* modes)
 {
     FILE* f;
 
@@ -31,7 +30,13 @@ verbose_fopen(const char *fp, const char *modes)
 char*
 get_line(char* line, FILE* file)
 {
-    return fgets(line, MAXWORD, file);
+    char* result = fgets(line, MAXWORD, file);
+
+    if (result == NULL && ferror(file)) {
+        perror("Error reading from file:");
+        clearerr(file);
+    }
+    return result;
 }
 
 /* Function to extract a word from a line */

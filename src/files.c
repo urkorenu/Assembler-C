@@ -1,10 +1,11 @@
 #include "files.h"
+#include "io.h"
+#include "error.h"
 
 /* Error message for memory allocation failure */
 const char FILES_ALLOC_ERR[] = {
     "Failed to allocate memory for struct files - Buy more RAM lol!\n"
 };
-
 
 /* Allocate memory for struct files */
 extern struct files*
@@ -33,6 +34,8 @@ modify_path(const char* path, const char* format)
         return NULL;
     }
 
+    if (!path)
+        return NULL;
     strcpy(new_path, path);
     strcat(new_path, format);
 
@@ -49,4 +52,23 @@ set_file_pack(struct files* files, const char* path)
     files->externals_path = modify_path(path, EXTERN);
     files->entries_path = modify_path(path, ENTRY);
     return;
+}
+
+int
+try_init_files(struct files paths, FILE** fread, FILE** fwrite)
+{
+    if (!fread || !fwrite)
+        return 0;
+
+    *fread = verbose_fopen(paths.assembly_path, "r");
+
+    if ((*fread) != NULL) {
+        *fwrite = verbose_fopen(paths.processed_path, "w");
+
+        if ((*fwrite) == NULL)
+            print_in_error(FAILED_OPEN_WRITING, 0);
+    } else {
+        print_in_error(FAILED_OPEN_READING, 0);
+    }
+    return (fread[0] != NULL && fwrite[0] != NULL);
 }

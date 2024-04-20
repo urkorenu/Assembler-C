@@ -1,4 +1,5 @@
 #include "encode.h"
+#include "error.h"
 #include "io.h"
 #include "linked_list.h"
 
@@ -51,19 +52,18 @@ encode_string(struct assembler_data* assembler, const char* line)
 
 /* Encode data */
 void
-encode_data(struct assembler_data* assembler, const char* line)
+encode_data(struct assembler_data* assembler, const char* line, int line_count)
 {
 
     int idx = 0;
     int temp = 0;
     int found_comma;
     char* word = NULL;
-    int* idx_ptr = &idx;
     struct bucket* temp_data;
-    word = get_word(line, idx_ptr);
-    word = get_word(line, idx_ptr);
+    word = get_word(line, &idx);
+    word = get_word(line, &idx);
 
-    while ((word = get_word(line, idx_ptr))) {
+    while ((word = get_word(line, &idx))) {
         if (is_ended_with_x(word, COMMA)) {
             found_comma = 1;
             remove_last_char(word);
@@ -80,19 +80,19 @@ encode_data(struct assembler_data* assembler, const char* line)
                                        int_to_voidp(temp));
                         assembler->data_c++;
                         assembler->ic++;
-                    } else
-                        ;
-                    /* error - value error */
-                } else
-                    ;
-                /* error - index is not defined */
-            } else
+                    } else {
+                        print_in_error(INVAILD_DATA, line_count);
+                    }
+                } else {
+                    print_in_error(NOT_DEFINED, line_count);
+                }
+            } else {
                 return;
-            /* error - Unknown index*/
-        } /* inst->source = word; */
+            }
+        }
 
         if (!found_comma) {
-            word = get_word(line, idx_ptr);
+            word = get_word(line, &idx);
             if (is_starting_with_x(word, COMMA)) {
                 remove_first_char(word);
                 if (word[0] != '0')
@@ -144,7 +144,8 @@ void
 encode_direct(struct assembler_data* assembler,
               struct line_data* inst,
               struct linked_list* source_code,
-              int source)
+              int source,
+              int line_count)
 {
     int temp = 0;
     struct bucket* temp_data;
@@ -170,14 +171,11 @@ encode_direct(struct assembler_data* assembler,
                     assembler->instruction_c++;
                     assembler->ic++;
                 } else
-                    ;
-                /* error : value error */
+                    print_in_error(INVAILD_DATA, line_count);
             } else
-                ;
-            /* error : not a defined symbol */
+                print_in_error(SYMBOL_NOT_FOUND, line_count);
         } else
-            ;
-        /* error : Unknown data */
+            print_in_error(SYMBOL_NOT_FOUND, line_count);
     }
 }
 
@@ -186,7 +184,8 @@ encode_index(struct assembler_data* assembler,
              struct line_data* inst,
              struct linked_list* source_code,
              int source,
-             char* index)
+             char* index,
+             int line_count)
 {
     struct bucket* temp_data;
     int operand_location = DESTINATION_OPERAND;
@@ -220,14 +219,11 @@ encode_index(struct assembler_data* assembler,
                     assembler->instruction_c++;
                     assembler->ic++;
                 } else
-                    ;
-                /* error - value error */
+                    print_in_error(INVAILD_DATA, line_count);
             } else
-                ;
-            /* error - index is not defined */
+                print_in_error(SYMBOL_NOT_FOUND, line_count);
         } else
-            ;
-        /* error - Unknown index*/
+            print_in_error(SYMBOL_NOT_FOUND, line_count);
     }
 }
 void
@@ -255,17 +251,19 @@ encode_operand(struct assembler_data* assembler,
                struct linked_list* source_code,
                char* operand,
                int is_source,
-               int* found_reg)
+               int* found_reg,
+               int line_count)
 {
     if (is_register(operand)) {
         encode_register(assembler, inst, (*found_reg), source_code, is_source);
         (*found_reg) = 1;
     } else if (is_starting_with_x(operand, HASH)) {
-        encode_direct(assembler, inst, source_code, is_source);
+        encode_direct(assembler, inst, source_code, is_source, line_count);
     } else {
         char* index = get_index(operand);
         if (index) {
-            encode_index(assembler, inst, source_code, is_source, index);
+            encode_index(
+              assembler, inst, source_code, is_source, index, line_count);
             free(index);
         } else {
             encode_null(assembler, inst, source_code, is_source);

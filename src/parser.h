@@ -74,7 +74,8 @@ get_index(char* word);
 extern int
 parse_line(struct assembler_data* assembler,
            char* line,
-           struct line_data* inst);
+           struct line_data* inst,
+           int line_count);
 
 /**
  * @brief Converts the first pass of an assembly code line into binary format.
@@ -108,7 +109,7 @@ line_to_bin_1st(struct assembler_data* assembler,
    @return Returns 0 if any errors are encountered during parsing, otherwise continues parsing.
 */
 extern int
-parse_define(struct assembler_data* assembler, char* line, int* idx);
+parse_define(struct assembler_data* assembler, char* line, int* idx, int line_count);
 
 /**
  * @brief Parses the data store instruction in the assembly code.
@@ -139,7 +140,8 @@ parse_data_store_instruction(struct assembler_data* assembler,
                              int* reading_symbol,
                              int* reading_data,
                              char* symbol,
-                             int* idx);
+                             int* idx,
+                             int line_count);
 
 /**
  * @brief Parses the .extern directive in the assembly code.
@@ -157,7 +159,7 @@ parse_data_store_instruction(struct assembler_data* assembler,
     Returns 0 if the analysis failed. If we encountered any errors during the analysis.
     */
 extern int
-parse_extern(struct assembler_data* assembler, char* line, int* idx);
+parse_extern(struct assembler_data* assembler, char* line, int* idx, int line_count);
 
 /**
  * @brief Parses an instruction in the assembly code.
@@ -195,11 +197,12 @@ extern int
 parse_instruction(struct assembler_data* assembler,
                   char* line,
                   int* idx,
-                  int* reading_data,
-                  int* reading_symbol,
+                  int reading_data,
+                  int reading_symbol,
                   char* symbol,
                   int* line_counter,
-                  char* word);
+                  char* word, 
+                  int line_count);
 
 /**
  * @brief This function processes each line of the assembly code,
