@@ -44,13 +44,32 @@ set_data(struct linked_list* p, void* data);
 extern void
 set_data_int(struct linked_list* p, int data);
 
-
+ /**
+ * @brief This function inserts a new node containing the provided data at the end of the linked list.
+ * @param  head A pointer to the head of the linked list.
+ * @param  last_node A pointer to the last node of the linked list.
+ * @return Returns a pointer to the newly inserted node at the end of the linked list.
+ */ 
 extern struct linked_list*
 insert_ll_node(struct linked_list* head, void* data);
 
+
+ /**
+ * @brief This function traverses the linked list starting from the provided node p
+   and returns the first node with its data state unset.
+ * @param p A pointer to the current node from which the traversal begins.
+ * @param ic A pointer to the instruction counter, which is incremented for each node visited.
+ * @return Returns  a pointer to the first node with its data state unset in the linked list.
+ */ 
 extern struct linked_list*
 get_first_unset_node(struct linked_list* p, int* ic);
 
+ /**
+ * @brief This function gets the last node of the linked list.
+   and returns the first node with its data state unset.
+ * @param p A pointer to the current node from which the traversal begins.
+ * @return Returns a pointer to the last node in the linked list.
+ */ 
 extern struct linked_list*
 get_last_node(struct linked_list* p);
 
