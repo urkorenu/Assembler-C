@@ -19,7 +19,12 @@ struct linked_list {
 };
 
 #define get_lnode_data(lnode, dtype) ((dtype)((lnode)->data))
-
+/**
+ * @brief This function allocates memory for a new linked list node.
+ * @param new_node A pointer to the newly created linked list node.
+ * @param data The data to be stored in the new linked list node.
+ * @return Returns a pointer to the newly created linked list node.
+ */ 
 extern struct linked_list*
 create_new_ll_node(void* data);
 
@@ -39,12 +44,7 @@ set_data(struct linked_list* p, void* data);
 extern void
 set_data_int(struct linked_list* p, int data);
 
-/**
- * @brief This function allocates memory for a new linked list node.
- * @param new_node A pointer to the newly created linked list node.
- * @param data The data to be stored in the new linked list node.
- * @return Returns a pointer to the newly created linked list node.
- */ 
+
 extern struct linked_list*
 insert_ll_node(struct linked_list* head, void* data);
 
