@@ -1,9 +1,9 @@
 #ifndef _IO_H
 #define _IO_H
+
 #include "includes.h"
 
-#define MAXWORD 100
-#define MAX_LEN 81
+#define MAXWORD 81
 #define MAX_INDEX_LENGTH 4
 
 extern FILE*

@@ -3,81 +3,56 @@
 
 #include "includes.h"
 
-/* Represents an error with an associated error ID and error message */
-typedef struct Error {
-    int error_id;    /* Unique identifier for the error */
-    char* error_msg; /* Error message associated with the error */
-} Error;
+#define print_in_error(code, line) _print_in_error((code), (line), __FILE__, __LINE__);
+
+/* this func print internal errors. */
+extern void
+_print_in_error(int error_code, int line, char* origin_file, int origin_line);
+
+extern void
+print_file_error(const char *fp);
 
 /* Represents error codes for various types of errors */
 typedef enum ERROR_CODES {
     /* The following errors are macro related or general */
-    ERROR_CODE_0 = 0,
-    ERROR_CODE_1,
-    ERROR_CODE_2,
-    ERROR_CODE_3,
-    ERROR_CODE_4,
-    ERROR_CODE_5,
-    ERROR_CODE_6,
-    ERROR_CODE_7,
-    ERROR_CODE_8,
-    ERROR_CODE_9,
-    ERROR_CODE_10,
-    ERROR_CODE_11,
-    ERROR_CODE_12,
-    ERROR_CODE_13,
-    ERROR_CODE_14,
-    ERROR_CODE_15,
-    ERROR_CODE_16,
-    ERROR_CODE_17,
-    ERROR_CODE_18,
-
-    /* if you think about more or less errors you can add or delete. */
+    VALID = 0,
+    DYNAMIC_ALLOCATE_FAIL,
+    FILENAME_TOO_LONG,
+    FILE_NAME_DOESNT_EXIST,
+    LINE_TOO_LONG,
+    FAILED_OPEN_WRITING,
+    FAILED_OPEN_READING,
+    MACRO_DOESNT_END,
+    EXTRA_TEXT,
+    SYMBOL_DEFINED,
+    MACRO_DEFINED,
+    NO_MACRO,
+    ILLEGAL_NAME,
+    SYMBOL_NOT_FOUND,
 
     /* The following errors are related to reading command assembly lines */
-    ERROR_CODE_28,
-    ERROR_CODE_29,
-    ERROR_CODE_30 = 30,
-    ERROR_CODE_31,
-    ERROR_CODE_32,
-    ERROR_CODE_33,
-    ERROR_CODE_34,
-    ERROR_CODE_35,
-    ERROR_CODE_36,
-    ERROR_CODE_37,
-    ERROR_CODE_38,
-    ERROR_CODE_39,
-    ERROR_CODE_40,
-    ERROR_CODE_41,
-    ERROR_CODE_42,
-    ERROR_CODE_43,
-    ERROR_CODE_44,
-    ERROR_CODE_45,
-    ERROR_CODE_46,
-    ERROR_CODE_47,
-    ERROR_CODE_48,
-    ERROR_CODE_49,
+    KEY_DEFINED,
+    MISSING_COMMAND,
+    ILLEGAL_OPCODE,
+    ILLEGAL_ARG,
+    MISSING_ARG,
+    MISSING_COMMA,
+    EXTRA_COMMAS,
+    MISPLACED_COMMA,
+    ILLEGAL_REG,
+    INVALID_COMMAD,
+    NOT_DEFINED,
 
     /* The following errors are related to reading instruction .data or .string
        lines related errors */
-    ERROR_CODE_50 = 50,
-    ERROR_CODE_51,
-    ERROR_CODE_52,
-    ERROR_CODE_53,
-    ERROR_CODE_54,
-    ERROR_CODE_55,
-    ERROR_CODE_56,
-    ERROR_CODE_57,
-    ERROR_CODE_58,
-    ERROR_CODE_59
+    TYPE_ERROR,
+    MISSING_QUOTES,
+    EXTRA_TEXT_AFTER_STRING,
+    EXTERN_DEFINED,
+    INVAILD_DATA,
+
+    TOTAL_NUMBER_OF_ERRORS
 } ERROR_CODES;
 
-
-/* this func print internal errors. */
-extern void
-print_in_error(int error_code);
-
-extern void
-print_file_error(const char *fp);
 
 #endif /* ERROR_H */
