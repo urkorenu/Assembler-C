@@ -6,8 +6,8 @@
 #include <stdio.h>
 
 struct macro {
-    fpos_t start;
-    int lines;
+    fpos_t start; /*The position in the file where the macro definition starts*/
+    int lines; /* The number of lines in the macro definition.*/
 };
 
 /**
