@@ -31,7 +31,9 @@
 #define INDEX_ADDRESS 2
 #define REGISTER_ADDRESS 3
 
+/*Preprocessor macro that casts a variable to a void pointer*/
 #define to_void_ptr(val) ((void*)(&(val)))
+
 /**
  * @brief Parses the file and operate the pre-processor into a file.
  * This function reads pre-processor directives from the given file and performs
@@ -199,6 +201,20 @@ parse_instruction(struct assembler_data* assembler,
                   int* line_counter,
                   char* word);
 
+/**
+ * @brief This function processes each line of the assembly code,
+   identifying symbols, data store instructions, externs, and entries.
+ * @param assembler Pointer to the assembler data structure containing various information about the assembly process.
+ * @param line The current line of assembly code being processed.
+ * @param line_counter  Pointer to an integer representing the line number.
+ * @param entry_list Pointer to a linked list storing entry points.
+ * @param entry_flag Pointer to an integer flag indicating whether an entry point is encountered.
+ * @param extern_list Pointer to a linked list storing external symbols.
+ * @param extern_flag Pointer to an integer flag indicating whether an extern symbol is encountered.
+ * @param last_unset_node Pointer to the last node in the object list where data is yet to be set.
+ * @param node_ic Pointer to an integer representing the instruction counter.
+ * @return Returns 1 if the processing of the line was successful, otherwise 0.
+ */ 
 extern int
 process_line(struct assembler_data* assembler,
              char* line,
