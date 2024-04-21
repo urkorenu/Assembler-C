@@ -127,6 +127,12 @@ mystrdup(const char* s);
 extern void*
 int_to_voidp(int data);
 
+
+ /**
+ * @brief This function removes square brackets [] from a string.
+ * @param word The string from which square brackets are to be removed.
+ * @return Returns the modified string with square brackets removed.
+ */  
 extern char*
 remove_square_brackets(char* word);
 
