@@ -70,15 +70,41 @@ is_data_store_instruction(const char* word);
 extern int
 is_symbol(const char* word);
 
+/**
+ * @brief This function checks  if a given word ends with a specific character.
+ * @param word Pointer to the word being checked.
+ * @param x The character to check if the word ends with.
+ * @return Returns 1 if the word ends with the specified character x.
+    Returns 0 otherwise.
+ */
 extern int
 is_ended_with_x(const char* word, const char x);
 
+ /**
+ * @brief This function checks if a given word starts with a specific character.
+ * @param word Pointer to the word being checked.
+ * @param x The character to check if the word starts with.
+ * @return Returns 1 if the word starts with the specified character x.
+    Returns 0 otherwise.
+ */ 
 extern int
 is_starting_with_x(const char* word, const char x);
 
+ /**
+ * @brief This function checks if a given word represents an E instruction.
+ * @param word Pointer to the word being checked.
+ * @return Returns 1 if the word is ".extern" or ".entry".
+    Returns 0 otherwise.
+ */   
 extern int
 is_e_instruction(const char* word);
 
+ /**
+ * @brief This function checks if a given word represents a register.
+ * @param word Pointer to the word being checked.
+ * @return Returns 1 if the word is a valid register (e.g., "r0" to "r7").
+   Returns 0 otherwise.
+ */ 
 extern int
 is_register(const char* word);
 
