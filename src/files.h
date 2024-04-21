@@ -18,8 +18,10 @@ struct files {
     char* externals_path; /*A pointer to a string representing the path for the externals file.*/
 };
 
+/* Holds an error message string that is used when memory allocation fails during file operations. */
 extern const char FILES_ALLOC_ERR[];
 
+/* Represents default values or configurations related to file. */
 extern const struct files DEFAULT_FILES_VAL;
 
 /**
