@@ -24,7 +24,7 @@ _find_node(struct tnode* root, const char* key)
 {
 
     int cmp;
-    if (root == NULL || root->node == NULL) {
+    if (root == NULL) {
         return NULL;
     }
     cmp = strcmp(root->node->key, key);

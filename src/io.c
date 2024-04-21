@@ -6,8 +6,9 @@
 
 #include "io.h"
 #include "error.h"
+#include "instruction.h"
 #include "parser.h"
-#include <stdio.h>
+#include <string.h>
 
 FILE*
 verbose_fopen(const char* fp, const char* modes)
@@ -45,7 +46,7 @@ char*
 get_word(const char* line, int* idx)
 {
     char* p;
-    int i = 0;
+    int i = 0, j = idx[0];
     if (line == NULL || idx == NULL) {
         return NULL;
     }
@@ -55,22 +56,21 @@ get_word(const char* line, int* idx)
         return NULL;
     }
 
-    while (isspace(line[*idx]))
-        (*idx)++;
+    while (isspace(line[j]))
+        j++;
 
-    while ((line[*idx] != '\0' && line[*idx] != '=' && isgraph(line[*idx])) ||
-           line[*idx] == '\"') {
-        if (line[*idx] == COMMA) {
-
-            p[i++] = line[(*idx)++];
+    while (line[j] != '\0' && line[j] != '=' && isgraph(line[j])) {
+        if (line[j] == COMMA) {
+            p[i++] = line[j++];
             break;
         }
-        p[i++] = line[(*idx)++];
+        p[i++] = line[j++];
     }
-    if (line[*idx] == '=' && i == 0)
-        p[i++] = line[(*idx)++];
+    if (line[j] == '=' && i == 0)
+        p[i++] = line[j++];
 
     p[i] = '\0';
+    idx[0] = j;
 
     return p;
 }
@@ -115,7 +115,7 @@ is_symbol(const char* word)
 
 /* Function to check if a word ends with a specific character */
 int
-is_ended_with_x(const char* word, const char x)
+is_ends_with_x(const char* word, const char x)
 {
     int length = strlen(word);
     if (length > 0 && word[length - 1] == x) {
@@ -153,7 +153,7 @@ is_register(const char* word, int line_count)
         if (0 <= temp && temp <= 7)
             return 1;
         else {
-            print_in_error(ILLEGAL_REG, line_count)
+            print_in_error(ILLEGAL_REG, line_count, word);
         }
     }
     return 0;
@@ -206,9 +206,9 @@ remove_square_brackets(char* word)
 void
 clean_word(char* word)
 {
-    if (is_ended_with_x(word, COMMA))
+    if (is_ends_with_x(word, COMMA))
         remove_last_char(word);
-    if (is_ended_with_x(word, ']'))
+    if (is_ends_with_x(word, ']'))
         word = remove_square_brackets(word);
 }
 
@@ -218,4 +218,23 @@ is_comment(char* line)
     if (line[0] == ';')
         return 1;
     return 0;
+}
+
+int
+is_legal_symbol(char* symbol, int line_count)
+{
+    struct line_data* inst = NULL;
+    inst = init_instruction(inst);
+
+    if (get_instruction(inst, symbol) ||
+        !strcmp(symbol, START_OF_MACRO_DEFINITION) ||
+        !strcmp(symbol, END_OF_MACRO_DEFINITION) ||
+        !strcmp(symbol, START_DATA_DEFINITION) ||
+        !strcmp(symbol, START_STRING_DEFINITION) ||
+        !strcmp(symbol, START_ENTRY_DEFINITION) ||
+        !strcmp(symbol, START_EXTERN_DEFINITION)) {
+        print_in_error(ILLEGAL_SYMBOL_NAME, line_count, symbol);
+        return 0;
+    }
+    return 1;
 }

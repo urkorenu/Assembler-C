@@ -2,6 +2,8 @@
 #include "error.h"
 #include "io.h"
 #include "linked_list.h"
+#include <ctype.h>
+#include <string.h>
 
 #define REGISTER_CODE_FMT "r%1d"
 
@@ -27,22 +29,53 @@ get_register_code(const char* reg)
 
 /* Encode string characters */
 void
-encode_string(struct assembler_data* assembler, const char* line)
+encode_string(struct assembler_data* assembler,
+              const char* line,
+              int line_count)
 {
-    int i = 0;
-    int idx = 0;
-    char* word = NULL;
-    int* idx_ptr = &idx;
     struct linked_list* last_node;
-    word = get_word(line, idx_ptr);
-    word = get_word(line, idx_ptr);
-    word = get_word(line, idx_ptr);
+    int string_started = 0;
+    int string_ended = 0;
+    int string_valid = 0;
+    int idx = 0;
+    char* word;
+    char* iter = NULL;
 
-    for (i = 1; word[i] != '\"' && word[i] != '\0'; i++) {
-        insert_ll_node(assembler->object_list, int_to_voidp((int)word[i]));
-        assembler->data_c++;
-        assembler->ic++;
+    while ((word = get_word(line, &idx))[0] && !string_started) {
+        iter = strchr(word, '\"');
+        string_started = (iter != NULL);
     }
+
+    iter += 1;
+
+    while (string_started && !string_ended && iter[0]) {
+        for (; iter[0] != '\0' && iter[0] != '\"'; iter += 1) {
+            insert_ll_node(assembler->object_list, int_to_voidp((int)iter[0]));
+            assembler->data_c++;
+            assembler->ic++;
+        }
+
+        if (iter[0] != '\"') {
+            iter = word;
+            word = get_word(word, &idx);
+        }
+        else {
+            string_ended = 1;
+        }
+    }
+
+    string_valid = (string_started && string_ended && word[0] == '\0');
+
+    if (!string_started || !string_ended) {
+        print_in_error(MISSING_QUOTES, line_count, NULL);
+        return;
+    }
+
+    if (!string_valid) {
+        print_in_error(EXTRA_TEXT, line_count, NULL);
+        return;
+    }
+
     /* last word of string should  be 0 */
     last_node = insert_ll_node(assembler->object_list, 0);
     last_node->state = DATA_SET;
@@ -63,8 +96,11 @@ encode_data(struct assembler_data* assembler, const char* line, int line_count)
     word = get_word(line, &idx);
     word = get_word(line, &idx);
 
-    while ((word = get_word(line, &idx))) {
-        if (is_ended_with_x(word, COMMA)) {
+    while (word[0]) {
+        word = get_word(line, &idx);
+        if (is_starting_with_x(word, COMMA))
+            print_in_error(EXTRA_COMMAS, line_count, NULL);
+        if (is_ends_with_x(word, COMMA)) {
             found_comma = 1;
             remove_last_char(word);
         }
@@ -81,10 +117,11 @@ encode_data(struct assembler_data* assembler, const char* line, int line_count)
                         assembler->data_c++;
                         assembler->ic++;
                     } else {
-                        print_in_error(INVAILD_DATA, line_count);
+                        print_in_error(
+                          INVALID_DATA, line_count, temp_data->key);
                     }
                 } else {
-                    print_in_error(NOT_DEFINED, line_count);
+                    print_in_error(NOT_DEFINED, line_count, temp_data->data);
                 }
             } else {
                 return;
@@ -155,6 +192,10 @@ encode_direct(struct assembler_data* assembler,
         val_str = inst->source;
     }
 
+    if (!val_str[1]) {
+        print_in_error(INVALID_DIRECT, line_count, val_str);
+        return;
+    }
     if ((temp = atoi(val_str + 1))) {
         temp = temp << 2;
         insert_ll_node(assembler->object_list, int_to_voidp(temp));
@@ -171,11 +212,11 @@ encode_direct(struct assembler_data* assembler,
                     assembler->instruction_c++;
                     assembler->ic++;
                 } else
-                    print_in_error(INVAILD_DATA, line_count);
+                    print_in_error(INVALID_DATA, line_count, temp_data->data);
             } else
-                print_in_error(SYMBOL_NOT_FOUND, line_count);
+                print_in_error(SYMBOL_NOT_FOUND, line_count, val_str + 1);
         } else
-            print_in_error(SYMBOL_NOT_FOUND, line_count);
+            print_in_error(SYMBOL_NOT_FOUND, line_count, val_str + 1);
     }
 }
 
@@ -220,13 +261,13 @@ encode_index(struct assembler_data* assembler,
                     assembler->instruction_c++;
                     assembler->ic++;
                 } else {
-                    print_in_error(INVAILD_DATA, line_count);
+                    print_in_error(INVALID_DATA, line_count, temp_data->key);
                 }
             } else {
-                print_in_error(SYMBOL_NOT_FOUND, line_count);
+                print_in_error(SYMBOL_NOT_FOUND, line_count, index);
             }
         } else {
-            print_in_error(SYMBOL_NOT_FOUND, line_count);
+            print_in_error(SYMBOL_NOT_FOUND, line_count, index);
         }
     }
 }

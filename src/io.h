@@ -9,6 +9,14 @@
 /* maximum length of an index. */
 #define MAX_INDEX_LENGTH 4
 
+
+#define START_OF_MACRO_DEFINITION	"macro"
+#define END_OF_MACRO_DEFINITION		"endm"
+#define START_DATA_DEFINITION		"data"
+#define START_STRING_DEFINITION 	"string"
+#define START_ENTRY_DEFINITION		"entry"
+#define START_EXTERN_DEFINITION 	"extern"
+
 /**
  * @brief This function opens a file with error handling for failure to open.
  * @param fp A pointer to a string containing the file path.
@@ -86,7 +94,7 @@ is_symbol(const char* word);
     Returns 0 otherwise.
  */
 extern int
-is_ended_with_x(const char* word, const char x);
+is_ends_with_x(const char* word, const char x);
 
 /**
 * @brief This function checks if a given word starts with a specific character.
@@ -152,4 +160,9 @@ clean_word(char* word);
 
 extern int
 is_comment(char* line);
+
+extern int
+is_legal_symbol(char* symbol, int line_count);
+
 #endif /*_IO_H*/
+

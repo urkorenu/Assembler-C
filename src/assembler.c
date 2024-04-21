@@ -26,11 +26,13 @@ parse_first_phase(struct assembler_data* assembler)
     source_file = verbose_fopen(assembler->as_files->processed_path, "r");
 
     if (!source_file) {
-        print_in_error(FAILED_OPEN_READING, 0);
+        print_in_error(FAILED_OPEN_READING, 0, NULL);
         return 0;
     }
 
     while (get_line(line, source_file) != NULL) {
+        if (!line[0])
+            continue;
         if (is_comment(line))
             continue;
         line_counter++;
@@ -104,10 +106,12 @@ parse_second_phase(struct assembler_data* assembler)
         return 0;
 
     while (get_line(line, source_file) != NULL) {
+        if (!line[0])
+            continue;
         if (is_comment(line))
             continue;
         line_counter++;
-        is_valid = process_line(assembler,
+        is_valid &= process_line(assembler,
                                 line,
                                 &line_counter,
                                 entry_list,
