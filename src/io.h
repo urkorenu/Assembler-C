@@ -3,7 +3,10 @@
 
 #include "includes.h"
 
-#define MAXWORD 81
+/* Maximum length of a single command line  */
+#define MAXWORD 81  
+
+/* maximum length of an index. */
 #define MAX_INDEX_LENGTH 4
 
  /**
