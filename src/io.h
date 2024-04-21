@@ -6,6 +6,13 @@
 #define MAXWORD 81
 #define MAX_INDEX_LENGTH 4
 
+ /**
+ * @brief This function opens a file with error handling for failure to open.
+ * @param fp A pointer to a string containing the file path.
+ * @param modes A pointer to a string containing the file opening modes.
+ * @param f File pointer for the opened file.
+ * @return Returns a  pointer to the opened file if successful, or NULL if the file couldn't be opened.
+ */ 
 extern FILE*
 verbose_fopen(const char *fp, const char *modes);
 
