@@ -4,10 +4,10 @@
 #include "assembler.h"
 #include "includes.h"
 
-#define WORDSIZE 14
-#define BITSIZE(x) (sizeof(x) * 8)
-#define BITMASK(N) (1 << (N))
-#define GET_BIT(X, N) (((X) & BITMASK(N)) >> (N))
+#define WORDSIZE 14 /* Defines the size of a word */
+#define BITSIZE(x) (sizeof(x) * 8) /* Calculates the size of a variable x in bits. */
+#define BITMASK(N) (1 << (N)) /* Generates a bitmask for a specific bit position N. */
+#define GET_BIT(X, N) (((X) & BITMASK(N)) >> (N)) /* Retrieves the value of a specific bit N from an integer X. */
 
 enum node_state { DATA_UNSET, DATA_SET };
 
