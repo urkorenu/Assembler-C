@@ -52,6 +52,12 @@ remove_last_char(char* word);
 extern void
 remove_first_char(char* word);
 
+/**
+ * @brief This function checks if a given word is a data store instruction.
+ * @param word Pointer to the word being checked.
+ * @return Returns 1 if the word is ".data" or ".string", indicating it is a data store instruction.
+    Returns 0 otherwise, indicating it is not a data store instruction.
+ */  
 extern int
 is_data_store_instruction(const char* word);
 
