@@ -108,9 +108,22 @@ is_e_instruction(const char* word);
 extern int
 is_register(const char* word);
 
+ /**
+ * @brief This function duplicates a given string.
+ * @param s Pointer to the string being duplicated.
+ * @return Returns a pointer to the duplicated string (p).
+ */ 
 extern char*
 mystrdup(const char* s);
 
+
+ /**
+ * @brief This function converts an integer value to a void pointer.
+ * @param data Integer value to be converted.
+ * @param iptr Pointer to an integer where data is stored.
+ * @return Returns a void pointer (iptr) pointing to the memory location
+  where the integer value data is stored.
+ */ 
 extern void*
 int_to_voidp(int data);
 
