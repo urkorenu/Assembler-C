@@ -136,6 +136,10 @@ int_to_voidp(int data);
 extern char*
 remove_square_brackets(char* word);
 
+/**
+ * @brief This function cleans a word by removing trailing comma and square brackets.
+ * @param word The word to be cleaned.
+ */  
 extern void
 clean_word(char* word);
 
