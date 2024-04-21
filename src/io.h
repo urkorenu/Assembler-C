@@ -16,6 +16,14 @@
 extern FILE*
 verbose_fopen(const char *fp, const char *modes);
 
+/**
+ * @brief This function reads a line from a file, handling errors.
+ * @param line Pointer to a character array where the line will be stored.
+ * @param file File pointer to the input file.
+ * @param result Pointer to the string read from the file.
+ * @return Returns a pointer to the string read from the file (line) if successful,
+   or NULL if there was an error or end of file was reached.
+ */
 extern char*
 get_line(char* line, FILE* file);
 
