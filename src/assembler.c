@@ -13,8 +13,8 @@ const char ASSEMBLER_MEM_ERR[] = {
 int
 parse_first_phase(struct assembler_data* assembler)
 {
-    char line[MAXWORD];
-    int idx = 0;
+    char line[MAXWORD]; /* Buffer to store each line of the source file. */
+    int idx = 0; /* Index to track the current position in the line buffer. */
     char* word = NULL;
     char* symbol = NULL;
     int reading_symbol = 0;
