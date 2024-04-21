@@ -93,9 +93,19 @@ create_tnode(const char* key, void* data);
  * Memory allocation -
  */
 
+
+/**
+ * @brief This function allocates memory for a new binary tree structure and initializes its root pointer to NULL.
+ * @param btree A pointer to the binary tree structure being allocated.
+ * @return Returns a a pointer to the newly allocated binary tree structure.
+ */  
 extern struct binary_tree*
 btree_alloc(void);
 
+/**
+ * @brief This function creates a new binary tree
+ * @return Returns a pointer to the newly created binary tree structure.
+ */  
 extern struct binary_tree*
 create_new_btree(void);
 
