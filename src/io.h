@@ -27,6 +27,14 @@ verbose_fopen(const char *fp, const char *modes);
 extern char*
 get_line(char* line, FILE* file);
 
+
+ /**
+ * @brief This function Extracts a word from a line of text.
+ * @param line Pointer to the input string containing the line.
+ * @param idx Pointer to an integer representing the current index in the input string.
+ * @return Returns a pointer to the dynamically allocated character array containing the extracted word.
+   If there are no more words or if an error occurs, it returns NULL.
+ */   
 extern char*
 get_word(const char* line, int* idx);
 
