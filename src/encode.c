@@ -204,7 +204,8 @@ encode_index(struct assembler_data* assembler,
     insert_ll_node(assembler->object_list, 0);
     assembler->instruction_c++;
     assembler->ic++;
-    if ((temp = atoi(index)) && (temp >= 0)) {
+    temp = atoi(index);
+    if (temp || !(strcmp(index, "0"))) {
         temp = temp << 2;
         insert_ll_node(assembler->object_list, int_to_voidp(temp));
         assembler->instruction_c++;
@@ -218,12 +219,15 @@ encode_index(struct assembler_data* assembler,
                     insert_ll_node(assembler->object_list, int_to_voidp(temp));
                     assembler->instruction_c++;
                     assembler->ic++;
-                } else
+                } else {
                     print_in_error(INVAILD_DATA, line_count);
-            } else
+                }
+            } else {
                 print_in_error(SYMBOL_NOT_FOUND, line_count);
-        } else
+            }
+        } else {
             print_in_error(SYMBOL_NOT_FOUND, line_count);
+        }
     }
 }
 void
@@ -254,7 +258,7 @@ encode_operand(struct assembler_data* assembler,
                int* found_reg,
                int line_count)
 {
-    if (is_register(operand)) {
+    if (is_register(operand, line_count)) {
         encode_register(assembler, inst, (*found_reg), source_code, is_source);
         (*found_reg) = 1;
     } else if (is_starting_with_x(operand, HASH)) {
