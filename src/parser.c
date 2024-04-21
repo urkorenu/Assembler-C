@@ -52,6 +52,8 @@ parse_pre_processor(struct assembler_data* assembler)
         return;
 
     while (get_line(line, read_file) != NULL) {
+        if (is_comment(line))
+            continue;
         if (!reading_macro) {
             process_regular_line(read_file,
                                  write_file,
@@ -245,6 +247,10 @@ line_to_bin(struct assembler_data* assembler,
       insert_ll_node(assembler->object_list, int_to_voidp(opcode));
     assembler->instruction_c++;
     assembler->ic++;
+
+    if (306 <= assembler->ic && assembler->ic <= 322) {
+        printf("ic%d: %s\n", assembler->ic-1, line);
+    }
     if (inst->source) {
         encode_operand(assembler,
                        inst,
@@ -401,7 +407,7 @@ parse_instruction(struct assembler_data* assembler,
     inst = init_instruction(inst);
     if (reading_symbol && !reading_data) {
         bucket_exists = get_data_by_key(assembler->symbol_table, symbol);
-        if (bucket_exists) {
+        if (bucket_exists!= NULL) {
             print_in_error(SYMBOL_DEFINED, line_count);
             return 0;
         }
