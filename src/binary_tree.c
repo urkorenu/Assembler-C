@@ -40,32 +40,12 @@ _find_node(struct tnode* root, const char* key)
 /* Get methods */
 /*/////////////*/
 
-/* Find the previous node of a given key in the binary tree */
-struct tnode*
-find_previous_node(struct tnode* root, const char* key)
-{
-    int cmp;
-    if (root->left == NULL || root->right == NULL || root->left == NULL)
-        return NULL;
-    cmp = strcmp(root->right->node->key, key);
-    if (cmp > 0) {
-        if (strcmp(root->right->node->key, key) == 0)
-            return root;
-        return find_previous_node(root->right, key);
-    } else {
-        if (strcmp(root->left->node->key, key) == 0)
-            return root;
-
-        return find_previous_node(root->left, key);
-    }
-}
-
 /* Get data associated with the given key from the binary tree */
 void*
 get_data_by_key(struct binary_tree* tree, const char* key)
 {
     struct tnode* node = _find_node(tree->root, key);
-    if (node != NULL && node->node != NULL && node->node->data != NULL) {
+    if (node != NULL) {
         return node->node->data;
     }
     return NULL;
