@@ -12,10 +12,10 @@
 enum node_state { DATA_UNSET, DATA_SET };
 
 struct linked_list {
-    void* data;
-    enum node_state state;
-    struct linked_list* next;
-    struct linked_list* pre;
+    void* data; /* Stores the data associated with the current node in the linked list. */
+    enum node_state state; /* The state of the current node in the linked list. */
+    struct linked_list* next; /* A pointer to the next node in the linked list. */
+    struct linked_list* pre; /* a pointer to the previous node in the linked list. */
 };
 
 #define get_lnode_data(lnode, dtype) ((dtype)((lnode)->data))
