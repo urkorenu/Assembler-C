@@ -5,6 +5,7 @@
  */
 
 #include "io.h"
+#include "error.h"
 #include "parser.h"
 #include <stdio.h>
 
@@ -57,9 +58,17 @@ get_word(const char* line, int* idx)
     while (isspace(line[*idx]))
         (*idx)++;
 
-    while ((line[*idx] != '\0' && isgraph(line[*idx])) || line[*idx] == '\"') {
+    while ((line[*idx] != '\0' && line[*idx] != '=' && isgraph(line[*idx])) ||
+           line[*idx] == '\"') {
+        if (line[*idx] == COMMA) {
+
+            p[i++] = line[(*idx)++];
+            break;
+        }
         p[i++] = line[(*idx)++];
     }
+    if (line[*idx] == '=' && i == 0)
+        p[i++] = line[(*idx)++];
 
     p[i] = '\0';
 
@@ -136,13 +145,16 @@ is_e_instruction(const char* word)
 
 /* Function to check if a word is a register */
 int
-is_register(const char* word)
+is_register(const char* word, int line_count)
 {
     int len = strlen(word);
     if (len == 2 && word[0] == 'r' && isdigit(word[len - 1])) {
         int temp = word[len - 1] - '0';
         if (0 <= temp && temp <= 7)
             return 1;
+        else {
+            print_in_error(ILLEGAL_REG, line_count)
+        }
     }
     return 0;
 }
@@ -198,4 +210,12 @@ clean_word(char* word)
         remove_last_char(word);
     if (is_ended_with_x(word, ']'))
         word = remove_square_brackets(word);
+}
+
+int
+is_comment(char* line)
+{
+    if (line[0] == ';')
+        return 1;
+    return 0;
 }
