@@ -31,6 +31,8 @@ parse_first_phase(struct assembler_data* assembler)
     }
 
     while (get_line(line, source_file) != NULL) {
+        if (is_comment(line))
+            continue;
         line_counter++;
         word = get_word(line, &idx);
 
@@ -102,6 +104,8 @@ parse_second_phase(struct assembler_data* assembler)
         return 0;
 
     while (get_line(line, source_file) != NULL) {
+        if (is_comment(line))
+            continue;
         line_counter++;
         is_valid = process_line(assembler,
                                 line,
