@@ -9,6 +9,7 @@
 #define BITMASK(N) (1 << (N)) /* Generates a bitmask for a specific bit position N. */
 #define GET_BIT(X, N) (((X) & BITMASK(N)) >> (N)) /* Retrieves the value of a specific bit N from an integer X. */
 
+ /* Represents the state of a node in a linked list. */
 enum node_state { DATA_UNSET, DATA_SET };
 
 struct linked_list {
