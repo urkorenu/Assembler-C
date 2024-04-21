@@ -61,6 +61,12 @@ remove_first_char(char* word);
 extern int
 is_data_store_instruction(const char* word);
 
+ /**
+ * @brief This function checks if a given word is a symbol.
+ * @param word Pointer to the word being checked.
+ * @return Returns 1 if the word is a symbol.
+    Returns 0 otherwise, is not a symbol.
+ */   
 extern int
 is_symbol(const char* word);
 
