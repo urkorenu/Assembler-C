@@ -3,12 +3,17 @@
 
 #include "includes.h"
 
+/* Simplifies error reporting by automatically passing error information to a function for printing. */
 #define print_in_error(code, line) _print_in_error((code), (line), __FILE__, __LINE__);
 
 /* this func print internal errors. */
 extern void
 _print_in_error(int error_code, int line, char* origin_file, int origin_line);
 
+/**
+ * @brief This function prints a file-related error message.
+ * @param fp The filename causing the error.
+ */  
 extern void
 print_file_error(const char *fp);
 
