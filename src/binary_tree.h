@@ -47,6 +47,10 @@ find_previous_node(struct tnode* root, const char* key);
 extern void*
 get_data_by_key(struct binary_tree* tree, const char* key);
 
+/**
+ * @brief This function prints the contents of a binary tree by its key and associated data.
+ * @param p Pointer to the current node in the binary tree.
+ */  
 extern void
 treeprint(struct tnode* p);
 
@@ -54,12 +58,34 @@ treeprint(struct tnode* p);
  * Set -
  * */
 
+/**
+ * @brief This function inserts a node with the given key and data into the binary tree.
+ * @param tree Pointer to the binary tree structure.
+ * @param key Key of the node to be inserted.
+ * @param data Data associated with the node to be inserted.
+ * @return Returns an integer value indicating the success of the operation (always returns 1).
+ */  
 extern int
 insert_node(struct binary_tree* tree, const char* key, void* data);
 
+
+/**
+ * @brief This function inserts a node with the given key and data into the binary tree.
+ * @param root A pointer to the root node of the binary tree.
+ * @param key The key associated with the node being inserted.
+ * @param data The data associated with the node being inserted.
+ * @return Returns a pointer to the root of the binary tree after inserting the new node.
+ */  
 extern struct tnode*
 add_node(struct tnode* p, const char* key, void* data);
 
+/**
+ * @brief This function creates a new tree node with the given key and data.
+ * @param key The key associated with the new tree node.
+ * @param data The data associated with the new tree node.
+ * @return Returnsa pointer to the newly created tree node.
+    If the key is null or if memory allocation fails, it returns NULL.
+ */  
 extern struct tnode*
 create_tnode(const char* key, void* data);
 
@@ -73,6 +99,10 @@ btree_alloc(void);
 extern struct binary_tree*
 create_new_btree(void);
 
+/**
+ * @brief This function frees the memory allocated for the binary tree.
+ * @param btree A pointer to the binary tree structure that needs to be freed.
+ */ 
 extern void
 btree_free(struct binary_tree* btree);
 
