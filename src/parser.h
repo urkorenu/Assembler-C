@@ -13,20 +13,24 @@
 #include "linked_list.h"
 #include "macro.h"
 
+/* Define string literals representing different types of data. */
 #define CODE "code"
 #define MDEFINE "mdefine"
 #define DATA "data"
 #define EXTERNAL "external"
 
-#define COMMA ','
-#define HASH '#'
+#define COMMA ',' /* Defines the character ',' */ 
+#define HASH '#' /* Defines the character '#' */ 
 
+/*These macros define constants representing the number of operands expected for source and destination respectively in an instruction.*/
 #define SOURCE_OPERAND 4
 #define DESTINATION_OPERAND 2
 
+/* These macros define constants representing the number of registers expected for source and destination respectively in an instruction.*/
 #define SOURCE_REGISTER 5
 #define DESTINATION_REGISTER 2
 
+/* These macros define constants representing different addressing modes used to specify the location of operands.*/
 #define DIRECT_ADDRESS 1
 #define INDEX_ADDRESS 2
 #define REGISTER_ADDRESS 3
