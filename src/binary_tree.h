@@ -26,6 +26,10 @@ struct binary_tree {
  *  Get -
  * */
 
+/**
+ * @brief This function initializes a tree node
+ * @return Returns the initialized tree node 
+ */  
 struct tnode
 tnode_init(void);
 
