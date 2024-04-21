@@ -38,6 +38,10 @@ get_line(char* line, FILE* file);
 extern char*
 get_word(const char* line, int* idx);
 
+ /**
+ * @brief This function removes the last character from a string.
+ * @param word Pointer to the string from which the last character will be removed.
+ */  
 extern void
 remove_last_char(char* word);
 
