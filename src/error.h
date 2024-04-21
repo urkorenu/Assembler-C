@@ -6,7 +6,17 @@
 /* Simplifies error reporting by automatically passing error information to a function for printing. */
 #define print_in_error(code, line) _print_in_error((code), (line), __FILE__, __LINE__);
 
-/* this func print internal errors. */
+
+/**
+ * @brief This function prints an error message along with its code, originating file, and line number.
+ * @param error_code The error code indicating the type of error.
+ * @param line: The line number where the error occurred.
+ * @param origin_file The file where the error originated.
+ * @param origin_line The line number in the file where the error originated.
+ * @return Returns 1 if the instruction code and number of arguments were successfully assigned to the line_data structure,
+    otherwise it returns 0.
+ */  
+
 extern void
 _print_in_error(int error_code, int line, char* origin_file, int origin_line);
 
