@@ -10,16 +10,16 @@
  *  Structs
  *  */
 
-struct tnode {
-    struct bucket* node;
-    struct tnode* left;
-    struct tnode* right;
+struct tnode { /* Node in a binary tree. */
+    struct bucket* node; /* Contains key-value pairs or data. */
+    struct tnode* left; /* A pointer to the left child node of the current node. */
+    struct tnode* right; /* A pointer to the right child node of the current node. */
 };
 
+/* This structure represents a binary tree. */
 struct binary_tree {
-    struct tnode* root;
+    struct tnode* root; /* Holds a pointer to the root node of the binary tree. */
 };
-
 /*
  * Methods
  *
