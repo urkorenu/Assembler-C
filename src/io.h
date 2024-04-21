@@ -45,6 +45,10 @@ get_word(const char* line, int* idx);
 extern void
 remove_last_char(char* word);
 
+ /**
+ * @brief This function removes the first character from a string.
+ * @param word Pointer to the string from which the first character will be removed.
+ */ 
 extern void
 remove_first_char(char* word);
 
