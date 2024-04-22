@@ -52,6 +52,23 @@ extern char*
 get_word(const char* line, int* idx);
 
 /**
+* @brief 
+*   Parses a string encapsulated in quotes from ~line~
+*   and sets ~start~ to point to the initial string quote.
+*
+* @param line 
+*   A pointer to the line to be parsed.
+* @param start 
+*   A pointer to be set to point at the starting string quote.
+* @return 
+*   Upon success, ~start~ will point to the starting string quote, 
+*   and the string's length will be returned (*excluding* its quotes).
+*   Upon error, ~start~ will remain unchanged and -1 will be returned.
+*/
+extern int
+get_string(char* line, char **start);
+
+/**
  * @brief This function removes the last character from a string.
  * @param word Pointer to the string from which the last character will be
  * removed.

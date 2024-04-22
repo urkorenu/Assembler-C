@@ -29,51 +29,29 @@ get_register_code(const char* reg)
 
 /* Encode string characters */
 void
-encode_string(struct assembler_data* assembler,
-              const char* line,
-              int line_count)
+encode_string(struct assembler_data* assembler, char* line, int line_count)
 {
+    int idx, len;
+    char* string;
     struct linked_list* last_node;
-    int string_started = 0;
-    int string_ended = 0;
-    int string_valid = 0;
-    int idx = 0;
-    char* word;
-    char* iter = NULL;
 
-    while ((word = get_word(line, &idx))[0] && !string_started) {
-        iter = strchr(word, '\"');
-        string_started = (iter != NULL);
-    }
-
-    iter += 1;
-
-    while (string_started && !string_ended && iter[0]) {
-        for (; iter[0] != '\0' && iter[0] != '\"'; iter += 1) {
-            insert_ll_node(assembler->object_list, int_to_voidp((int)iter[0]));
-            assembler->data_c++;
-            assembler->ic++;
-        }
-
-        if (iter[0] != '\"') {
-            iter = word;
-            word = get_word(word, &idx);
-        }
-        else {
-            string_ended = 1;
-        }
-    }
-
-    string_valid = (string_started && string_ended && word[0] == '\0');
-
-    if (!string_started || !string_ended) {
+    if ((len = get_string(line, &string)) == -1) {
         print_in_error(MISSING_QUOTES, line_count, NULL);
         return;
     }
+    
+    idx = len;
+    string += 1;
 
-    if (!string_valid) {
+    if (get_word(string, &idx)[0]) {
         print_in_error(EXTRA_TEXT, line_count, NULL);
         return;
+    }
+
+    for (idx = 0; idx < len - 1; idx++) {
+        insert_ll_node(assembler->object_list, int_to_voidp((int)string[idx]));
+        assembler->data_c++;
+        assembler->ic++;
     }
 
     /* last word of string should  be 0 */

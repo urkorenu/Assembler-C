@@ -75,6 +75,31 @@ get_word(const char* line, int* idx)
     return p;
 }
 
+int
+get_string(char* line, char **start)
+{
+    char* tmp;
+
+
+    if (!line || !line[0])
+        return -1;
+
+    line = strchr(line, '\"');
+
+    if (line == NULL)
+        return -1;
+
+    tmp = line;
+    line = strchr(line + 1, '\"');
+
+    if (line != NULL) {
+        start[0] = tmp;
+        return line - start[0];
+    }
+
+    return -1;
+}
+
 /* Function to remove the last character from a string */
 void
 remove_last_char(char* word)
