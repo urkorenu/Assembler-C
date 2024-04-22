@@ -97,14 +97,14 @@ process_regular_line(FILE* read_file,
                      fpos_t* temp_pos,
                      char** key)
 {
-    char* word = NULL;
+    char word[MAXWORD];
     int idx = 0;
     struct macro* temp = NULL;
 
-    word = get_word(line, &idx);
+    get_word(line, &idx, word);
     if (strcmp(word, "mcr") == 0) {
         (*reading_macro) = 1;
-        (*key) = get_word(line, &idx);
+        get_word(line, &idx, key[0]);
         (*start_idx) = ++(*line_count);
         fgetpos(read_file, temp_pos);
     } else {
@@ -132,10 +132,10 @@ process_macro_line(FILE* read_file,
                    fpos_t temp_pos,
                    int* reading_macro)
 {
-    char* word = NULL;
+    char word[MAXWORD];
     int idx = 0;
 
-    word = get_word(line, &idx);
+    get_word(line, &idx, word);
 
     if (strcmp(word, "endmcr") == 0) {
         struct macro* macro =
@@ -180,18 +180,18 @@ parse_line(struct assembler_data* assembler,
            struct line_data* inst,
            int line_count)
 {
-    char* word = NULL;
+    char word[MAXWORD];
     int idx = 0;
     int found_comma = 0;
-    word = get_word(line, &idx);
+    get_word(line, &idx, word);
     while (word[0]) {
         if (is_symbol(word)) {
             inst->symbol = mystrdup(word);
-            word = get_word(line, &idx);
+            get_word(line, &idx, word);
         }
         if (get_instruction(inst, word)) {
             if (inst->args == 2) {
-                word = get_word(line, &idx);
+                get_word(line, &idx, word);
                 if (is_ends_with_x(word, COMMA)) {
                     found_comma = 1;
                     remove_last_char(word);
@@ -200,7 +200,7 @@ parse_line(struct assembler_data* assembler,
                     inst->source = mystrdup(word);
                 }
                 if (!found_comma) {
-                    word = get_word(line, &idx);
+                    get_word(line, &idx, word);
                     if (is_starting_with_x(word, COMMA)) {
                         remove_first_char(word);
                     } else {
@@ -211,7 +211,7 @@ parse_line(struct assembler_data* assembler,
                 }
             }
             if (inst->args >= 1) {
-                word = get_word(line, &idx);
+                get_word(line, &idx, word);
                 if (!word[0]) {
                     inst->is_valid = 0;
                     print_in_error(MISSING_ARG, line_count, NULL);
@@ -224,7 +224,7 @@ parse_line(struct assembler_data* assembler,
                 }
                 inst->destination = mystrdup(word);
             }
-            word = get_word(line, &idx);
+            get_word(line, &idx, word);
             if (word[0]) {
                 inst->is_valid = 0;
                 print_in_error(EXTRA_TEXT, line_count, NULL);
@@ -283,10 +283,11 @@ parse_define(struct assembler_data* assembler,
              int* idx,
              int line_count)
 {
-    char* word = NULL;
-    char* key = get_word(line, idx);
+    char word[MAXWORD];
+    char key[MAXWORD];
+    get_word(line, idx, key);
     /*TODO: add verification that it doesnt contain prohibited word*/
-    if (key == NULL) {
+    if (!key[0]) {
         print_in_error(MISSING_ARG, line_count, NULL);
         return 0;
     }
@@ -296,14 +297,14 @@ parse_define(struct assembler_data* assembler,
         return 0;
     }
 
-    word = get_word(line, idx);
-    if (word == NULL || strcmp(word, "=") != 0) {
+    get_word(line, idx, word);
+    if (!word[0] || strcmp(word, "=") != 0) {
         print_in_error(ILLEGAL_ARG, line_count, word);
         return 0;
     }
 
-    word = get_word(line, idx);
-    if (word == NULL) {
+    get_word(line, idx, word);
+    if (!word[0]) {
         print_in_error(MISSING_ARG, line_count, NULL);
         return 0;
     }
@@ -345,9 +346,10 @@ process_data(struct assembler_data* assembler,
              int* idx,
              int line_count)
 {
-    char* word = get_word(line, idx);
-    if (!word)
-        word = get_word(line, idx);
+    char word[MAXWORD];
+    get_word(line, idx, word);
+    if (!word[0])
+        get_word(line, idx, word);
     if (is_starting_with_x(word, '\"')) {
         encode_string(assembler, line, line_count);
     } else {
@@ -380,8 +382,9 @@ parse_extern(struct assembler_data* assembler,
              int* idx,
              int line_count)
 {
-    char* key = get_word(line, idx);
-    if (key == NULL) {
+    char key[MAXWORD];
+    get_word(line, idx, key);
+    if (!key[0]) {
         print_in_error(MISSING_ARG, line_count, NULL);
         return 0;
     }
@@ -434,7 +437,7 @@ process_entry(struct assembler_data* assembler,
 
     int ic;
     struct bucket* data;
-    word = get_word(line, idx);
+    get_word(line, idx, word);
     if (!(data = (get_data_by_key(assembler->symbol_table, word)))) {
         print_in_error(SYMBOL_NOT_FOUND, line_count, word);
         return 0;
@@ -468,7 +471,7 @@ process_words(struct assembler_data* assembler,
         data = get_data_by_key(assembler->symbol_table, word);
         if (!data) {
             /* not in symbol table */
-            word = get_word(line, idx);
+            get_word(line, idx, word);
             continue;
         } else if (data->data != NULL && (strcmp(data->key, CODE) == 0)) {
             /* in symbol table and its code */
@@ -488,8 +491,7 @@ process_words(struct assembler_data* assembler,
             last_unset_node =
               get_first_unset_node(assembler->object_list, node_ic);
         }
-
-        word = get_word(line, idx);
+        get_word(line, idx, word);
     }
 }
 
@@ -504,12 +506,12 @@ process_line(struct assembler_data* assembler,
              struct linked_list* last_unset_node,
              int* node_ic)
 {
-    char* word = NULL;
+    char word[MAXWORD];
     int idx = 0;
     int is_valid = 1;
-    word = get_word(line, &idx);
+    get_word(line, &idx, word);
     if (is_symbol(word)) {
-        word = get_word(line, &idx);
+        get_word(line, &idx, word);
     }
     if ((is_data_store_instruction(word)) || ((strcmp(word, ".extern") == 0))) {
         return is_valid;

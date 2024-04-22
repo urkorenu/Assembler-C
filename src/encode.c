@@ -1,4 +1,5 @@
 #include "encode.h"
+#include "bucket.h"
 #include "error.h"
 #include "io.h"
 #include "linked_list.h"
@@ -33,17 +34,19 @@ encode_string(struct assembler_data* assembler, char* line, int line_count)
 {
     int idx, len;
     char* string;
+    char tmp_word[MAXWORD];
     struct linked_list* last_node;
 
     if ((len = get_string(line, &string)) == -1) {
         print_in_error(MISSING_QUOTES, line_count, NULL);
         return;
     }
-    
+
     idx = len;
     string += 1;
 
-    if (get_word(string, &idx)[0]) {
+    get_word(string, &idx, tmp_word);
+    if (tmp_word[0]) {
         print_in_error(EXTRA_TEXT, line_count, NULL);
         return;
     }
@@ -69,13 +72,13 @@ encode_data(struct assembler_data* assembler, const char* line, int line_count)
     int idx = 0;
     int temp = 0;
     int found_comma;
-    char* word = NULL;
+    char word[MAXWORD];
     struct bucket* temp_data;
-    word = get_word(line, &idx);
-    word = get_word(line, &idx);
+    get_word(line, &idx, word);
+    get_word(line, &idx, word);
 
     while (word[0]) {
-        word = get_word(line, &idx);
+        get_word(line, &idx, word);
         if (is_starting_with_x(word, COMMA))
             print_in_error(EXTRA_COMMAS, line_count, NULL);
         if (is_ends_with_x(word, COMMA)) {
@@ -107,7 +110,7 @@ encode_data(struct assembler_data* assembler, const char* line, int line_count)
         }
 
         if (!found_comma) {
-            word = get_word(line, &idx);
+            get_word(line, &idx, word);
             if (is_starting_with_x(word, COMMA)) {
                 remove_first_char(word);
                 if (word[0] != '0')
@@ -210,16 +213,13 @@ encode_index(struct assembler_data* assembler,
     int operand_location = DESTINATION_OPERAND;
     int temp;
     int code;
-    int* iptr;
-    iptr = malloc(sizeof(int));
 
     if (source) {
         operand_location = SOURCE_OPERAND;
     }
     code = add_bits(source_code->data, INDEX_ADDRESS, operand_location);
-    iptr[0] = code;
-    source_code->data = iptr;
-    /* It should change later at 2nd phase */
+    set_bucket_ic(source_code->data, code);
+
     insert_ll_node(assembler->object_list, 0);
     assembler->instruction_c++;
     assembler->ic++;

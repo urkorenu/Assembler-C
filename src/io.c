@@ -42,18 +42,12 @@ get_line(char* line, FILE* file)
 }
 
 /* Function to extract a word from a line */
-char*
-get_word(const char* line, int* idx)
+void
+get_word(const char* line, int* idx, char* word)
 {
-    char* p;
     int i = 0, j = idx[0];
-    if (line == NULL || idx == NULL) {
-        return NULL;
-    }
-
-    p = malloc(sizeof(char) * MAXWORD);
-    if (p == NULL) {
-        return NULL;
+    if (line == NULL || idx == NULL || word == NULL) {
+        return;
     }
 
     while (isspace(line[j]))
@@ -61,25 +55,22 @@ get_word(const char* line, int* idx)
 
     while (line[j] != '\0' && line[j] != '=' && isgraph(line[j])) {
         if (line[j] == COMMA) {
-            p[i++] = line[j++];
+            word[i++] = line[j++];
             break;
         }
-        p[i++] = line[j++];
+        word[i++] = line[j++];
     }
     if (line[j] == '=' && i == 0)
-        p[i++] = line[j++];
+        word[i++] = line[j++];
 
-    p[i] = '\0';
+    word[i] = '\0';
     idx[0] = j;
-
-    return p;
 }
 
 int
-get_string(char* line, char **start)
+get_string(char* line, char** start)
 {
     char* tmp;
-
 
     if (!line || !line[0])
         return -1;
@@ -258,8 +249,11 @@ is_legal_symbol(char* symbol, int line_count)
         !strcmp(symbol, START_STRING_DEFINITION) ||
         !strcmp(symbol, START_ENTRY_DEFINITION) ||
         !strcmp(symbol, START_EXTERN_DEFINITION)) {
+
         print_in_error(ILLEGAL_SYMBOL_NAME, line_count, symbol);
+        free(inst);
         return 0;
     }
+    free(inst);
     return 1;
 }

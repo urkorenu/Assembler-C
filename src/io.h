@@ -48,8 +48,8 @@ string.
 containing the extracted word. If there are no more words or if an error occurs,
 it returns NULL.
 */
-extern char*
-get_word(const char* line, int* idx);
+extern void
+get_word(const char* line, int* idx, char* word);
 
 /**
 * @brief 
