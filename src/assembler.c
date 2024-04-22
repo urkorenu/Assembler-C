@@ -15,8 +15,8 @@ parse_first_phase(struct assembler_data* assembler)
 {
     char line[MAXWORD]; /* Buffer to store each line of the source file. */
     int idx = 0; /* Index to track the current position in the line buffer. */
-    char* word = NULL;
-    char* symbol = NULL;
+    char word[MAXWORD];
+    char symbol[MAXWORD];
     int reading_symbol = 0;
     int reading_data = 0;
     int is_valid = 1;
@@ -26,21 +26,25 @@ parse_first_phase(struct assembler_data* assembler)
     source_file = verbose_fopen(assembler->as_files->processed_path, "r");
 
     if (!source_file) {
-        print_in_error(FAILED_OPEN_READING, 0);
+        print_in_error(FAILED_OPEN_READING, 0, NULL);
         return 0;
     }
 
     while (get_line(line, source_file) != NULL) {
+        if (!line[0])
+            continue;
+        if (is_comment(line))
+            continue;
         line_counter++;
-        word = get_word(line, &idx);
+        get_word(line, &idx, word);
 
         if (strcmp(word, ".define") == 0) {
             is_valid = parse_define(assembler, line, &idx, line_counter);
 
         } else if (is_symbol(word)) {
             int temp_index = 0;
-            symbol = get_word(word, &temp_index);
-            word = get_word(line, &idx);
+            get_word(word, &temp_index, symbol);
+            get_word(line, &idx, word);
             reading_symbol = 1;
         }
 
@@ -70,8 +74,6 @@ parse_first_phase(struct assembler_data* assembler)
                                          word,
                                          line_counter);
         }
-        word = NULL;
-        symbol = NULL;
         idx = 0;
         memset(line, 0, MAXWORD);
         reading_symbol = 0;
@@ -102,16 +104,20 @@ parse_second_phase(struct assembler_data* assembler)
         return 0;
 
     while (get_line(line, source_file) != NULL) {
+        if (!line[0])
+            continue;
+        if (is_comment(line))
+            continue;
         line_counter++;
-        is_valid = process_line(assembler,
-                                line,
-                                &line_counter,
-                                entry_list,
-                                &entry_flag,
-                                extern_list,
-                                &extern_flag,
-                                last_unset_node,
-                                &node_ic);
+        is_valid &= process_line(assembler,
+                                 line,
+                                 &line_counter,
+                                 entry_list,
+                                 &entry_flag,
+                                 extern_list,
+                                 &extern_flag,
+                                 last_unset_node,
+                                 &node_ic);
         node_ic = 100;
         last_unset_node =
           get_first_unset_node(assembler->object_list, &node_ic);

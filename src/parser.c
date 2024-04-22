@@ -1,5 +1,6 @@
 #include "parser.h"
 #include "assembler.h"
+#include "bucket.h"
 #include "error.h"
 #include "io.h"
 #include "linked_list.h"
@@ -52,6 +53,10 @@ parse_pre_processor(struct assembler_data* assembler)
         return;
 
     while (get_line(line, read_file) != NULL) {
+        if (!line[0])
+            continue;
+        if (is_comment(line))
+            continue;
         if (!reading_macro) {
             process_regular_line(read_file,
                                  write_file,
@@ -92,14 +97,14 @@ process_regular_line(FILE* read_file,
                      fpos_t* temp_pos,
                      char** key)
 {
-    char* word = NULL;
+    char word[MAXWORD];
     int idx = 0;
     struct macro* temp = NULL;
 
-    word = get_word(line, &idx);
+    get_word(line, &idx, word);
     if (strcmp(word, "mcr") == 0) {
         (*reading_macro) = 1;
-        (*key) = get_word(line, &idx);
+        get_word(line, &idx, key[0]);
         (*start_idx) = ++(*line_count);
         fgetpos(read_file, temp_pos);
     } else {
@@ -127,10 +132,10 @@ process_macro_line(FILE* read_file,
                    fpos_t temp_pos,
                    int* reading_macro)
 {
-    char* word = NULL;
+    char word[MAXWORD];
     int idx = 0;
 
-    word = get_word(line, &idx);
+    get_word(line, &idx, word);
 
     if (strcmp(word, "endmcr") == 0) {
         struct macro* macro =
@@ -175,19 +180,19 @@ parse_line(struct assembler_data* assembler,
            struct line_data* inst,
            int line_count)
 {
-    char* word = NULL;
+    char word[MAXWORD];
     int idx = 0;
-    int found_comma;
-    word = get_word(line, &idx);
+    int found_comma = 0;
+    get_word(line, &idx, word);
     while (word[0]) {
         if (is_symbol(word)) {
             inst->symbol = mystrdup(word);
-            word = get_word(line, &idx);
+            get_word(line, &idx, word);
         }
         if (get_instruction(inst, word)) {
             if (inst->args == 2) {
-                word = get_word(line, &idx);
-                if (is_ended_with_x(word, COMMA)) {
+                get_word(line, &idx, word);
+                if (is_ends_with_x(word, COMMA)) {
                     found_comma = 1;
                     remove_last_char(word);
                     inst->source = mystrdup(word);
@@ -195,37 +200,40 @@ parse_line(struct assembler_data* assembler,
                     inst->source = mystrdup(word);
                 }
                 if (!found_comma) {
-                    word = get_word(line, &idx);
+                    get_word(line, &idx, word);
                     if (is_starting_with_x(word, COMMA)) {
                         remove_first_char(word);
-                        if (word[0] != '0')
-                            idx -= (strlen(word)) - 1;
                     } else {
                         inst->is_valid = 0;
-                        print_in_error(MISSING_COMMA, line_count);
+                        print_in_error(MISSING_COMMA, line_count, NULL);
                         return 0;
                     }
                 }
             }
             if (inst->args >= 1) {
-                word = get_word(line, &idx);
-                if (is_ended_with_x(word, COMMA)) {
+                get_word(line, &idx, word);
+                if (!word[0]) {
                     inst->is_valid = 0;
-                    print_in_error(EXTRA_COMMAS, line_count);
+                    print_in_error(MISSING_ARG, line_count, NULL);
+                    return 0;
+                }
+                if (is_ends_with_x(word, COMMA)) {
+                    inst->is_valid = 0;
+                    print_in_error(EXTRA_COMMAS, line_count, NULL);
                     return 0;
                 }
                 inst->destination = mystrdup(word);
             }
-            word = get_word(line, &idx);
+            get_word(line, &idx, word);
             if (word[0]) {
                 inst->is_valid = 0;
-                print_in_error(EXTRA_TEXT, line_count);
+                print_in_error(EXTRA_TEXT, line_count, NULL);
                 return 0;
             }
 
         } else {
             inst->is_valid = 0;
-            print_in_error(INVALID_COMMAD, line_count);
+            print_in_error(INVALID_COMMAND, line_count, word);
             return 0;
         }
     }
@@ -245,6 +253,7 @@ line_to_bin(struct assembler_data* assembler,
       insert_ll_node(assembler->object_list, int_to_voidp(opcode));
     assembler->instruction_c++;
     assembler->ic++;
+
     if (inst->source) {
         encode_operand(assembler,
                        inst,
@@ -274,29 +283,30 @@ parse_define(struct assembler_data* assembler,
              int* idx,
              int line_count)
 {
-    char* word = NULL;
-    char* key = get_word(line, idx);
-    /*TODO: add verification that it doesnt conatin prohibited word*/
-    if (key == NULL) {
-        print_in_error(MISSING_ARG, line_count);
+    char word[MAXWORD];
+    char key[MAXWORD];
+    get_word(line, idx, key);
+    if (!is_legal_symbol(word, line_count))
+        return 0;
+    if (!key[0]) {
+        print_in_error(MISSING_ARG, line_count, NULL);
         return 0;
     }
 
     if (get_data_by_key(assembler->symbol_table, key)) {
-        print_in_error(SYMBOL_DEFINED, line_count);
-        printf("1");
+        print_in_error(SYMBOL_DEFINED, line_count, key);
         return 0;
     }
 
-    word = get_word(line, idx);
-    if (word == NULL || strcmp(word, "=") != 0) {
-        print_in_error(ILLEGAL_ARG, line_count);
+    get_word(line, idx, word);
+    if (!word[0] || strcmp(word, "=") != 0) {
+        print_in_error(ILLEGAL_ARG, line_count, word);
         return 0;
     }
 
-    word = get_word(line, idx);
-    if (word == NULL) {
-        print_in_error(MISSING_ARG, line_count);
+    get_word(line, idx, word);
+    if (!word[0]) {
+        print_in_error(MISSING_ARG, line_count, NULL);
         return 0;
     }
 
@@ -311,22 +321,21 @@ handle_symbol(struct assembler_data* assembler,
               int* idx,
               int line_count)
 {
-    int* iptr;
     struct bucket* b = create_bucket(CODE, NULL);
+    remove_last_char(symbol);
 
     if (symbol == NULL) {
-        print_in_error(MISSING_ARG, line_count);
+        print_in_error(MISSING_ARG, line_count, NULL);
         return 0;
     }
     if (get_data_by_key(assembler->symbol_table, symbol)) {
-        print_in_error(SYMBOL_DEFINED, line_count);
+        print_in_error(SYMBOL_DEFINED, line_count, symbol);
         return 0;
     }
+    if (!is_legal_symbol(symbol, line_count))
+        return 0;
 
-    iptr = malloc(sizeof(int));
-    iptr[0] = assembler->ic;
-    b->data = iptr;
-    remove_last_char(symbol);
+    set_bucket_ic(b, assembler->ic);
     insert_node(assembler->symbol_table, symbol, b);
     return 1;
 }
@@ -338,11 +347,12 @@ process_data(struct assembler_data* assembler,
              int* idx,
              int line_count)
 {
-    char* word = get_word(line, idx);
-    if (!word)
-        word = get_word(line, idx);
-    if (is_starting_with_x(word, '\"') && is_ended_with_x(word, '\"')) {
-        encode_string(assembler, line);
+    char word[MAXWORD];
+    get_word(line, idx, word);
+    if (!word[0])
+        get_word(line, idx, word);
+    if (is_starting_with_x(word, '\"')) {
+        encode_string(assembler, line, line_count);
     } else {
         encode_data(assembler, line, line_count);
     }
@@ -373,9 +383,10 @@ parse_extern(struct assembler_data* assembler,
              int* idx,
              int line_count)
 {
-    char* key = get_word(line, idx);
-    if (key == NULL) {
-        print_in_error(MISSING_ARG, line_count);
+    char key[MAXWORD];
+    get_word(line, idx, key);
+    if (!key[0]) {
+        print_in_error(MISSING_ARG, line_count, NULL);
         return 0;
     }
 
@@ -395,21 +406,16 @@ parse_instruction(struct assembler_data* assembler,
                   int line_count)
 {
     struct line_data* inst = NULL;
-    struct bucket* b = create_bucket(CODE, NULL);
-    struct bucket* bucket_exists = NULL;
 
-    inst = init_instruction(inst);
     if (reading_symbol && !reading_data) {
-        bucket_exists = get_data_by_key(assembler->symbol_table, symbol);
-        if (bucket_exists) {
-            print_in_error(SYMBOL_DEFINED, line_count);
-            return 0;
-        }
-        set_bucket_ic(b, assembler->ic);
-        remove_last_char(symbol);
-        insert_node(assembler->symbol_table, symbol, b);
+        if (handle_symbol(assembler, symbol, idx, line_count))
+            if (!word[0]) {
+                print_in_error(MISSING_ARG, line_count, NULL);
+                return 0;
+            }
     }
 
+    inst = init_instruction(inst);
     if (get_instruction(inst, word)) {
         parse_line(assembler, line, inst, line_count);
         line_to_bin(assembler, line, inst, line_count);
@@ -432,9 +438,13 @@ process_entry(struct assembler_data* assembler,
 
     int ic;
     struct bucket* data;
-    word = get_word(line, idx);
+    get_word(line, idx, word);
     if (!(data = (get_data_by_key(assembler->symbol_table, word)))) {
-        print_in_error(SYMBOL_NOT_FOUND, line_count);
+        print_in_error(SYMBOL_NOT_FOUND, line_count, word);
+        return 0;
+    }
+    if (strcmp(data->key, EXTERNAL) == 0) {
+        print_in_error(ENTRY_IS_EXTERNAL, line_count, word);
         return 0;
     }
     ic = ((int*)data->data)[0];
@@ -462,7 +472,7 @@ process_words(struct assembler_data* assembler,
         data = get_data_by_key(assembler->symbol_table, word);
         if (!data) {
             /* not in symbol table */
-            word = get_word(line, idx);
+            get_word(line, idx, word);
             continue;
         } else if (data->data != NULL && (strcmp(data->key, CODE) == 0)) {
             /* in symbol table and its code */
@@ -482,8 +492,7 @@ process_words(struct assembler_data* assembler,
             last_unset_node =
               get_first_unset_node(assembler->object_list, node_ic);
         }
-
-        word = get_word(line, idx);
+        get_word(line, idx, word);
     }
 }
 
@@ -498,12 +507,12 @@ process_line(struct assembler_data* assembler,
              struct linked_list* last_unset_node,
              int* node_ic)
 {
-    char* word = NULL;
+    char word[MAXWORD];
     int idx = 0;
     int is_valid = 1;
-    word = get_word(line, &idx);
+    get_word(line, &idx, word);
     if (is_symbol(word)) {
-        word = get_word(line, &idx);
+        get_word(line, &idx, word);
     }
     if ((is_data_store_instruction(word)) || ((strcmp(word, ".extern") == 0))) {
         return is_valid;

@@ -14,16 +14,22 @@ print_file_error(const char* fp)
 }
 
 void
-_print_in_error(int error_code, int line, char* origin_file, int origin_line)
+_print_in_error(int error_code,
+                int line,
+                char* origin_file,
+                int origin_line,
+                const char* word)
 {
     if (!errors[0][0])
         init_errors();
     /* Print the error code number and the error message */
-    printf("[Error] %s(%d): %s ",origin_file, origin_line, (errors[error_code]));
+    printf("[Error] %s(%d): ", origin_file, origin_line);
+    if (word)
+        printf("\"%s\" ", word);
+    printf("%s ", errors[error_code]);
     if (line > 0) {
         printf("in Line: %d \n", line);
-    }
-    else {
+    } else {
         printf("\n");
     }
 }
@@ -62,9 +68,12 @@ init_errors(void)
            "Extra text after the string end in '.string' line");
     strcpy(errors[EXTERN_DEFINED],
            "Label defined as .extern and defined in file");
-    strcpy(errors[INVAILD_DATA], "Input number in .data line is out of range");
-    strcpy(errors[INVALID_COMMAD], "Invalid command");
+    strcpy(errors[INVALID_DATA], "Input number in .data line is out of range");
+    strcpy(errors[ENTRY_IS_EXTERNAL], "Entry is equals to external");
+    strcpy(errors[INVALID_COMMAND], "Invalid command");
+    strcpy(errors[INVALID_DIRECT], "Direct arg is empty");
+    strcpy(errors[ILLEGAL_CHAR], "is not a legal char");
+    strcpy(errors[ILLEGAL_SYMBOL_NAME], "is not legal symbol name");
     strcpy(errors[NOT_DEFINED],
            "The data you are looking for has not been defined");
 }
-

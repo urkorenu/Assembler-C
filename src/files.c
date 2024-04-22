@@ -66,9 +66,9 @@ try_init_files(struct files paths, FILE** fread, FILE** fwrite)
         *fwrite = verbose_fopen(paths.processed_path, "w");
 
         if ((*fwrite) == NULL)
-            print_in_error(FAILED_OPEN_WRITING, 0);
+            print_in_error(FAILED_OPEN_WRITING, 0, NULL);
     } else {
-        print_in_error(FAILED_OPEN_READING, 0);
+        print_in_error(FAILED_OPEN_READING, 0, NULL);
     }
     return (fread[0] != NULL && fwrite[0] != NULL);
 }

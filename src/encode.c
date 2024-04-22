@@ -1,7 +1,10 @@
 #include "encode.h"
+#include "bucket.h"
 #include "error.h"
 #include "io.h"
 #include "linked_list.h"
+#include <ctype.h>
+#include <string.h>
 
 #define REGISTER_CODE_FMT "r%1d"
 
@@ -27,22 +30,33 @@ get_register_code(const char* reg)
 
 /* Encode string characters */
 void
-encode_string(struct assembler_data* assembler, const char* line)
+encode_string(struct assembler_data* assembler, char* line, int line_count)
 {
-    int i = 0;
-    int idx = 0;
-    char* word = NULL;
-    int* idx_ptr = &idx;
+    int idx, len;
+    char* string;
+    char tmp_word[MAXWORD];
     struct linked_list* last_node;
-    word = get_word(line, idx_ptr);
-    word = get_word(line, idx_ptr);
-    word = get_word(line, idx_ptr);
 
-    for (i = 1; word[i] != '\"' && word[i] != '\0'; i++) {
-        insert_ll_node(assembler->object_list, int_to_voidp((int)word[i]));
+    if ((len = get_string(line, &string)) == -1) {
+        print_in_error(MISSING_QUOTES, line_count, NULL);
+        return;
+    }
+
+    idx = len;
+    string += 1;
+
+    get_word(string, &idx, tmp_word);
+    if (tmp_word[0]) {
+        print_in_error(EXTRA_TEXT, line_count, NULL);
+        return;
+    }
+
+    for (idx = 0; idx < len - 1; idx++) {
+        insert_ll_node(assembler->object_list, int_to_voidp((int)string[idx]));
         assembler->data_c++;
         assembler->ic++;
     }
+
     /* last word of string should  be 0 */
     last_node = insert_ll_node(assembler->object_list, 0);
     last_node->state = DATA_SET;
@@ -58,13 +72,16 @@ encode_data(struct assembler_data* assembler, const char* line, int line_count)
     int idx = 0;
     int temp = 0;
     int found_comma;
-    char* word = NULL;
+    char word[MAXWORD];
     struct bucket* temp_data;
-    word = get_word(line, &idx);
-    word = get_word(line, &idx);
+    get_word(line, &idx, word);
+    get_word(line, &idx, word);
 
-    while ((word = get_word(line, &idx))) {
-        if (is_ended_with_x(word, COMMA)) {
+    while (word[0]) {
+        get_word(line, &idx, word);
+        if (is_starting_with_x(word, COMMA))
+            print_in_error(EXTRA_COMMAS, line_count, NULL);
+        if (is_ends_with_x(word, COMMA)) {
             found_comma = 1;
             remove_last_char(word);
         }
@@ -81,10 +98,11 @@ encode_data(struct assembler_data* assembler, const char* line, int line_count)
                         assembler->data_c++;
                         assembler->ic++;
                     } else {
-                        print_in_error(INVAILD_DATA, line_count);
+                        print_in_error(
+                          INVALID_DATA, line_count, temp_data->key);
                     }
                 } else {
-                    print_in_error(NOT_DEFINED, line_count);
+                    print_in_error(NOT_DEFINED, line_count, temp_data->data);
                 }
             } else {
                 return;
@@ -92,7 +110,7 @@ encode_data(struct assembler_data* assembler, const char* line, int line_count)
         }
 
         if (!found_comma) {
-            word = get_word(line, &idx);
+            get_word(line, &idx, word);
             if (is_starting_with_x(word, COMMA)) {
                 remove_first_char(word);
                 if (word[0] != '0')
@@ -155,6 +173,10 @@ encode_direct(struct assembler_data* assembler,
         val_str = inst->source;
     }
 
+    if (!val_str[1]) {
+        print_in_error(INVALID_DIRECT, line_count, val_str);
+        return;
+    }
     if ((temp = atoi(val_str + 1))) {
         temp = temp << 2;
         insert_ll_node(assembler->object_list, int_to_voidp(temp));
@@ -171,11 +193,11 @@ encode_direct(struct assembler_data* assembler,
                     assembler->instruction_c++;
                     assembler->ic++;
                 } else
-                    print_in_error(INVAILD_DATA, line_count);
+                    print_in_error(INVALID_DATA, line_count, temp_data->data);
             } else
-                print_in_error(SYMBOL_NOT_FOUND, line_count);
+                print_in_error(SYMBOL_NOT_FOUND, line_count, val_str + 1);
         } else
-            print_in_error(SYMBOL_NOT_FOUND, line_count);
+            print_in_error(SYMBOL_NOT_FOUND, line_count, val_str + 1);
     }
 }
 
@@ -191,20 +213,18 @@ encode_index(struct assembler_data* assembler,
     int operand_location = DESTINATION_OPERAND;
     int temp;
     int code;
-    int* iptr;
-    iptr = malloc(sizeof(int));
 
     if (source) {
         operand_location = SOURCE_OPERAND;
     }
     code = add_bits(source_code->data, INDEX_ADDRESS, operand_location);
-    iptr[0] = code;
-    source_code->data = iptr;
-    /* It should change later at 2nd phase */
+    set_bucket_ic(source_code->data, code);
+
     insert_ll_node(assembler->object_list, 0);
     assembler->instruction_c++;
     assembler->ic++;
-    if ((temp = atoi(index)) && (temp >= 0)) {
+    temp = atoi(index);
+    if (temp || !(strcmp(index, "0"))) {
         temp = temp << 2;
         insert_ll_node(assembler->object_list, int_to_voidp(temp));
         assembler->instruction_c++;
@@ -218,12 +238,15 @@ encode_index(struct assembler_data* assembler,
                     insert_ll_node(assembler->object_list, int_to_voidp(temp));
                     assembler->instruction_c++;
                     assembler->ic++;
-                } else
-                    print_in_error(INVAILD_DATA, line_count);
-            } else
-                print_in_error(SYMBOL_NOT_FOUND, line_count);
-        } else
-            print_in_error(SYMBOL_NOT_FOUND, line_count);
+                } else {
+                    print_in_error(INVALID_DATA, line_count, temp_data->key);
+                }
+            } else {
+                print_in_error(SYMBOL_NOT_FOUND, line_count, index);
+            }
+        } else {
+            print_in_error(SYMBOL_NOT_FOUND, line_count, index);
+        }
     }
 }
 void
@@ -254,7 +277,7 @@ encode_operand(struct assembler_data* assembler,
                int* found_reg,
                int line_count)
 {
-    if (is_register(operand)) {
+    if (is_register(operand, line_count)) {
         encode_register(assembler, inst, (*found_reg), source_code, is_source);
         (*found_reg) = 1;
     } else if (is_starting_with_x(operand, HASH)) {

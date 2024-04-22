@@ -47,7 +47,7 @@ get_register_code(const char* reg);
  * @param line: pointer to a constant character string.
  */
 extern void
-encode_string(struct assembler_data* assembler, const char* line);
+encode_string(struct assembler_data* assembler, char* line, int line_count);
 
 /**
  * @brief This function encodes data from the input string according to the
