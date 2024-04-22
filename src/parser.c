@@ -286,7 +286,8 @@ parse_define(struct assembler_data* assembler,
     char word[MAXWORD];
     char key[MAXWORD];
     get_word(line, idx, key);
-    /*TODO: add verification that it doesnt contain prohibited word*/
+    if (!is_legal_symbol(word, line_count))
+        return 0;
     if (!key[0]) {
         print_in_error(MISSING_ARG, line_count, NULL);
         return 0;
