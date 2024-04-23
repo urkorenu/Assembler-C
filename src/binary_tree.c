@@ -143,6 +143,7 @@ free_tree(struct tnode* root)
         free_tree(root->left);
         free_tree(root->right);
         free_bucket(root->node);
+        /*free_bucket(root->node->data);*/
         free(root);
     }
 }

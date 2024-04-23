@@ -71,7 +71,7 @@ encode_data(struct assembler_data* assembler, const char* line, int line_count)
 
     int idx = 0;
     int temp = 0;
-    int found_comma;
+    int found_comma = 0;
     char word[MAXWORD];
     struct bucket* temp_data;
     get_word(line, &idx, word);

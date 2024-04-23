@@ -99,6 +99,6 @@ print_e_list(const struct linked_list* p, FILE* file, const char* sep);
  * @param p A pointer to the current node from which the traversal begins.
  */ 
 extern void
-llfree(struct linked_list* p);
+llfree(struct linked_list* p, int free_b);
 
 #endif /* !LINKED_LIST_H */

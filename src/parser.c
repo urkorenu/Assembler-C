@@ -186,7 +186,6 @@ parse_line(struct assembler_data* assembler,
     get_word(line, &idx, word);
     while (word[0]) {
         if (is_symbol(word)) {
-            inst->symbol = mystrdup(word);
             get_word(line, &idx, word);
         }
         if (get_instruction(inst, word)) {
@@ -262,6 +261,7 @@ line_to_bin(struct assembler_data* assembler,
                        1,
                        &found_reg,
                        line_count);
+        free(inst->source);
     }
     if (inst->destination) {
         encode_operand(assembler,
@@ -271,6 +271,7 @@ line_to_bin(struct assembler_data* assembler,
                        0,
                        &found_reg,
                        line_count);
+        free(inst->destination);
     }
 
     free(index);
@@ -286,7 +287,7 @@ parse_define(struct assembler_data* assembler,
     char word[MAXWORD];
     char key[MAXWORD];
     get_word(line, idx, key);
-    if (!is_legal_symbol(word, line_count))
+    if (!is_legal_symbol(key, line_count))
         return 0;
     if (!key[0]) {
         print_in_error(MISSING_ARG, line_count, NULL);
@@ -421,7 +422,7 @@ parse_instruction(struct assembler_data* assembler,
         line_to_bin(assembler, line, inst, line_count);
     }
 
-    inst = NULL;
+    free(inst);
     return 1;
 }
 
@@ -466,6 +467,7 @@ process_words(struct assembler_data* assembler,
     int code = 0;
     int ic;
     struct bucket* data;
+    int* tmp_p = NULL;
 
     while (word[0]) {
         clean_word(word);
@@ -476,14 +478,15 @@ process_words(struct assembler_data* assembler,
             continue;
         } else if (data->data != NULL && (strcmp(data->key, CODE) == 0)) {
             /* in symbol table and its code */
-            code = add_bits(int_to_voidp(code), 2, 0);
-            code = add_bits(int_to_voidp(2), ((int*)data->data)[0], 2);
+            tmp_p = int_to_voidp(2);
+            code = add_bits(tmp_p, ((int*)data->data)[0], 2);
             set_data_int(last_unset_node, code);
             last_unset_node =
               get_first_unset_node(assembler->object_list, node_ic);
         } else if (data->data == NULL) {
             /* in symbol table but its null (extern) */
-            code = add_bits(int_to_voidp(code), 1, 0);
+            tmp_p = int_to_voidp(code);
+            code = add_bits(tmp_p, 1, 0);
             set_data_int(last_unset_node, code);
             ic = (*node_ic);
             insert_ll_node(extern_list,
@@ -492,6 +495,8 @@ process_words(struct assembler_data* assembler,
             last_unset_node =
               get_first_unset_node(assembler->object_list, node_ic);
         }
+        if (tmp_p)
+            free(tmp_p);
         get_word(line, idx, word);
     }
 }

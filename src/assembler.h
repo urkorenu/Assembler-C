@@ -4,7 +4,6 @@
 #include "includes.h"
 
 struct assembler_data {
-    struct linked_list* errors; /*Linked list that stores errors*/
     struct linked_list* object_list; /*Linked list  that stores assembled object code or data.*/
     struct binary_tree* symbol_table; /*Binary tree that stores symbols encountered during assembly along with their corresponding values or addresses.*/
     struct binary_tree* macro_tree; /*Binary tree that stores macros encountered during assembly.*/

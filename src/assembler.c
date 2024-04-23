@@ -141,6 +141,8 @@ parse_second_phase(struct assembler_data* assembler)
         }
     }
 
+    llfree(entry_list, 1);
+    llfree(extern_list, 1);
     fclose(source_file);
     return is_valid;
 }
@@ -162,7 +164,7 @@ assembler_free(struct assembler_data* assembler)
     if (assembler == NULL)
         return;
 
-    llfree(assembler->object_list);
+    llfree(assembler->object_list, 0);
     btree_free(assembler->symbol_table);
     btree_free(assembler->macro_tree);
     files_free(assembler->as_files);
@@ -173,7 +175,6 @@ struct assembler_data
 assembler_init(char* path)
 {
     struct assembler_data assembler;
-    assembler.errors = create_new_ll_node(0);
     assembler.object_list = create_new_ll_node(0);
     assembler.symbol_table = create_new_btree();
     assembler.macro_tree = create_new_btree();

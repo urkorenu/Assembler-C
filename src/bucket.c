@@ -1,4 +1,5 @@
 #include "bucket.h"
+#include "io.h"
 
 /*/////////////*/
 /* Set methods */
@@ -18,18 +19,17 @@ bucket_set_data(struct bucket* p, void* data)
     p->data = data;
 }
 
-void
-set_bucket_ic(struct bucket* b, int ic)
+void set_bucket_ic(struct bucket* b, int ic)
 {
     int* iptr;
-
     if (!b && !ic)
         return;
 
-    iptr = malloc(sizeof(int));
-    iptr[0] = ic;
+    iptr = int_to_voidp(ic);
     b->data = iptr;
 }
+
+
 /*//////////////////*/
 /* Memory functions */
 /*//////////////////*/
@@ -55,6 +55,7 @@ free_bucket(struct bucket* p)
     free(p->key);
     free(p->data);
     free(p);
+    p = NULL;
 }
 
 /* Reset a bucket by zeroing out its memory. */

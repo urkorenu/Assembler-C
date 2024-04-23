@@ -21,6 +21,11 @@ files_alloc(void)
 extern void
 files_free(struct files* f)
 {
+    free(f->object_path);
+    free(f->entries_path);
+    free(f->assembly_path);
+    free(f->externals_path);
+    free(f->processed_path);
     free(f);
 }
 

@@ -8,16 +8,19 @@
 #include "assembler.h"
 #include "bucket.h"
 #include "files.h"
-
+#include "io.h"
+#include <stdlib.h>
 
 /* Function prototypes */
 /**
  * @brief This function prints the contents of a linked list to a file
- * @param p A pointer to the linked list structure containing the data to be printed.
+ * @param p A pointer to the linked list structure containing the data to be
+ * printed.
  * @param file A pointer to the file where the contents will be printed.
  * @param sep The separator string used to separate each element in the output.
- * @param ic The instruction counter value appended to each element in the output.
- */ 
+ * @param ic The instruction counter value appended to each element in the
+ * output.
+ */
 static void
 _print_linked_list(const struct linked_list* p,
                    FILE* file,
@@ -37,10 +40,7 @@ set_data(struct linked_list* p, void* data)
 void
 set_data_int(struct linked_list* p, int data)
 {
-    int* iptr;
-    iptr = malloc(sizeof(int));
-    iptr[0] = data;
-    p->data = iptr;
+    p->data = int_to_voidp(data);
     p->state = DATA_SET;
 }
 
@@ -105,17 +105,23 @@ get_last_node(struct linked_list* p)
 
 /* Free memory allocated for the linked list */
 void
-llfree(struct linked_list* p)
+llfree(struct linked_list* p, int free_b)
 {
     if (p == NULL) {
         return;
     }
     if (p->next != NULL) {
-        llfree(p->next);
+        llfree(p->next, free_b);
     }
     p->next = NULL;
     p->pre = NULL;
+    if (free_b)
+        free_bucket(p->data);
+    else {
+        free(p->data);
+    }
     free(p);
+    p = NULL;
 }
 
 /* Print the linked list to a file with a custom separator */

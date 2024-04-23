@@ -192,9 +192,10 @@ mystrdup(const char* s)
 void*
 int_to_voidp(int data)
 {
-    int* iptr;
-    iptr = malloc(sizeof(int));
-    iptr[0] = data;
+    int* iptr = malloc(sizeof(int));
+    if (iptr != NULL) {
+        *iptr = data;
+    }
     return iptr;
 }
 
@@ -240,6 +241,9 @@ int
 is_legal_symbol(char* symbol, int line_count)
 {
     struct line_data* inst = NULL;
+
+    if (!symbol[0])
+        return 1;
     inst = init_instruction(inst);
 
     if (get_instruction(inst, symbol) ||

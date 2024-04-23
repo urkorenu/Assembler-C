@@ -7,6 +7,8 @@ init_instruction(struct line_data* p)
 {
     p = (struct line_data*)malloc(sizeof(struct line_data));
     p->args = 0;
+    p->source = NULL;
+    p->destination = NULL;
     p->code = 0;
     return p;
 }
@@ -15,7 +17,7 @@ init_instruction(struct line_data* p)
 int
 get_instruction(struct line_data* p, const char* word)
 {
-    if (!word)
+    if (!word[0])
         return 0;
     if (strcmp(word, "mov") == 0) {
         p->code = 0;
