@@ -5,7 +5,7 @@
 #include "include/io.h"
 #include "include/linked_list.h"
 
-void
+static void
 process_regular_line(FILE* read_file,
                      FILE* write_file,
                      char* line,
@@ -14,8 +14,33 @@ process_regular_line(FILE* read_file,
                      int* reading_macro,
                      int* start_idx,
                      fpos_t* temp_pos,
-                     char** key);
-void
+                     char** key)
+{
+    int idx = 0;
+    char word[MAXWORD];
+    struct macro* temp = NULL;
+
+    get_word(line, &idx, word);
+    if (strcmp(word, "mcr") == 0) {
+        (*reading_macro) = 1;
+        get_word(line, &idx, key[0]);
+        (*start_idx) = ++(*line_count);
+        fgetpos(read_file, temp_pos);
+    } else {
+        temp = get_data_by_key(assembler->macro_tree, word);
+        if (temp) {
+            fgetpos(read_file, temp_pos);
+            insert_macro(temp, read_file, write_file);
+            fsetpos(read_file, temp_pos);
+            ++(*line_count);
+        } else {
+            fprintf(write_file, "%s", line);
+            ++(*line_count);
+        }
+    }
+}
+
+static void
 process_macro_line(FILE* read_file,
                    FILE* write_file,
                    char* line,
@@ -24,30 +49,34 @@ process_macro_line(FILE* read_file,
                    char* key,
                    int start_idx,
                    fpos_t temp_pos,
-                   int* reading_macro);
+                   int* reading_macro)
+{
+    int idx = 0;
+    char word[MAXWORD];
 
-/**
- * @brief Parses the read_file and operate the pre-processor into a read_file.
- *
- * This function reads pre-processor directives from the given read_file and
- * performs appropriate actions based on the directives encountered.
- *
- * @param read_file      Pointer to the input read_file.
- * @param assembler->macro_tree      Pointer to the assembler->macro_tree data
- * structure.
- * @param write_file  Pointer to the output read_file.
- */
+    get_word(line, &idx, word);
+
+    if (strcmp(word, "endmcr") == 0) {
+        struct macro* macro =
+          create_macro(&macro, temp_pos, *line_count - start_idx);
+        insert_node(assembler->macro_tree, key, macro);
+        (*reading_macro) = 0;
+    } else {
+        (*line_count)++;
+    }
+}
+
 void
 parse_pre_processor(struct assembler_data* assembler)
 {
     int start_idx;
+    fpos_t temp_pos;
+    char* key = NULL;
     int line_count = 1;
     int reading_macro = 0;
-    char* key = NULL;
-    char line[MAXWORD] = { 0 };
     FILE* read_file = NULL;
     FILE* write_file = NULL;
-    fpos_t temp_pos;
+    char line[MAXWORD] = { 0 };
 
     if (!try_init_files((*assembler->as_files), &read_file, &write_file))
         return;
@@ -86,67 +115,6 @@ parse_pre_processor(struct assembler_data* assembler)
     fclose(write_file);
 }
 
-void
-process_regular_line(FILE* read_file,
-                     FILE* write_file,
-                     char* line,
-                     int* line_count,
-                     struct assembler_data* assembler,
-                     int* reading_macro,
-                     int* start_idx,
-                     fpos_t* temp_pos,
-                     char** key)
-{
-    char word[MAXWORD];
-    int idx = 0;
-    struct macro* temp = NULL;
-
-    get_word(line, &idx, word);
-    if (strcmp(word, "mcr") == 0) {
-        (*reading_macro) = 1;
-        get_word(line, &idx, key[0]);
-        (*start_idx) = ++(*line_count);
-        fgetpos(read_file, temp_pos);
-    } else {
-        temp = get_data_by_key(assembler->macro_tree, word);
-        if (temp) {
-            fgetpos(read_file, temp_pos);
-            insert_macro(temp, read_file, write_file);
-            fsetpos(read_file, temp_pos);
-            ++(*line_count);
-        } else {
-            fprintf(write_file, "%s", line);
-            ++(*line_count);
-        }
-    }
-}
-
-void
-process_macro_line(FILE* read_file,
-                   FILE* write_file,
-                   char* line,
-                   int* line_count,
-                   struct assembler_data* assembler,
-                   char* key,
-                   int start_idx,
-                   fpos_t temp_pos,
-                   int* reading_macro)
-{
-    char word[MAXWORD];
-    int idx = 0;
-
-    get_word(line, &idx, word);
-
-    if (strcmp(word, "endmcr") == 0) {
-        struct macro* macro =
-          create_macro(&macro, temp_pos, *line_count - start_idx);
-        insert_node(assembler->macro_tree, key, macro);
-        (*reading_macro) = 0;
-    } else {
-        (*line_count)++;
-    }
-}
-
 char*
 get_index(char* word)
 {
@@ -180,10 +148,12 @@ parse_line(struct assembler_data* assembler,
            struct line_data* inst,
            int line_count)
 {
-    char word[MAXWORD];
     int idx = 0;
+    char word[MAXWORD];
     int found_comma = 0;
+
     get_word(line, &idx, word);
+
     while (word[0]) {
         if (is_symbol(word)) {
             get_word(line, &idx, word);
@@ -194,9 +164,9 @@ parse_line(struct assembler_data* assembler,
                 if (is_ends_with_x(word, COMMA)) {
                     found_comma = 1;
                     remove_last_char(word);
-                    inst->source = mystrdup(word);
+                    inst->source = str_dup(word);
                 } else {
-                    inst->source = mystrdup(word);
+                    inst->source = str_dup(word);
                 }
                 if (!found_comma) {
                     get_word(line, &idx, word);
@@ -221,7 +191,7 @@ parse_line(struct assembler_data* assembler,
                     print_in_error(EXTRA_COMMAS, line_count, NULL);
                     return 0;
                 }
-                inst->destination = mystrdup(word);
+                inst->destination = str_dup(word);
             }
             get_word(line, &idx, word);
             if (word[0]) {
@@ -245,9 +215,9 @@ line_to_bin(struct assembler_data* assembler,
             struct line_data* inst,
             int line_count)
 {
-    int opcode = inst->code << 6;
     int found_reg = 0;
     char* index = NULL;
+    int opcode = inst->code << 6;
     struct linked_list* source_code =
       insert_ll_node(assembler->object_list, int_to_voidp(opcode));
     assembler->instruction_c++;
@@ -284,9 +254,11 @@ parse_define(struct assembler_data* assembler,
              int* idx,
              int line_count)
 {
-    char word[MAXWORD];
     char key[MAXWORD];
+    char word[MAXWORD];
+
     get_word(line, idx, key);
+
     if (!is_legal_symbol(key, line_count))
         return 0;
     if (!key[0]) {
@@ -349,9 +321,12 @@ process_data(struct assembler_data* assembler,
              int line_count)
 {
     char word[MAXWORD];
+
     get_word(line, idx, word);
+
     if (!word[0])
         get_word(line, idx, word);
+
     if (is_starting_with_x(word, '\"')) {
         encode_string(assembler, line, line_count);
     } else {
@@ -385,7 +360,9 @@ parse_extern(struct assembler_data* assembler,
              int line_count)
 {
     char key[MAXWORD];
+
     get_word(line, idx, key);
+
     if (!key[0]) {
         print_in_error(MISSING_ARG, line_count, NULL);
         return 0;
@@ -439,7 +416,9 @@ process_entry(struct assembler_data* assembler,
 
     int ic;
     struct bucket* data;
+
     get_word(line, idx, word);
+
     if (!(data = (get_data_by_key(assembler->symbol_table, word)))) {
         print_in_error(SYMBOL_NOT_FOUND, line_count, word);
         return 0;
@@ -464,10 +443,10 @@ process_words(struct assembler_data* assembler,
               int* node_ic,
               struct linked_list* last_unset_node)
 {
-    int code = 0;
     int ic;
-    struct bucket* data;
+    int code = 0;
     int* tmp_p = NULL;
+    struct bucket* data;
 
     while (word[0]) {
         clean_word(word);
@@ -512,10 +491,12 @@ process_line(struct assembler_data* assembler,
              struct linked_list* last_unset_node,
              int* node_ic)
 {
-    char word[MAXWORD];
     int idx = 0;
     int is_valid = 1;
+    char word[MAXWORD];
+
     get_word(line, &idx, word);
+
     if (is_symbol(word)) {
         get_word(line, &idx, word);
     }

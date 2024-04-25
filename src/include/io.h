@@ -4,18 +4,17 @@
 #include "includes.h"
 
 /* Maximum length of a single command line  */
-#define MAXWORD 81  
+#define MAXWORD 81
 
-/* maximum length of an index. */
+/* Maximum length of an index. */
 #define MAX_INDEX_LENGTH 4
 
-
-#define START_OF_MACRO_DEFINITION	"macro"
-#define END_OF_MACRO_DEFINITION		"endm"
-#define START_DATA_DEFINITION		"data"
-#define START_STRING_DEFINITION 	"string"
-#define START_ENTRY_DEFINITION		"entry"
-#define START_EXTERN_DEFINITION 	"extern"
+#define START_OF_MACRO_DEFINITION "macro"
+#define END_OF_MACRO_DEFINITION "endm"
+#define START_DATA_DEFINITION "data"
+#define START_STRING_DEFINITION "string"
+#define START_ENTRY_DEFINITION "entry"
+#define START_EXTERN_DEFINITION "extern"
 
 /**
  * @brief This function opens a file with error handling for failure to open.
@@ -52,21 +51,20 @@ extern void
 get_word(const char* line, int* idx, char* word);
 
 /**
-* @brief 
-*   Parses a string encapsulated in quotes from ~line~
-*   and sets ~start~ to point to the initial string quote.
-*
-* @param line 
-*   A pointer to the line to be parsed.
-* @param start 
-*   A pointer to be set to point at the starting string quote.
-* @return 
-*   Upon success, ~start~ will point to the starting string quote, 
-*   and the string's length will be returned (*excluding* its quotes).
-*   Upon error, ~start~ will remain unchanged and -1 will be returned.
-*/
+ * @brief
+ *   Parses a string encapsulated in quotes from ~line~
+ *   and sets ~start~ to point to the initial string quote.
+ * @param line
+ *   A pointer to the line to be parsed.
+ * @param start
+ *   A pointer to be set to point at the starting string quote.
+ * @return
+ *   Upon success, ~start~ will point to the starting string quote,
+ *   and the string's length will be returned (*excluding* its quotes).
+ *   Upon error, ~start~ will remain unchanged and -1 will be returned.
+ */
 extern int
-get_string(char* line, char **start);
+get_string(char* line, char** start);
 
 /**
  * @brief This function removes the last character from a string.
@@ -144,10 +142,11 @@ is_register(const char* word, int line_count);
 /**
  * @brief This function duplicates a given string.
  * @param s Pointer to the string being duplicated.
+ * @param line_counter An int represents the current line of the assembly file.
  * @return Returns a pointer to the duplicated string (p).
  */
 extern char*
-mystrdup(const char* s);
+str_dup(const char* s);
 
 /**
 * @brief This function converts an integer value to a void pointer.
@@ -159,27 +158,37 @@ mystrdup(const char* s);
 extern void*
 int_to_voidp(int data);
 
-
- /**
+/**
  * @brief This function removes square brackets [] from a string.
  * @param word The string from which square brackets are to be removed.
  * @return Returns the modified string with square brackets removed.
- */  
+ */
 extern char*
 remove_square_brackets(char* word);
 
 /**
- * @brief This function cleans a word by removing trailing comma and square brackets.
+ * @brief This function cleans a word by removing trailing comma and square
+ * brackets.
  * @param word The word to be cleaned.
- */  
+ */
 extern void
 clean_word(char* word);
 
+/**
+ * @brief This function checks whether a line is a comment (start with ';')
+ * @param word The line to be checked.
+ */
 extern int
 is_comment(char* line);
 
+/**
+ * @brief This function checks if a symbol is legal and not a system word.
+ * @param symbol The string to be checked.
+ * @param line_counter An int represents the current line of the assembly file.
+ * @return Returns 1 if the symbol is legal to use.
+ * Returns 0 is its illegal.
+ */
 extern int
 is_legal_symbol(char* symbol, int line_count);
 
 #endif /*_IO_H*/
-

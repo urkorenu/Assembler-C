@@ -6,7 +6,8 @@
 #include "instruction.h"
 #include "io.h"
 #include "linked_list.h"
-#include "parser.h"
+
+#define REGISTER_CODE_FMT "r%1d"
 
 /*The file contain all functions for encoding bits in the program*/
 
@@ -14,7 +15,7 @@
  * @brief This function adds bits to a number in a certain position.
  * The function takes integer type number, which is the number to which we want
  * to add bits, integer type number the bits we want to add, and integer type
- * nuber the position where we want to add the bits. The function performs one
+ * number the position where we want to add the bits. The function performs one
  * iteration unless requested otherwise.
  * @param source: An integer type number to which we want to add bits.
  * @param data: An integer type number that represents the number we want to
@@ -45,6 +46,7 @@ get_register_code(const char* reg);
  * each character to its ascii representation
  * @param assembler: Pointer to a struct assembler_data.
  * @param line: pointer to a constant character string.
+ * @param line_count: integer that represent the current line of the assembly file.
  */
 extern void
 encode_string(struct assembler_data* assembler, char* line, int line_count);
@@ -57,6 +59,7 @@ encode_string(struct assembler_data* assembler, char* line, int line_count);
  parse the string.
  * @param assembler: Pointer to a struct assembler_data.
  * @param line: and a pointer to a constant character string.
+ * @param line_count: integer that represent the current line of the assembly file.
  */
 extern void
 encode_data(struct assembler_data* assembler, const char* line, int line_count);
@@ -81,18 +84,19 @@ encode_register(struct assembler_data* assembler,
 
 /**
  * @brief Encodes direct addressing operands in assembly instructions
-   This function Determines whether the operand is from the source or
- destination of the instruction. Parses and converts the operand value to an
- integer, shifting it appropriately. Inserts the encoded value into the
- assembler's object list, updating the instruction counter and object list
- count. Handles errors related to invalid values, undefined symbols, or unknown
- data.
+ * This function Determines whether the operand is from the source or
+ * destination of the instruction. Parses and converts the operand value to an
+ * integer, shifting it appropriately. Inserts the encoded value into the
+ * assembler's object list, updating the instruction counter and object list
+ * count. Handles errors related to invalid values, undefined symbols, or unknown
+ * data.
  * @param assembler: Pointer to a struct assembler_data.
  * @param inst: A pointer to a struct line_data.
  * @param source_code A pointer to a struct linked_list
-   representing the source code data associated with the instruction
+ *  representing the source code data associated with the instruction
  * @param source An integer flag indicating whether the operand is from the
- source or destination of the instruction.
+ * source or destination of the instruction.
+ * @param line_count: integer that represent the current line of the assembly file.
  */
 extern void
 encode_direct(struct assembler_data* assembler,
@@ -119,6 +123,7 @@ encode_direct(struct assembler_data* assembler,
  source or destination of the instruction.
  * @param index A pointer to a character array representing the index value
  extracted from the instruction.
+ * @param line_count: integer that represent the current line of the assembly file.
  */
 extern void
 encode_index(struct assembler_data* assembler,
@@ -163,6 +168,7 @@ encode_null(struct assembler_data* assembler,
  source or destination of the instruction.
  * @param found_reg A pointer to an integer used to track whether a register
  operand has been found during encoding.
+ * @param line_count: integer that represent the current line of the assembly file.
  */
 extern void
 encode_operand(struct assembler_data* assembler,
@@ -172,4 +178,5 @@ encode_operand(struct assembler_data* assembler,
                int is_source,
                int* found_reg,
                int line_count);
+
 #endif /* ENCODE_H*/

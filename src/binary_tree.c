@@ -1,12 +1,6 @@
 #include "include/binary_tree.h"
 #include "include/bucket.h"
 
-/*/////////////////////////////////////////*/
-/* ///// Binary tree node functions ///////*/
-/*/////////////////////////////////////////*/
-
-/* Static functions */
-
 struct tnode
 tnode_init(void)
 {
@@ -17,7 +11,6 @@ tnode_init(void)
     return node;
 }
 
-/* Find a node with the given key in the binary tree */
 static struct tnode*
 _find_node(struct tnode* root, const char* key)
 {
@@ -35,11 +28,7 @@ _find_node(struct tnode* root, const char* key)
     else
         return _find_node(root->left, key);
 }
-/*/////////////*/
-/* Get methods */
-/*/////////////*/
 
-/* Get data associated with the given key from the binary tree */
 void*
 get_data_by_key(struct binary_tree* tree, const char* key)
 {
@@ -50,7 +39,6 @@ get_data_by_key(struct binary_tree* tree, const char* key)
     return NULL;
 }
 
-/* Print binary tree by its key and ic - suited for symbol table */
 void
 treeprint(struct tnode* p)
 {
@@ -70,9 +58,6 @@ treeprint(struct tnode* p)
     }
 }
 
-/* Set methods */
-
-/* Insert a node with the given key and data into the binary tree */
 int
 insert_node(struct binary_tree* tree, const char* key, void* data)
 {
@@ -83,7 +68,6 @@ insert_node(struct binary_tree* tree, const char* key, void* data)
     return 1;
 }
 
-/* Insert a node with the given key and data into the binary tree */
 struct tnode*
 add_node(struct tnode* root, const char* key, void* data)
 {
@@ -101,7 +85,6 @@ add_node(struct tnode* root, const char* key, void* data)
     return root;
 }
 
-/* Create a new tree node with the given key and data */
 struct tnode*
 create_tnode(const char* key, void* data)
 {
@@ -121,9 +104,6 @@ create_tnode(const char* key, void* data)
     return node;
 }
 
-/* Free Methods */
-
-/* Free memory allocated for the binary tree and calls for free_tree function */
 void
 btree_free(struct binary_tree* btree, int is_bucket)
 {
@@ -134,7 +114,6 @@ btree_free(struct binary_tree* btree, int is_bucket)
     btree = NULL;
 }
 
-/* Free memory allocated for the binary tree nodes */
 void
 free_tree(struct tnode* root, int is_bucket)
 {

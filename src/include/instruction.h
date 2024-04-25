@@ -4,13 +4,13 @@
 /* This structure represents data associated with a line of code or an
  * instruction */
 struct line_data {
-    char* symbol; /* Stores the symbol associated with the instruction. */
-    int code; /* Represents the operation to be performed by the instruction. */
-    char* source;      /* Stores the source operand of the instruction. */
-    char* destination; /* Stores the destination operand of the instruction.. */
-    int args;     /* Stores the number of arguments or operands expected by the
-                     instruction. */
-    int is_valid; /* Indicates whether the instruction is valid or not. */
+    char* symbol;       /* Stores the symbol associated with the instruction. */
+    int code;           /* Represents the operation to be performed by the instruction. */
+    char* source;       /* Stores the source operand of the instruction. */
+    char* destination;  /* Stores the destination operand of the instruction.. */
+    int args;           /* Stores the number of arguments or operands expected by the
+                            instruction. */
+    int is_valid;       /* Indicates whether the instruction is valid or not. */
 };
 
 /**

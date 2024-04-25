@@ -1,9 +1,3 @@
-/*
- * File: utils.c
- * Description: This file contains utility functions for parsing and processing
- * strings.
- */
-
 #include "include/io.h"
 #include "include/error.h"
 #include "include/instruction.h"
@@ -27,7 +21,6 @@ verbose_fopen(const char* fp, const char* modes)
     return f;
 }
 
-/* Function to read a line from a file */
 char*
 get_line(char* line, FILE* file)
 {
@@ -40,7 +33,6 @@ get_line(char* line, FILE* file)
     return result;
 }
 
-/* Function to extract a word from a line */
 void
 get_word(const char* line, int* idx, char* word)
 {
@@ -90,7 +82,6 @@ get_string(char* line, char** start)
     return -1;
 }
 
-/* Function to remove the last character from a string */
 void
 remove_last_char(char* word)
 {
@@ -100,7 +91,6 @@ remove_last_char(char* word)
     }
 }
 
-/* Function to remove the first character from a string */
 void
 remove_first_char(char* word)
 {
@@ -109,7 +99,6 @@ remove_first_char(char* word)
     }
 }
 
-/* Function to check if a word is a data store instruction */
 int
 is_data_store_instruction(const char* word)
 {
@@ -118,7 +107,6 @@ is_data_store_instruction(const char* word)
     return 0;
 }
 
-/* Function to check if a word is a symbol */
 int
 is_symbol(const char* word)
 {
@@ -128,7 +116,6 @@ is_symbol(const char* word)
     return 0;
 }
 
-/* Function to check if a word ends with a specific character */
 int
 is_ends_with_x(const char* word, const char x)
 {
@@ -139,7 +126,6 @@ is_ends_with_x(const char* word, const char x)
     return 0;
 }
 
-/* Function to check if a word starts with a specific character */
 int
 is_starting_with_x(const char* word, const char x)
 {
@@ -149,7 +135,6 @@ is_starting_with_x(const char* word, const char x)
     return 0;
 }
 
-/* Function to check if a word is an E instruction */
 int
 is_e_instruction(const char* word)
 {
@@ -158,7 +143,6 @@ is_e_instruction(const char* word)
     return 0;
 }
 
-/* Function to check if a word is a register */
 int
 is_register(const char* word, int line_count)
 {
@@ -174,9 +158,8 @@ is_register(const char* word, int line_count)
     return 0;
 }
 
-/* Function to duplicate a string */
 char*
-mystrdup(const char* s)
+str_dup(const char* s)
 {
     char* p = (char*)malloc(strlen(s) + 1);
     if (p == NULL) {

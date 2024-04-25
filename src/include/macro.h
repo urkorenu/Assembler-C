@@ -1,13 +1,11 @@
 #ifndef _MACROS_H
 #define _MACROS_H
 
-#include "bucket.h"
 #include "includes.h"
-#include <stdio.h>
 
 struct macro {
-    fpos_t start; /*The position in the file where the macro definition starts*/
-    int lines; /* The number of lines in the macro definition.*/
+    fpos_t start_pos; /*The position in the file where the macro definition starts*/
+    int line_amount;  /*The number of lines in the macro definition.*/
 };
 
 /**
@@ -44,22 +42,5 @@ free_macro(struct macro* p);
  */
 extern void
 reset_macro(struct macro* p);
-
-/**
- * @brief This function updates the starting position (start) of a struct macro object 
-   to the value provided as an argument to the function.
- * @param macro A pointer to a struct macro.
- * @param start Represents a file position (fpos_t). 
-   It holds the value that will be assigned to the start field of the struct macro object.
- */
-extern void
-set_start(struct macro* macro, fpos_t start);
-
-/**
- * @brief This function sets the number of lines in a macro.
- * @param macro A pointer to a struct macro object.
- */
-extern void
-set_lines(struct macro* macro, int lines);
 
 #endif /* _MACROS_H */

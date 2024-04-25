@@ -46,7 +46,6 @@
  * @param host Pointer to the host data structure.
  * @param new_file Pointer to the output file.
  */
-
 extern void
 parse_pre_processor(struct assembler_data* assembler);
 
@@ -68,6 +67,7 @@ get_index(char* word);
  * @param line A pointer to a string representing the line of assembly code to be parsed.
  * @param inst A pointer to a data structure of type struct line_data,
    which contains information about the parsed line, including symbols, commands, and operands.
+ * @param line_counter An int represents the current line of the assembly file.
  * @return An integer value. 
   It returns 1 if the line of assembly code is successfully parsed without any errors,
   indicating that the line is valid. 
@@ -110,6 +110,7 @@ line_to_bin_1st(struct assembler_data* assembler,
    This line typically contains the .define directive that needs to be parsed.
  * @param idx A pointer to an integer that represents the current index in the line being parsed.
    It is used to keep track of the position within the line while parsing
+ * @param line_counter An int represents the current line of the assembly file.
    @return Returns 0 if any errors are encountered during parsing, otherwise continues parsing.
 */
 extern int
@@ -133,6 +134,7 @@ parse_define(struct assembler_data* assembler, char* line, int* idx, int line_co
     It is used when handling symbols during parsing.
  * @param idx A pointer to an integer representing the current index in the line being parsed.
     It is used to keep track of the position within the line while parsing.
+ * @param line_counter An int represents the current line of the assembly file.
    @return Returns an integer value. 
     It returns 1 after successful parsing of the data store instruction, indicating that the function has completed.
     It return 0 if any errors occur during the parsing, to indicate that the parsing process was unsuccessful.
@@ -159,6 +161,7 @@ parse_data_store_instruction(struct assembler_data* assembler,
    It is used to keep track of the position within the line while parsing.
  * @param key A pointer to a character array representing the symbol specified by the .extern directive.
     It is extracted from the assembly code line and used to insert the symbol into the symbol table.
+ * @param line_counter An int represents the current line of the assembly file.
    @return Returns 1 if the directive is successfully parsed and the symbol is inserted into the symbol table
     Returns 0 if the analysis failed. If we encountered any errors during the analysis.
     */
@@ -194,6 +197,7 @@ parse_extern(struct assembler_data* assembler, char* line, int* idx, int line_co
     It is used to store information about the instruction in the symbol table.
  * @param inst A pointer to a structure (struct line_data) representing the parsed information 
    of the assembly code instruction.
+ * @param line_counter An int represents the current line of the assembly file.
    @return Returns 1 if the directive is successfully parsed and the symbol is inserted into the symbol table
     Returns 0 if the analysis failed. If we encountered any errors during the analysis.
     */

@@ -1,25 +1,20 @@
 #include "include/bucket.h"
 #include "include/io.h"
 
-/*/////////////*/
-/* Set methods */
-/*/////////////*/
-
-/* Set the key for a bucket.*/
 void
 bucket_set_key(struct bucket* p, const char* key)
 {
-    p->key = mystrdup(key);
+    p->key = str_dup(key);
 }
 
-/* Set the data for a bucket.*/
 void
 bucket_set_data(struct bucket* p, void* data)
 {
     p->data = data;
 }
 
-void set_bucket_ic(struct bucket* b, int ic)
+void
+set_bucket_ic(struct bucket* b, int ic)
 {
     int* iptr;
     if (!b && !ic)
@@ -29,12 +24,6 @@ void set_bucket_ic(struct bucket* b, int ic)
     b->data = iptr;
 }
 
-
-/*//////////////////*/
-/* Memory functions */
-/*//////////////////*/
-
-/* Allocate memory for a bucket. */
 struct bucket*
 bucket_alloc(void)
 {
@@ -46,7 +35,6 @@ bucket_alloc(void)
     return p;
 }
 
-/* Free the memory of a bucker*/
 void
 free_bucket(struct bucket* p)
 {
@@ -58,14 +46,12 @@ free_bucket(struct bucket* p)
     p = NULL;
 }
 
-/* Reset a bucket by zeroing out its memory. */
 void
 reset_bucket(struct bucket* p)
 {
     memset(p, 0, sizeof(struct bucket));
 }
 
-/* Reset a bucket by zeroing out its memory. */
 struct bucket*
 create_bucket(const char* key, void* data)
 {

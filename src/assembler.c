@@ -6,22 +6,18 @@
 #include "include/linked_list.h"
 #include "include/parser.h"
 
-const char ASSEMBLER_MEM_ERR[] = {
-    "FATAL ERROR: Failed to allocate memory for struct assembler_data\n"
-};
-
 int
 parse_first_phase(struct assembler_data* assembler)
 {
-    char line[MAXWORD]; /* Buffer to store each line of the source file. */
-    int idx = 0; /* Index to track the current position in the line buffer. */
-    char word[MAXWORD];
-    char symbol[MAXWORD];
-    int reading_symbol = 0;
-    int reading_data = 0;
+    int idx = 0;
     int is_valid = 1;
-    int line_counter = 0;
     FILE* source_file;
+    char line[MAXWORD];
+    char word[MAXWORD];
+    int reading_data = 0;
+    char symbol[MAXWORD];
+    int line_counter = 0;
+    int reading_symbol = 0;
 
     source_file = verbose_fopen(assembler->as_files->processed_path, "r");
 
@@ -31,9 +27,7 @@ parse_first_phase(struct assembler_data* assembler)
     }
 
     while (get_line(line, source_file) != NULL) {
-        if (!line[0])
-            continue;
-        if (is_comment(line))
+        if (!line[0] || is_comment(line))
             continue;
         line_counter++;
         get_word(line, &idx, word);
@@ -75,9 +69,9 @@ parse_first_phase(struct assembler_data* assembler)
                                          line_counter);
         }
         idx = 0;
-        memset(line, 0, MAXWORD);
-        reading_symbol = 0;
         reading_data = 0;
+        reading_symbol = 0;
+        memset(line, 0, MAXWORD);
     }
     fclose(source_file);
     return is_valid;
@@ -104,9 +98,7 @@ parse_second_phase(struct assembler_data* assembler)
         return 0;
 
     while (get_line(line, source_file) != NULL) {
-        if (!line[0])
-            continue;
-        if (is_comment(line))
+        if (!line[0] || is_comment(line))
             continue;
         line_counter++;
         is_valid &= process_line(assembler,
@@ -122,7 +114,6 @@ parse_second_phase(struct assembler_data* assembler)
         last_unset_node =
           get_first_unset_node(assembler->object_list, &node_ic);
     }
-    memset(line, 0, MAXWORD);
 
     if (entry_flag == 1 && is_valid) {
         en_file = fopen(assembler->as_files->entries_path, "w");
@@ -130,7 +121,6 @@ parse_second_phase(struct assembler_data* assembler)
             print_e_list(entry_list, en_file, "\n");
             printf("entry file was created successfully\n");
             fclose(en_file);
-            en_file = NULL;
         }
     }
     if (extern_flag == 1 && is_valid) {
@@ -139,13 +129,13 @@ parse_second_phase(struct assembler_data* assembler)
             print_e_list(extern_list, ex_file, "\n");
             printf("extern file was created successfully\n");
             fclose(ex_file);
-            ex_file = NULL;
         }
     }
 
+    fclose(source_file);
     llfree(entry_list, 1);
     llfree(extern_list, 1);
-    fclose(source_file);
+    memset(line, 0, MAXWORD);
     return is_valid;
 }
 
@@ -174,9 +164,10 @@ assembler_free(struct assembler_data* assembler)
 }
 
 struct assembler_data
-assembler_init(char* path)
+assembler_init(const char* path)
 {
     struct assembler_data assembler;
+
     assembler.object_list = create_new_ll_node(0);
     assembler.symbol_table = create_new_btree();
     assembler.macro_tree = create_new_btree();
@@ -184,6 +175,8 @@ assembler_init(char* path)
     assembler.ic = 100;
     assembler.instruction_c = 0;
     assembler.data_c = 0;
+
     set_file_pack(assembler.as_files, path);
+
     return assembler;
 }

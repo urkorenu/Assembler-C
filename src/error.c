@@ -1,6 +1,7 @@
 #include "include/error.h"
 
 static char errors[TOTAL_NUMBER_OF_ERRORS][100] = { { 0 } };
+
 static void
 init_errors(void);
 
@@ -22,7 +23,6 @@ _print_in_error(int error_code,
 {
     if (!errors[0][0])
         init_errors();
-    /* Print the error code number and the error message */
     printf("[Error] %s(%d): ", origin_file, origin_line);
     if (word)
         printf("\"%s\" ", word);

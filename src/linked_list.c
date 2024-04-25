@@ -1,16 +1,9 @@
-/*
- * File: linked_list.c
- * Description: This file contains the core and methods of the linked list data
- * structure.
- */
-
 #include "include/linked_list.h"
 #include "include/assembler.h"
 #include "include/bucket.h"
 #include "include/files.h"
 #include "include/io.h"
 
-/* Function prototypes */
 /**
  * @brief This function prints the contents of a linked list to a file
  * @param p A pointer to the linked list structure containing the data to be
@@ -23,27 +16,17 @@
 static void
 _print_linked_list(const struct linked_list* p,
                    FILE* file,
-                   const char* sep,
+                   const char* separator,
                    int ic);
+/*
+ * @brief This function takes an integer by its binary and encrypt it directly
+ * to a file.
+ * @param n Int that contains the binary to be encrypted.
+ * @param file The file to print the enctyption to.
+ * */
 static void
 encrypt_binary(int n, FILE* file);
 
-/* Set data and state for the node */
-void
-set_data(struct linked_list* p, void* data)
-{
-    p->data = data;
-    p->state = DATA_SET;
-}
-
-void
-set_data_int(struct linked_list* p, int data)
-{
-    p->data = int_to_voidp(data);
-    p->state = DATA_SET;
-}
-
-/* Allocate memory for a new linked list node */
 struct linked_list*
 create_new_ll_node(void* data)
 {
@@ -60,16 +43,29 @@ create_new_ll_node(void* data)
     return new_node;
 }
 
-/* Insert a new node at the end of the linked list */
+void
+set_data(struct linked_list* p, void* data)
+{
+    p->data = data;
+    p->state = DATA_SET;
+}
+
+void
+set_data_int(struct linked_list* p, int data)
+{
+    p->data = int_to_voidp(data);
+    p->state = DATA_SET;
+}
+
 struct linked_list*
-insert_ll_node(struct linked_list* head, void* data)
+insert_ll_node(struct linked_list* p, void* data)
 {
     struct linked_list* last_node;
 
-    if (head == NULL)
-        last_node = head = create_new_ll_node(data);
+    if (p == NULL)
+        last_node = p = create_new_ll_node(data);
     else
-        last_node = get_last_node(head);
+        last_node = get_last_node(p);
 
     last_node = last_node->next = create_new_ll_node(data);
 
@@ -93,7 +89,6 @@ get_first_unset_node(struct linked_list* p, int* ic)
     return p;
 }
 
-/* Get the last node of the linked list */
 struct linked_list*
 get_last_node(struct linked_list* p)
 {
@@ -102,7 +97,6 @@ get_last_node(struct linked_list* p)
     return p;
 }
 
-/* Free memory allocated for the linked list */
 void
 llfree(struct linked_list* p, int free_b)
 {
@@ -122,36 +116,10 @@ llfree(struct linked_list* p, int free_b)
     free(p);
     p = NULL;
 }
-
-/* Print the linked list to a file with a custom separator */
-void
-ll_fprintf(const struct linked_list* p,
-           FILE* file,
-           const char* sep,
-           int ic,
-           struct assembler_data* assembler)
-{
-    if (file == NULL) {
-        fprintf(stderr, "Error: Invalid file pointer.\n");
-    } else if (p != NULL) {
-        fprintf(file, "   %d %d", assembler->instruction_c, assembler->data_c);
-        _print_linked_list(p, file, ((sep == NULL) ? "\n" : sep), ic);
-    }
-}
-
-/* Print the linked list to a file */
-void
-print_linked_list(struct assembler_data* assembler)
-{
-    FILE* file = fopen(assembler->as_files->object_path, "w");
-    ll_fprintf(assembler->object_list, file, "\n", 100, assembler);
-}
-
-/* Helper function to recursively print the linked list */
 static void
 _print_linked_list(const struct linked_list* p,
                    FILE* file,
-                   const char* sep,
+                   const char* separator,
                    int ic)
 {
     if (p->state == DATA_SET) {
@@ -162,9 +130,32 @@ _print_linked_list(const struct linked_list* p,
             encrypt_binary(0, file);
     }
     if (p->next != NULL) {
-        fprintf(file, "%s", sep);
-        _print_linked_list(p->next, file, sep, ic);
+        fprintf(file, "%s", separator);
+        _print_linked_list(p->next, file, separator, ic);
     }
+}
+
+void
+ll_fprintf(const struct linked_list* p,
+           FILE* file,
+           const char* separator,
+           int ic,
+           struct assembler_data* assembler)
+{
+    if (file == NULL) {
+        fprintf(stderr, "Error: Invalid file pointer.\n");
+    } else if (p != NULL) {
+        fprintf(file, "   %d %d", assembler->instruction_c, assembler->data_c);
+        _print_linked_list(
+          p, file, ((separator == NULL) ? "\n" : separator), ic);
+    }
+}
+
+void
+print_linked_list(struct assembler_data* assembler)
+{
+    FILE* file = fopen(assembler->as_files->object_path, "w");
+    ll_fprintf(assembler->object_list, file, "\n", 100, assembler);
 }
 
 void
@@ -184,7 +175,6 @@ print_e_list(const struct linked_list* p, FILE* file, const char* sep)
     }
 }
 
-/* Helper function to encrypt binary representation and print to file */
 static void
 encrypt_binary(int n, FILE* file)
 {

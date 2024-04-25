@@ -1,13 +1,7 @@
 #include "include/files.h"
-#include "include/io.h"
 #include "include/error.h"
+#include "include/io.h"
 
-/* Error message for memory allocation failure */
-const char FILES_ALLOC_ERR[] = {
-    "Failed to allocate memory for struct files - Buy more RAM lol!\n"
-};
-
-/* Allocate memory for struct files */
 extern struct files*
 files_alloc(void)
 {
@@ -17,7 +11,6 @@ files_alloc(void)
     return f;
 }
 
-/* Free memory allocated for struct files */
 extern void
 files_free(struct files* f)
 {
@@ -29,7 +22,6 @@ files_free(struct files* f)
     free(f);
 }
 
-/* Modify file path by concatenating with a format */
 char*
 modify_path(const char* path, const char* format)
 {
@@ -47,7 +39,6 @@ modify_path(const char* path, const char* format)
     return new_path;
 }
 
-/* Set file paths for a files structure */
 void
 set_file_pack(struct files* files, const char* path)
 {

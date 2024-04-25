@@ -2,8 +2,9 @@
 #include "include/bucket.h"
 #include "include/error.h"
 #include "include/io.h"
-#include "include/parser.h"
+#include "include/linked_list.h"
 
+#define REGISTER_CODE_FMT "r%1d"
 
 int
 add_bits(void* source, int data, int location)
@@ -52,22 +53,23 @@ encode_string(struct assembler_data* assembler, char* line, int line_count)
         assembler->ic++;
     }
 
+    /* last word of string should  be 0 */
     last_node = insert_ll_node(assembler->object_list, 0);
     last_node->state = DATA_SET;
     assembler->data_c++;
     assembler->ic++;
 }
 
+/* Encode data */
 void
 encode_data(struct assembler_data* assembler, const char* line, int line_count)
 {
 
     int idx = 0;
     int temp = 0;
-    char word[MAXWORD];
     int found_comma = 0;
+    char word[MAXWORD];
     struct bucket* temp_data;
-
     get_word(line, &idx, word);
     get_word(line, &idx, word);
 
@@ -114,6 +116,7 @@ encode_data(struct assembler_data* assembler, const char* line, int line_count)
     }
 }
 
+/* Encode register */
 void
 encode_register(struct assembler_data* assembler,
                 struct line_data* inst,
@@ -201,12 +204,11 @@ encode_index(struct assembler_data* assembler,
              int source,
              char* index,
              int line_count)
-{    
-    int temp;
-    int code;
+{
     struct bucket* temp_data;
     int operand_location = DESTINATION_OPERAND;
-
+    int temp;
+    int code;
 
     if (source) {
         operand_location = SOURCE_OPERAND;
