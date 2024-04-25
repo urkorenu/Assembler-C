@@ -1,4 +1,4 @@
-#include "error.h"
+#include "include/error.h"
 
 static char errors[TOTAL_NUMBER_OF_ERRORS][100] = { { 0 } };
 static void

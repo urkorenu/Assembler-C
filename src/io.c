@@ -4,11 +4,10 @@
  * strings.
  */
 
-#include "io.h"
-#include "error.h"
-#include "instruction.h"
-#include "parser.h"
-#include <string.h>
+#include "include/io.h"
+#include "include/error.h"
+#include "include/instruction.h"
+#include "include/parser.h"
 
 FILE*
 verbose_fopen(const char* fp, const char* modes)

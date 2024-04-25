@@ -4,12 +4,11 @@
  * structure.
  */
 
-#include "linked_list.h"
-#include "assembler.h"
-#include "bucket.h"
-#include "files.h"
-#include "io.h"
-#include <stdlib.h>
+#include "include/linked_list.h"
+#include "include/assembler.h"
+#include "include/bucket.h"
+#include "include/files.h"
+#include "include/io.h"
 
 /* Function prototypes */
 /**

@@ -1,6 +1,6 @@
-#include "files.h"
-#include "io.h"
-#include "error.h"
+#include "include/files.h"
+#include "include/io.h"
+#include "include/error.h"
 
 /* Error message for memory allocation failure */
 const char FILES_ALLOC_ERR[] = {

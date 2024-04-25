@@ -1,6 +1,6 @@
-#include "assembler.h"
-#include "linked_list.h"
-#include "parser.h"
+#include "include/assembler.h"
+#include "include/linked_list.h"
+#include "include/parser.h"
 
 int
 main(int argc, char* argv[])
@@ -18,6 +18,8 @@ main(int argc, char* argv[])
         if (!parse_second_phase(&assembler))
             return EXIT_FAILURE;
         print_linked_list(&assembler);
+        printf("file \"%s\" compiled successfully!\n",
+               assembler.as_files->assembly_path);
         assembler_free(&assembler);
     }
     return EXIT_SUCCESS;
