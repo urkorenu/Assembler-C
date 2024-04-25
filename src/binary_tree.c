@@ -1,6 +1,5 @@
-#include "binary_tree.h"
-#include "bucket.h"
-#include <stdlib.h>
+#include "include/binary_tree.h"
+#include "include/bucket.h"
 
 /*/////////////////////////////////////////*/
 /* ///// Binary tree node functions ///////*/

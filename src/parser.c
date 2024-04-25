@@ -1,9 +1,9 @@
-#include "parser.h"
-#include "assembler.h"
-#include "bucket.h"
-#include "error.h"
-#include "io.h"
-#include "linked_list.h"
+#include "include/parser.h"
+#include "include/assembler.h"
+#include "include/bucket.h"
+#include "include/error.h"
+#include "include/io.h"
+#include "include/linked_list.h"
 
 void
 process_regular_line(FILE* read_file,

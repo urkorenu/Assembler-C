@@ -2,6 +2,7 @@
 CC := gcc
 HIDE := @
 SRC_DIR := src
+OBJ_DIR := obj
 TEST_DIR := tests
 INCLUDES := -I./$(SRC_DIR)
 CFLAGS := -ansi -pedantic -Wall -g
@@ -9,7 +10,7 @@ CFLAGS := -ansi -pedantic -Wall -g
 #Files and Directories
 TEST_SOURCES := $(wildcard ./$(TEST_DIR)/*.c)
 SOURCES := $(filter-out ./$(SRC_DIR)/main.c, $(wildcard ./$(SRC_DIR)/*.c))
-OBJECTS := $(SOURCES:.c=.o)
+OBJECTS := $(addprefix $(OBJ_DIR)/, $(notdir $(SOURCES:.c=.o)))
 TESTS := $(notdir $(TEST_SOURCES:.c=))
 BIN := assembler
 
@@ -30,7 +31,7 @@ clean: cleanup
 # Build
 # -----
 
-$(SRC_DIR)/%.o: $(SRC_DIR)/%.c
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@echo $(BIN): Building $@...
 	@$(HIDE)$(CC) $(CFLAGS) -c $(INCLUDES) $^ -o $@
 

@@ -1,5 +1,5 @@
-#include "macro.h"
-#include "io.h"
+#include "include/macro.h"
+#include "include/io.h"
 
 /* Function to allocate memory for a macro */
 static struct macro*

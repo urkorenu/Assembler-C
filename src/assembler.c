@@ -1,10 +1,10 @@
-#include "assembler.h"
-#include "binary_tree.h"
-#include "error.h"
-#include "files.h"
-#include "io.h"
-#include "linked_list.h"
-#include "parser.h"
+#include "include/assembler.h"
+#include "include/binary_tree.h"
+#include "include/error.h"
+#include "include/files.h"
+#include "include/io.h"
+#include "include/linked_list.h"
+#include "include/parser.h"
 
 const char ASSEMBLER_MEM_ERR[] = {
     "FATAL ERROR: Failed to allocate memory for struct assembler_data\n"
@@ -128,6 +128,7 @@ parse_second_phase(struct assembler_data* assembler)
         en_file = fopen(assembler->as_files->entries_path, "w");
         if (en_file) {
             print_e_list(entry_list, en_file, "\n");
+            printf("entry file was created successfully\n");
             fclose(en_file);
             en_file = NULL;
         }
@@ -136,6 +137,7 @@ parse_second_phase(struct assembler_data* assembler)
         ex_file = fopen(assembler->as_files->externals_path, "w");
         if (ex_file) {
             print_e_list(extern_list, ex_file, "\n");
+            printf("extern file was created successfully\n");
             fclose(ex_file);
             ex_file = NULL;
         }

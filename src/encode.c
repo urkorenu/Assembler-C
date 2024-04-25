@@ -1,10 +1,8 @@
-#include "encode.h"
-#include "bucket.h"
-#include "error.h"
-#include "io.h"
-#include "linked_list.h"
-#include <ctype.h>
-#include <string.h>
+#include "include/encode.h"
+#include "include/bucket.h"
+#include "include/error.h"
+#include "include/io.h"
+#include "include/linked_list.h"
 
 #define REGISTER_CODE_FMT "r%1d"
 

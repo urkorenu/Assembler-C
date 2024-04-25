@@ -1,5 +1,5 @@
-#include "instruction.h"
-#include "includes.h"
+#include "include/instruction.h"
+#include "include/includes.h"
 
 /* Initialize an instruction structure */
 struct line_data*
