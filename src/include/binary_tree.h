@@ -118,7 +118,7 @@ create_new_btree(void);
  * @param btree A pointer to the binary tree structure that needs to be freed.
  */ 
 extern void
-btree_free(struct binary_tree* btree);
+btree_free(struct binary_tree* btree, int is_bucket);
 
 /**
  * @brief This function recursively frees the memory allocated for each node of the binary tree,
@@ -126,6 +126,6 @@ btree_free(struct binary_tree* btree);
  * @param root A pointer to the root node of the binary tree.
  */  
 extern void
-free_tree(struct tnode* p);
+free_tree(struct tnode* p, int is_bucket);
 
 #endif /* _BINARY_TREE_H */

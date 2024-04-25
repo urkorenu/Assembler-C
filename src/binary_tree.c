@@ -125,24 +125,30 @@ create_tnode(const char* key, void* data)
 
 /* Free memory allocated for the binary tree and calls for free_tree function */
 void
-btree_free(struct binary_tree* btree)
+btree_free(struct binary_tree* btree, int is_bucket)
 {
     if (btree == NULL)
         return;
-    free_tree(btree->root);
+    free_tree(btree->root, is_bucket);
     free(btree);
     btree = NULL;
 }
 
 /* Free memory allocated for the binary tree nodes */
 void
-free_tree(struct tnode* root)
+free_tree(struct tnode* root, int is_bucket)
 {
+    struct bucket* tmp_b = NULL;
     if (root != NULL) {
-        free_tree(root->left);
-        free_tree(root->right);
-        free_bucket(root->node);
-        /*free_bucket(root->node->data);*/
+        free_tree(root->left, is_bucket);
+        free_tree(root->right, is_bucket);
+        if (is_bucket) {
+            tmp_b = root->node->data;
+            free(tmp_b->key);
+            free_bucket(root->node);
+        } else {
+            free_bucket(root->node);
+        }
         free(root);
     }
 }

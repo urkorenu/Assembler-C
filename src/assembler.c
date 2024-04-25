@@ -167,8 +167,8 @@ assembler_free(struct assembler_data* assembler)
         return;
 
     llfree(assembler->object_list, 0);
-    btree_free(assembler->symbol_table);
-    btree_free(assembler->macro_tree);
+    btree_free(assembler->symbol_table, 1);
+    btree_free(assembler->macro_tree, 0);
     files_free(assembler->as_files);
     memset(assembler, 0, sizeof(struct assembler_data));
 }
