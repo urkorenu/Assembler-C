@@ -29,13 +29,15 @@ parse_first_phase(struct assembler_data* assembler)
     while (get_line(line, source_file) != NULL) {
         if (!line[0] || is_comment(line))
             continue;
+
         line_counter++;
         get_word(line, &idx, word);
 
         if (strcmp(word, ".define") == 0) {
             is_valid = parse_define(assembler, line, &idx, line_counter);
+        }
 
-        } else if (is_symbol(word)) {
+        else if (is_symbol(word)) {
             int temp_index = 0;
             get_word(word, &temp_index, symbol);
             get_word(line, &idx, word);
@@ -52,6 +54,7 @@ parse_first_phase(struct assembler_data* assembler)
                                                     &idx,
                                                     line_counter);
         }
+
         if (is_e_instruction(word)) {
             if (strcmp(word, ".extern") == 0) {
                 is_valid = parse_extern(assembler, line, &idx, line_counter);
@@ -68,11 +71,13 @@ parse_first_phase(struct assembler_data* assembler)
                                          word,
                                          line_counter);
         }
+
         idx = 0;
         reading_data = 0;
         reading_symbol = 0;
         memset(line, 0, MAXWORD);
     }
+
     fclose(source_file);
     return is_valid;
 }
@@ -100,6 +105,7 @@ parse_second_phase(struct assembler_data* assembler)
     while (get_line(line, source_file) != NULL) {
         if (!line[0] || is_comment(line))
             continue;
+
         line_counter++;
         is_valid &= process_line(assembler,
                                  line,

@@ -6,6 +6,7 @@ extern struct files*
 files_alloc(void)
 {
     struct files* f = malloc(sizeof(struct files));
+
     if (f == NULL)
         fprintf(stderr, FILES_ALLOC_ERR);
     return f;
@@ -26,6 +27,7 @@ char*
 modify_path(const char* path, const char* format)
 {
     char* new_path = malloc(strlen(path) + strlen(format) + 1);
+
     if (new_path == NULL) {
         fprintf(stderr, "Memory allocation failed\n");
         return NULL;
@@ -33,6 +35,7 @@ modify_path(const char* path, const char* format)
 
     if (!path)
         return NULL;
+
     strcpy(new_path, path);
     strcat(new_path, format);
 

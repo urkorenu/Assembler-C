@@ -32,6 +32,7 @@ create_new_ll_node(void* data)
 {
     struct linked_list* new_node;
     new_node = (struct linked_list*)malloc(sizeof(struct linked_list));
+
     if (new_node == NULL) {
         printf("Memory allocation failed\n");
         exit(EXIT_FAILURE);

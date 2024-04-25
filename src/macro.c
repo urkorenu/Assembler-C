@@ -35,6 +35,7 @@ struct macro*
 create_macro(struct macro** p, fpos_t pos, int lines)
 {
     *p = macro_alloc();
+
     if (*p == NULL) {
         fprintf(stderr, "Memory allocation failed\n");
         exit(EXIT_FAILURE);
@@ -47,9 +48,11 @@ create_macro(struct macro** p, fpos_t pos, int lines)
 void
 insert_macro(struct macro* p, FILE* file, FILE* new_file)
 {
-    char line[MAXWORD];
     int i = 0;
+    char line[MAXWORD];
+
     fsetpos(file, &p->start_pos);
+
     while (i++ < p->line_amount) {
         get_line(line, file);
         fprintf(new_file, "%s", line);

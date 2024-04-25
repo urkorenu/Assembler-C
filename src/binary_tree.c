@@ -5,9 +5,11 @@ struct tnode
 tnode_init(void)
 {
     struct tnode node;
+
     node.node = bucket_alloc();
     node.left = NULL;
     node.right = NULL;
+
     return node;
 }
 
@@ -16,15 +18,18 @@ _find_node(struct tnode* root, const char* key)
 {
 
     int cmp;
+
     if (root == NULL) {
         return NULL;
     }
+
     cmp = strcmp(root->node->key, key);
     if (cmp == 0) {
         return root;
     }
     if (cmp > 0)
         return _find_node(root->right, key);
+
     else
         return _find_node(root->left, key);
 }
@@ -33,6 +38,7 @@ void*
 get_data_by_key(struct binary_tree* tree, const char* key)
 {
     struct tnode* node = _find_node(tree->root, key);
+
     if (node != NULL) {
         return node->node->data;
     }
@@ -44,6 +50,7 @@ treeprint(struct tnode* p)
 {
 
     struct bucket* temp_buck;
+
     if (p != NULL) {
         if (p->node != NULL) {
             temp_buck = p->node->data;
@@ -118,6 +125,7 @@ void
 free_tree(struct tnode* root, int is_bucket)
 {
     struct bucket* tmp_b = NULL;
+
     if (root != NULL) {
         free_tree(root->left, is_bucket);
         free_tree(root->right, is_bucket);

@@ -10,6 +10,7 @@ print_file_error(const char* fp)
 {
     if (!errno)
         return;
+
     fprintf(stderr, "Fatal Error:\n%*s\"%s\": ", 4, " ", fp);
     perror("");
 }
@@ -23,9 +24,11 @@ _print_in_error(int error_code,
 {
     if (!errors[0][0])
         init_errors();
+
     printf("[Error] %s(%d): ", origin_file, origin_line);
     if (word)
         printf("\"%s\" ", word);
+
     printf("%s ", errors[error_code]);
     if (line > 0) {
         printf("in Line: %d \n", line);

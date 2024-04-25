@@ -10,11 +10,11 @@ verbose_fopen(const char* fp, const char* modes)
 
     if (!fp)
         return NULL;
+
     if (!modes)
         modes = "r";
 
     f = fopen(fp, modes);
-
     if (!f)
         print_file_error(fp);
 
@@ -37,6 +37,7 @@ void
 get_word(const char* line, int* idx, char* word)
 {
     int i = 0, j = idx[0];
+
     if (line == NULL || idx == NULL || word == NULL) {
         return;
     }
@@ -67,7 +68,6 @@ get_string(char* line, char** start)
         return -1;
 
     line = strchr(line, '\"');
-
     if (line == NULL)
         return -1;
 
@@ -86,6 +86,7 @@ void
 remove_last_char(char* word)
 {
     int size = strlen(word);
+
     if (size > 0) {
         word[size - 1] = '\0';
     }
@@ -111,6 +112,7 @@ int
 is_symbol(const char* word)
 {
     int length = strlen(word);
+
     if (word[length - 1] == ':')
         return 1;
     return 0;
@@ -120,6 +122,7 @@ int
 is_ends_with_x(const char* word, const char x)
 {
     int length = strlen(word);
+
     if (length > 0 && word[length - 1] == x) {
         return 1;
     }
@@ -147,6 +150,7 @@ int
 is_register(const char* word, int line_count)
 {
     int len = strlen(word);
+
     if (len == 2 && word[0] == 'r' && isdigit(word[len - 1])) {
         int temp = word[len - 1] - '0';
         if (0 <= temp && temp <= 7)
@@ -162,6 +166,7 @@ char*
 str_dup(const char* s)
 {
     char* p = (char*)malloc(strlen(s) + 1);
+
     if (p == NULL) {
         fprintf(stderr, "Memory allocation failed for string duplication\n");
         exit(EXIT_FAILURE);
@@ -175,6 +180,7 @@ void*
 int_to_voidp(int data)
 {
     int* iptr = malloc(sizeof(int));
+
     if (iptr != NULL) {
         *iptr = data;
     }
